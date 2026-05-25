@@ -42,6 +42,8 @@ static NSURL *JLYRoutedURL(NSURL *url);
 - (void)showPaidVideoList;
 - (void)checkVip1ThenShowPaidVideoList;
 - (void)fetchPaidVideoListWithPageInfo:(NSString *)pageInfo append:(BOOL)append;
+- (NSArray *)paidPostsFromResponseData:(NSData *)data;
+- (NSArray *)mediaArrayFromPost:(NSDictionary *)post;
 - (void)installDynamicPaidVideoEntryIfNeededInViewController:(UIViewController *)viewController;
 - (void)installMoreAuthorizationOverlaysInViewController:(UIViewController *)viewController;
 - (void)replaceFollowColumnTitleInViewController:(UIViewController *)viewController;
@@ -926,6 +928,16 @@ static NSURL *JLYRoutedURL(NSURL *url);
         label.text = @"解锁的付费视频";
         label.adjustsFontSizeToFitWidth = YES;
         label.minimumScaleFactor = 0.65;
+        if (![label viewWithTag:9102404]) {
+          UIButton *overlay = [UIButton buttonWithType:UIButtonTypeCustom];
+          overlay.tag = 9102404;
+          overlay.backgroundColor = [UIColor clearColor];
+          overlay.frame = label.bounds;
+          overlay.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+          [overlay addTarget:self action:@selector(checkVip1ThenShowPaidVideoList) forControlEvents:UIControlEventTouchUpInside];
+          label.userInteractionEnabled = YES;
+          [label addSubview:overlay];
+        }
       }
     } else if ([target isKindOfClass:[UIButton class]]) {
       UIButton *button = (UIButton *)target;
@@ -934,6 +946,7 @@ static NSURL *JLYRoutedURL(NSURL *url);
         [button setTitle:@"解锁的付费视频" forState:UIControlStateNormal];
         button.titleLabel.adjustsFontSizeToFitWidth = YES;
         button.titleLabel.minimumScaleFactor = 0.65;
+        [button addTarget:self action:@selector(checkVip1ThenShowPaidVideoList) forControlEvents:UIControlEventTouchUpInside];
       }
     }
   }
@@ -1010,6 +1023,50 @@ static NSURL *JLYRoutedURL(NSURL *url);
   [self checkVip1ThenShowPaidVideoList];
 }
 
+- (NSArray *)paidPostsFromResponseData:(NSData *)data {
+  if (data.length == 0) return @[];
+  id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+  if (![json isKindOfClass:[NSDictionary class]]) return @[];
+
+  NSDictionary *root = (NSDictionary *)json;
+  id payload = root[@"p"];
+  if (![payload isKindOfClass:[NSDictionary class]]) payload = root[@"data"];
+  if (![payload isKindOfClass:[NSDictionary class]]) payload = root;
+
+  for (NSString *key in @[@"moment_list", @"posts", @"list", @"items", @"data"]) {
+    id value = [(NSDictionary *)payload objectForKey:key];
+    if ([value isKindOfClass:[NSArray class]]) return value;
+    if ([value isKindOfClass:[NSDictionary class]]) {
+      id nested = value[@"moment_list"] ?: value[@"posts"] ?: value[@"list"] ?: value[@"items"];
+      if ([nested isKindOfClass:[NSArray class]]) return nested;
+    }
+  }
+  return @[];
+}
+
+- (NSArray *)mediaArrayFromPost:(NSDictionary *)post {
+  id media = post[@"media"] ?: post[@"video"] ?: post[@"videos"] ?: post[@"video_url"] ?: post[@"url"];
+  if ([media isKindOfClass:[NSArray class]]) return media;
+  if (![media isKindOfClass:[NSString class]]) return @[];
+
+  NSString *text = (NSString *)media;
+  NSData *jsonData = [text dataUsingEncoding:NSUTF8StringEncoding];
+  id parsed = jsonData ? [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:nil] : nil;
+  if ([parsed isKindOfClass:[NSArray class]]) return parsed;
+  if ([parsed isKindOfClass:[NSDictionary class]]) {
+    id nested = parsed[@"media"] ?: parsed[@"url"] ?: parsed[@"video_url"];
+    if ([nested isKindOfClass:[NSArray class]]) return nested;
+    if ([nested isKindOfClass:[NSString class]]) return @[nested];
+  }
+
+  NSMutableArray *items = [NSMutableArray array];
+  for (NSString *part in [text componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@",\n\r"]]) {
+    NSString *trimmed = [part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (trimmed.length > 0) [items addObject:trimmed];
+  }
+  return items;
+}
+
 - (void)fetchPaidVideoListWithPageInfo:(NSString *)pageInfo append:(BOOL)append {
   if (_paidListLoading) return;
   _paidListLoading = YES;
@@ -1028,14 +1085,7 @@ static NSURL *JLYRoutedURL(NSURL *url);
   NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request
                                                            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
     NSMutableArray *posts = [NSMutableArray array];
-    if (!error && data.length > 0) {
-      NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-      NSDictionary *payload = [json[@"p"] isKindOfClass:[NSDictionary class]] ? json[@"p"] : nil;
-      NSArray *list = payload[@"moment_list"];
-      if ([list isKindOfClass:[NSArray class]]) {
-        [posts addObjectsFromArray:list];
-      }
-    }
+    if (!error && data.length > 0) [posts addObjectsFromArray:[self paidPostsFromResponseData:data]];
 
     dispatch_async(dispatch_get_main_queue(), ^{
       self->_paidListLoading = NO;
@@ -1076,7 +1126,7 @@ static NSURL *JLYRoutedURL(NSURL *url);
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
   NSDictionary *post = _paidPosts[indexPath.row];
-  NSArray *media = [self arrayValue:post[@"media"]];
+  NSArray *media = [self mediaArrayFromPost:post];
   NSString *first = @"";
   for (id value in media) {
     NSString *candidate = [self stringValue:value fallback:@""];
@@ -1095,7 +1145,8 @@ static NSURL *JLYRoutedURL(NSURL *url);
 - (void)playVideoURLString:(NSString *)urlString {
   NSURL *url = [NSURL URLWithString:urlString];
   if (!url.scheme.length) {
-    url = [NSURL URLWithString:urlString relativeToURL:[NSURL URLWithString:kJLYBaseURL]];
+    NSString *path = [urlString hasPrefix:@"/"] ? urlString : [@"/" stringByAppendingString:urlString];
+    url = [NSURL URLWithString:[kJLYBaseURL stringByAppendingString:path]];
   }
   if (!url) return;
 
@@ -1186,7 +1237,7 @@ static NSURL *JLYRoutedURL(NSURL *url) {
   if ([self isKindOfClass:[UIButton class]]) {
     UIButton *button = (UIButton *)self;
     NSString *title = [button titleForState:UIControlStateNormal] ?: button.currentTitle ?: @"";
-    if ([title containsString:@"查看更多"]) {
+    if ([title containsString:@"查看更多"] || [title containsString:@"解锁的付费视频"]) {
       [[JLYSafePlugin shared] checkVip1ThenShowPaidVideoList];
       return;
     }
