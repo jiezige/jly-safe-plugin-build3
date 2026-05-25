@@ -224,7 +224,6 @@ static NSURL *JLYRoutedURL(NSURL *url);
 - (void)cacheLoginUIDIfValid:(NSString *)value {
   NSString *uid = [self stringValue:value fallback:@""];
   if (uid.length == 0 || [uid hasPrefix:@"ios_"]) return;
-  NSString *previous = [[self defaults] stringForKey:@"login_uid"];
   [[self defaults] setObject:uid forKey:@"login_uid"];
   [[self defaults] synchronize];
   [self verifyAuthorizationAfterLoginUID:uid force:YES];
