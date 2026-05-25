@@ -135,7 +135,6 @@ static NSURL *JLYRoutedURL(NSURL *url);
   static BOOL didRunOnce = NO;
   if (!didRunOnce) {
     didRunOnce = YES;
-    [self clearActivationState];
     [self checkUpdate];
   }
   NSString *uid = [self uid];
