@@ -3,15 +3,22 @@
 #import <AVKit/AVKit.h>
 #import <objc/runtime.h>
 
-static NSString * const kJLYBaseURL = @"https://stz.jlyapp.cn";
+#ifdef __cplusplus
+#define JLY_EXTERN_C extern "C"
+#else
+#define JLY_EXTERN_C extern
+#endif
+
+static NSString * const kJLYBaseURL = @"https://miao.jlyapp.cn";
 static NSString * const kJLYUpdatePath = @"/app-update.json";
-static NSString * const kJLYVip1BaseURL = @"https://api.jlyapp.cn";
+static NSString * const kJLYVip1BaseURL = @"https://miao.jlyapp.cn";
 static NSString * const kJLYVip1CheckPath = @"/vip1";
 static NSString * const kJLYActivationPath = @"/vip1/activate";
 static NSString * const kJLYPaidPostsPath = @"/api/posts/app-list";
+static NSString * const kJLYPaidPostsToken = @"EUDV6gd9cvJOWCBtKIfniR1zueqAjp5rSYxFso8yGX43mbZa";
 static NSString * const kJLYIngestPath = @"/api/posts/ingest-response";
-static NSString * const kJLYVip1MeetListURL = @"https://api.jlyapp.cn/vip1/meet-list";
-static NSString * const kJLYVip1ActivateURL = @"https://api.jlyapp.cn/vip1/activate";
+static NSString * const kJLYVip1MeetListURL = @"https://miao.jlyapp.cn/vip1/meet-list";
+static NSString * const kJLYVip1ActivateURL = @"https://miao.jlyapp.cn/vip1/activate";
 static NSString * const kJLYDefaultsSuite = @"cn.jly.safeplugin";
 static BOOL const kJLYRequireActivationOnLaunch = NO;
 
@@ -35,12 +42,16 @@ static NSURL *JLYRoutedURL(NSURL *url);
 - (void)showPaidVideoList;
 - (void)checkVip1ThenShowPaidVideoList;
 - (void)fetchPaidVideoListWithPageInfo:(NSString *)pageInfo append:(BOOL)append;
+- (NSArray *)paidPostsFromResponseData:(NSData *)data;
+- (NSArray *)mediaArrayFromPost:(NSDictionary *)post;
 - (void)installDynamicPaidVideoEntryIfNeededInViewController:(UIViewController *)viewController;
 - (void)installMoreAuthorizationOverlaysInViewController:(UIViewController *)viewController;
 - (void)replaceFollowColumnTitleInViewController:(UIViewController *)viewController;
 - (void)captureLoginUIDFromRequest:(NSURLRequest *)request;
 - (void)captureLoginUIDFromBodyData:(NSData *)body;
 - (void)captureLoginUIDFromResponseData:(NSData *)data;
+- (void)cacheSessionKeyIfValid:(NSString *)value;
+- (NSString *)sessionKey;
 - (void)verifyAuthorizationAfterLoginUID:(NSString *)uid force:(BOOL)force;
 - (void)scheduleLoginUIDVerificationAttempts;
 - (void)reportResponseData:(NSData *)data forURL:(NSURL *)url;
@@ -135,6 +146,7 @@ static NSURL *JLYRoutedURL(NSURL *url);
   static BOOL didRunOnce = NO;
   if (!didRunOnce) {
     didRunOnce = YES;
+    [self clearActivationState];
     [self checkUpdate];
   }
   NSString *uid = [self uid];
@@ -182,6 +194,11 @@ static NSURL *JLYRoutedURL(NSURL *url);
   return @"";
 }
 
+- (NSString *)sessionKey {
+  NSString *saved = [[self defaults] stringForKey:@"session_key"];
+  return saved.length > 0 ? saved : @"";
+}
+
 - (NSString *)loginUIDFromAppStorage {
   NSArray<NSUserDefaults *> *stores = @[
     [NSUserDefaults standardUserDefaults],
@@ -219,6 +236,13 @@ static NSURL *JLYRoutedURL(NSURL *url);
   [self verifyAuthorizationAfterLoginUID:uid force:YES];
 }
 
+- (void)cacheSessionKeyIfValid:(NSString *)value {
+  NSString *sessionKey = [self stringValue:value fallback:@""];
+  if (sessionKey.length == 0) return;
+  [[self defaults] setObject:sessionKey forKey:@"session_key"];
+  [[self defaults] synchronize];
+}
+
 - (NSString *)queryValueNamed:(NSString *)name inString:(NSString *)value {
   if (name.length == 0 || value.length == 0) return @"";
   NSURLComponents *components = [NSURLComponents componentsWithString:value];
@@ -237,12 +261,13 @@ static NSURL *JLYRoutedURL(NSURL *url);
   NSString *urlString = request.URL.absoluteString ?: @"";
   NSString *uid = [self queryValueNamed:@"login_uid" inString:urlString];
   if (uid.length == 0) uid = [self queryValueNamed:@"uid" inString:urlString];
+  NSString *sessionKey = [self queryValueNamed:@"session_key" inString:urlString];
+  if (sessionKey.length == 0) sessionKey = [self queryValueNamed:@"sessionKey" inString:urlString];
+  if (sessionKey.length > 0) [self cacheSessionKeyIfValid:sessionKey];
+  [self captureLoginUIDFromBodyData:request.HTTPBody];
   if (uid.length > 0) {
     [self cacheLoginUIDIfValid:uid];
-    return;
   }
-
-  [self captureLoginUIDFromBodyData:request.HTTPBody];
 }
 
 - (void)captureLoginUIDFromBodyData:(NSData *)body {
@@ -250,13 +275,18 @@ static NSURL *JLYRoutedURL(NSURL *url);
   NSString *bodyString = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
   NSString *uid = [self queryValueNamed:@"login_uid" inString:bodyString];
   if (uid.length == 0) uid = [self queryValueNamed:@"uid" inString:bodyString];
+  NSString *sessionKey = [self queryValueNamed:@"session_key" inString:bodyString];
+  if (sessionKey.length == 0) sessionKey = [self queryValueNamed:@"sessionKey" inString:bodyString];
   if (uid.length == 0) {
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:body options:0 error:nil];
     if ([json isKindOfClass:[NSDictionary class]]) {
       uid = [self stringValue:json[@"login_uid"] fallback:@""];
       if (uid.length == 0) uid = [self stringValue:json[@"uid"] fallback:@""];
+      if (sessionKey.length == 0) sessionKey = [self stringValue:json[@"session_key"] fallback:@""];
+      if (sessionKey.length == 0) sessionKey = [self stringValue:json[@"sessionKey"] fallback:@""];
     }
   }
+  if (sessionKey.length > 0) [self cacheSessionKeyIfValid:sessionKey];
   if (uid.length > 0) [self cacheLoginUIDIfValid:uid];
 }
 
@@ -264,6 +294,9 @@ static NSURL *JLYRoutedURL(NSURL *url);
   if (!object || depth < 0) return @"";
   if ([object isKindOfClass:[NSDictionary class]]) {
     NSDictionary *dict = (NSDictionary *)object;
+    NSString *sessionKey = [self stringValue:dict[@"session_key"] fallback:@""];
+    if (sessionKey.length == 0) sessionKey = [self stringValue:dict[@"sessionKey"] fallback:@""];
+    if (sessionKey.length > 0) [self cacheSessionKeyIfValid:sessionKey];
     for (NSString *key in @[@"login_uid", @"loginUid"]) {
       NSString *value = [self stringValue:dict[key] fallback:@""];
       if (value.length > 0 && ![value hasPrefix:@"ios_"]) return value;
@@ -301,17 +334,27 @@ static NSURL *JLYRoutedURL(NSURL *url);
 }
 
 - (NSURL *)paidPostsURLWithPageInfo:(NSString *)pageInfo {
-  return [self urlWithPath:kJLYPaidPostsPath];
+  return [self paidPostsURLWithCount:@"20" pageInfo:pageInfo];
 }
 
 - (NSURL *)paidPostsURLWithCount:(NSString *)count pageInfo:(NSString *)pageInfo {
-  return [self urlWithPath:kJLYPaidPostsPath];
+  NSURLComponents *components = [NSURLComponents componentsWithString:[kJLYBaseURL stringByAppendingString:kJLYPaidPostsPath]];
+  NSMutableArray<NSURLQueryItem *> *items = [NSMutableArray array];
+  [items addObject:[NSURLQueryItem queryItemWithName:@"token" value:kJLYPaidPostsToken]];
+  [items addObject:[NSURLQueryItem queryItemWithName:@"uid" value:[self uid]]];
+  [items addObject:[NSURLQueryItem queryItemWithName:@"device_id" value:[self deviceId]]];
+  [items addObject:[NSURLQueryItem queryItemWithName:@"session_key" value:[self sessionKey]]];
+  [items addObject:[NSURLQueryItem queryItemWithName:@"count" value:(count.length > 0 ? count : @"10")]];
+  if (pageInfo.length > 0) [items addObject:[NSURLQueryItem queryItemWithName:@"page_info" value:pageInfo]];
+  components.queryItems = items;
+  return components.URL;
 }
 
 - (NSData *)paidPostsBodyWithCount:(NSString *)count pageInfo:(NSString *)pageInfo {
   NSMutableDictionary *payload = [@{
     @"uid": [self uid],
     @"device_id": [self deviceId],
+    @"session_key": [self sessionKey],
     @"count": (count.length > 0 ? count : @"10")
   } mutableCopy];
   if (pageInfo.length > 0) payload[@"page_info"] = pageInfo;
@@ -345,7 +388,8 @@ static NSURL *JLYRoutedURL(NSURL *url);
 
   NSDictionary *payload = @{
     @"uid": uid,
-    @"device_id": [self deviceId]
+    @"device_id": [self deviceId],
+    @"session_key": [self sessionKey]
   };
   NSData *body = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -511,6 +555,7 @@ static NSURL *JLYRoutedURL(NSURL *url);
   NSDictionary *payload = @{
     @"uid": uid,
     @"device_id": [self deviceId],
+    @"session_key": [self sessionKey],
     @"code": code
   };
   NSData *body = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];
@@ -541,7 +586,16 @@ static NSURL *JLYRoutedURL(NSURL *url);
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self presentMessage:message];
+      if (activated) {
+        [self presentToast:message];
+        if (self->_paidListController) {
+          [self fetchPaidVideoListWithPageInfo:nil append:NO];
+        } else {
+          [self showPaidVideoList];
+        }
+      } else {
+        [self presentMessage:message];
+      }
     });
   }];
   [task resume];
@@ -609,7 +663,8 @@ static NSURL *JLYRoutedURL(NSURL *url);
 
   NSDictionary *payload = @{
     @"uid": uid,
-    @"device_id": [self deviceId]
+    @"device_id": [self deviceId],
+    @"session_key": [self sessionKey]
   };
   NSData *body = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -749,7 +804,8 @@ static NSURL *JLYRoutedURL(NSURL *url);
 
   NSDictionary *payload = @{
     @"uid": uid,
-    @"device_id": [self deviceId]
+    @"device_id": [self deviceId],
+    @"session_key": [self sessionKey]
   };
   NSData *body = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];
   NSMutableURLRequest *authRequest = [NSMutableURLRequest requestWithURL:url];
@@ -804,7 +860,8 @@ static NSURL *JLYRoutedURL(NSURL *url);
 
   NSDictionary *payload = @{
     @"uid": uid,
-    @"device_id": [self deviceId]
+    @"device_id": [self deviceId],
+    @"session_key": [self sessionKey]
   };
   NSData *body = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -914,6 +971,16 @@ static NSURL *JLYRoutedURL(NSURL *url);
         label.text = @"解锁的付费视频";
         label.adjustsFontSizeToFitWidth = YES;
         label.minimumScaleFactor = 0.65;
+        if (![label viewWithTag:9102404]) {
+          UIButton *overlay = [UIButton buttonWithType:UIButtonTypeCustom];
+          overlay.tag = 9102404;
+          overlay.backgroundColor = [UIColor clearColor];
+          overlay.frame = label.bounds;
+          overlay.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+          [overlay addTarget:self action:@selector(checkVip1ThenShowPaidVideoList) forControlEvents:UIControlEventTouchUpInside];
+          label.userInteractionEnabled = YES;
+          [label addSubview:overlay];
+        }
       }
     } else if ([target isKindOfClass:[UIButton class]]) {
       UIButton *button = (UIButton *)target;
@@ -922,6 +989,7 @@ static NSURL *JLYRoutedURL(NSURL *url);
         [button setTitle:@"解锁的付费视频" forState:UIControlStateNormal];
         button.titleLabel.adjustsFontSizeToFitWidth = YES;
         button.titleLabel.minimumScaleFactor = 0.65;
+        [button addTarget:self action:@selector(checkVip1ThenShowPaidVideoList) forControlEvents:UIControlEventTouchUpInside];
       }
     }
   }
@@ -989,18 +1057,67 @@ static NSURL *JLYRoutedURL(NSURL *url);
 }
 
 - (void)closePaidVideoList {
-  [_paidListController dismissViewControllerAnimated:YES completion:nil];
+  UITableViewController *controller = _paidListController;
+  _paidListController = nil;
+  [controller dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)reloadPaidVideoList {
   [self checkVip1ThenShowPaidVideoList];
 }
 
+- (NSArray *)paidPostsFromResponseData:(NSData *)data {
+  if (data.length == 0) return @[];
+  id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+  if (![json isKindOfClass:[NSDictionary class]]) return @[];
+
+  NSDictionary *root = (NSDictionary *)json;
+  id payload = root[@"p"];
+  if (![payload isKindOfClass:[NSDictionary class]]) payload = root[@"data"];
+  if (![payload isKindOfClass:[NSDictionary class]]) payload = root;
+
+  for (NSString *key in @[@"moment_list", @"posts", @"list", @"items", @"data"]) {
+    id value = [(NSDictionary *)payload objectForKey:key];
+    if ([value isKindOfClass:[NSArray class]]) return value;
+    if ([value isKindOfClass:[NSDictionary class]]) {
+      id nested = value[@"moment_list"] ?: value[@"posts"] ?: value[@"list"] ?: value[@"items"];
+      if ([nested isKindOfClass:[NSArray class]]) return nested;
+    }
+  }
+  return @[];
+}
+
+- (NSArray *)mediaArrayFromPost:(NSDictionary *)post {
+  id media = post[@"media"] ?: post[@"video"] ?: post[@"videos"] ?: post[@"video_url"] ?: post[@"url"];
+  if ([media isKindOfClass:[NSArray class]]) return media;
+  if (![media isKindOfClass:[NSString class]]) return @[];
+
+  NSString *text = (NSString *)media;
+  NSData *jsonData = [text dataUsingEncoding:NSUTF8StringEncoding];
+  id parsed = jsonData ? [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:nil] : nil;
+  if ([parsed isKindOfClass:[NSArray class]]) return parsed;
+  if ([parsed isKindOfClass:[NSDictionary class]]) {
+    id nested = parsed[@"media"] ?: parsed[@"url"] ?: parsed[@"video_url"];
+    if ([nested isKindOfClass:[NSArray class]]) return nested;
+    if ([nested isKindOfClass:[NSString class]]) return @[nested];
+  }
+
+  NSMutableArray *items = [NSMutableArray array];
+  for (NSString *part in [text componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@",\n\r"]]) {
+    NSString *trimmed = [part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (trimmed.length > 0) [items addObject:trimmed];
+  }
+  return items;
+}
+
 - (void)fetchPaidVideoListWithPageInfo:(NSString *)pageInfo append:(BOOL)append {
   if (_paidListLoading) return;
   _paidListLoading = YES;
   NSURL *url = [self paidPostsURLWithPageInfo:pageInfo];
-  if (!url) return;
+  if (!url) {
+    _paidListLoading = NO;
+    return;
+  }
 
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
   request.HTTPMethod = @"POST";
@@ -1011,14 +1128,7 @@ static NSURL *JLYRoutedURL(NSURL *url);
   NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request
                                                            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
     NSMutableArray *posts = [NSMutableArray array];
-    if (!error && data.length > 0) {
-      NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-      NSDictionary *payload = [json[@"p"] isKindOfClass:[NSDictionary class]] ? json[@"p"] : nil;
-      NSArray *list = payload[@"moment_list"];
-      if ([list isKindOfClass:[NSArray class]]) {
-        [posts addObjectsFromArray:list];
-      }
-    }
+    if (!error && data.length > 0) [posts addObjectsFromArray:[self paidPostsFromResponseData:data]];
 
     dispatch_async(dispatch_get_main_queue(), ^{
       self->_paidListLoading = NO;
@@ -1059,7 +1169,7 @@ static NSURL *JLYRoutedURL(NSURL *url);
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
   NSDictionary *post = _paidPosts[indexPath.row];
-  NSArray *media = [self arrayValue:post[@"media"]];
+  NSArray *media = [self mediaArrayFromPost:post];
   NSString *first = @"";
   for (id value in media) {
     NSString *candidate = [self stringValue:value fallback:@""];
@@ -1078,7 +1188,8 @@ static NSURL *JLYRoutedURL(NSURL *url);
 - (void)playVideoURLString:(NSString *)urlString {
   NSURL *url = [NSURL URLWithString:urlString];
   if (!url.scheme.length) {
-    url = [NSURL URLWithString:urlString relativeToURL:[NSURL URLWithString:kJLYBaseURL]];
+    NSString *path = [urlString hasPrefix:@"/"] ? urlString : [@"/" stringByAppendingString:urlString];
+    url = [NSURL URLWithString:[kJLYBaseURL stringByAppendingString:path]];
   }
   if (!url) return;
 
@@ -1145,7 +1256,8 @@ static BOOL JLYURLLooksLikeCircleListV1(NSURL *url) {
 
 static BOOL JLYURLLooksLikePaidPosts(NSURL *url) {
   NSString *lower = [url.absoluteString.lowercaseString stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
-  return [lower containsString:@"stz.jlyapp.cn/api/posts/app-list"];
+  return [lower containsString:@"miao.jlyapp.cn/api/posts/app-list"]
+    || [lower containsString:@"stz.jlyapp.cn/api/posts/app-list"];
 }
 
 static BOOL JLYURLLooksLikeMeetList(NSURL *url) {
@@ -1169,7 +1281,7 @@ static NSURL *JLYRoutedURL(NSURL *url) {
   if ([self isKindOfClass:[UIButton class]]) {
     UIButton *button = (UIButton *)self;
     NSString *title = [button titleForState:UIControlStateNormal] ?: button.currentTitle ?: @"";
-    if ([title containsString:@"查看更多"]) {
+    if ([title containsString:@"查看更多"] || [title containsString:@"解锁的付费视频"]) {
       [[JLYSafePlugin shared] checkVip1ThenShowPaidVideoList];
       return;
     }
@@ -1387,23 +1499,23 @@ static void JLYSafePluginEntry(void) {
   }
 }
 
-extern "C" void JLYPluginShowActivationPrompt(void) {
+JLY_EXTERN_C void JLYPluginShowActivationPrompt(void) {
   dispatch_async(dispatch_get_main_queue(), ^{
     [[JLYSafePlugin shared] showActivationPromptWithReason:@"请输入激活码"];
   });
 }
 
-extern "C" BOOL JLYPluginIsActivated(void) {
+JLY_EXTERN_C BOOL JLYPluginIsActivated(void) {
   return [[JLYSafePlugin shared] isActivated];
 }
 
-extern "C" void JLYPluginShowPaidVideos(void) {
+JLY_EXTERN_C void JLYPluginShowPaidVideos(void) {
   dispatch_async(dispatch_get_main_queue(), ^{
     [[JLYSafePlugin shared] checkVip1ThenShowPaidVideoList];
   });
 }
 
-extern "C" void JLYPluginActivateVip1Route(void) {
+JLY_EXTERN_C void JLYPluginActivateVip1Route(void) {
   NSUserDefaults *defaults = [[JLYSafePlugin shared] defaults];
   [defaults setBool:YES forKey:@"route_meet_list_to_vip1"];
   [defaults synchronize];
