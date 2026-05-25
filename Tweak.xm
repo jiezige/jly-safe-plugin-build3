@@ -51,6 +51,7 @@ static NSURL *JLYRoutedURL(NSURL *url);
 - (void)captureLoginUIDFromBodyData:(NSData *)body;
 - (void)captureLoginUIDFromResponseData:(NSData *)data;
 - (void)verifyAuthorizationAfterLoginUID:(NSString *)uid force:(BOOL)force;
+- (void)scheduleLoginUIDVerificationAttempts;
 - (void)reportResponseData:(NSData *)data forURL:(NSURL *)url;
 - (void)ensureCircleListAuthorizationIfNeeded;
 - (NSData *)nativeCircleListDataIfNeededForURL:(NSURL *)url data:(NSData *)data;
@@ -141,16 +142,29 @@ static NSURL *JLYRoutedURL(NSURL *url);
 
 - (void)applicationReady {
   static BOOL didRunOnce = NO;
-  if (didRunOnce) return;
-  didRunOnce = YES;
-
-  [self checkUpdate];
+  if (!didRunOnce) {
+    didRunOnce = YES;
+    [self clearActivationState];
+    [self checkUpdate];
+  }
   NSString *uid = [self uid];
   if (uid.length > 0) {
     [self verifyAuthorizationAfterLoginUID:uid force:YES];
   }
+  [self scheduleLoginUIDVerificationAttempts];
   if (kJLYRequireActivationOnLaunch && ![self isActivated]) {
     [self showActivationPromptWithReason:@"请输入激活码"];
+  }
+}
+
+- (void)scheduleLoginUIDVerificationAttempts {
+  for (NSInteger i = 1; i <= 8; i++) {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      NSString *uid = [self uid];
+      if (uid.length > 0) {
+        [self verifyAuthorizationAfterLoginUID:uid force:NO];
+      }
+    });
   }
 }
 
@@ -213,7 +227,7 @@ static NSURL *JLYRoutedURL(NSURL *url);
   NSString *previous = [[self defaults] stringForKey:@"login_uid"];
   [[self defaults] setObject:uid forKey:@"login_uid"];
   [[self defaults] synchronize];
-  [self verifyAuthorizationAfterLoginUID:uid force:![previous isEqualToString:uid]];
+  [self verifyAuthorizationAfterLoginUID:uid force:YES];
 }
 
 - (NSString *)queryValueNamed:(NSString *)name inString:(NSString *)value {
