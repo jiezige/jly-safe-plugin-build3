@@ -1,139 +1,147 @@
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
-static NSString * const kJLYCollectBaseURL = @"https://pee.api.jluapp.cn";
-static NSString * const kJLYCollectPath = @"/api/posts/ingest-response";
+static NSString * const kJLYBaseURL = @"https://pee.jlyapp.cn";
+static NSString * const kJLYIngestPath = @"/api/posts/ingest-response";
 
-@interface JLYCollectOnly : NSObject
-+ (instancetype)shared;
-- (void)reportResponseData:(NSData *)data forURL:(NSURL *)url;
-@end
-
-@interface NSURLSession (JLYCollectOnlyHooks)
-- (NSURLSessionDataTask *)jlyc_dataTaskWithURL:(NSURL *)url completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
-- (NSURLSessionDataTask *)jlyc_dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
-- (NSURLSessionUploadTask *)jlyc_uploadTaskWithRequest:(NSURLRequest *)request fromData:(NSData *)bodyData completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
-- (NSURLSessionUploadTask *)jlyc_uploadTaskWithRequest:(NSURLRequest *)request fromFile:(NSURL *)fileURL completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
-@end
-
-@interface NSURLConnection (JLYCollectOnlyHooks)
-+ (void)jlyc_sendAsynchronousRequest:(NSURLRequest *)request queue:(NSOperationQueue *)queue completionHandler:(void (^)(NSURLResponse *response, NSData *data, NSError *connectionError))handler;
-+ (NSData *)jlyc_sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error;
-@end
-
-static BOOL JLYCURLLooksLikeTarget(NSURL *url) {
-  NSString *lower = [url.absoluteString.lowercaseString stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
-  return [lower containsString:@"sm/circle/mymoment"];
+static BOOL JLYURLLooksInteresting(NSString *urlString) {
+    if (![urlString isKindOfClass:[NSString class]] || urlString.length == 0) return NO;
+    NSString *lower = urlString.lowercaseString;
+    if ([lower containsString:@"pee.jlyapp.cn"]) return NO;
+    return [lower containsString:@"sm/circle/mymoment"] ||
+           [lower containsString:@"circle/mymoment"] ||
+           [lower containsString:@"sm/circle/detailv1"] ||
+           [lower containsString:@"circle/detailv1"] ||
+           [lower containsString:@"sm/circle/timelinev1"] ||
+           [lower containsString:@"circle/timelinev1"] ||
+           [lower containsString:@"sm/circle/mypaymoment"] ||
+           [lower containsString:@"circle/mypaymoment"] ||
+           [lower containsString:@"sm/circle/list"] ||
+           [lower containsString:@"circle/list"];
 }
 
-@implementation JLYCollectOnly
-+ (instancetype)shared {
-  static JLYCollectOnly *instance;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{ instance = [[JLYCollectOnly alloc] init]; });
-  return instance;
+static NSString *JLYJSONStringFromObject(id obj) {
+    if (!obj) return nil;
+    if ([obj isKindOfClass:[NSData class]]) {
+        return [[NSString alloc] initWithData:(NSData *)obj encoding:NSUTF8StringEncoding];
+    }
+    if ([obj isKindOfClass:[NSString class]]) {
+        return (NSString *)obj;
+    }
+    if ([NSJSONSerialization isValidJSONObject:obj]) {
+        NSData *data = [NSJSONSerialization dataWithJSONObject:obj options:0 error:nil];
+        if (data.length) return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    }
+    return [obj description];
 }
 
-- (void)reportResponseData:(NSData *)data forURL:(NSURL *)url {
-  if (data.length == 0 || !JLYCURLLooksLikeTarget(url)) return;
-  NSString *text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ?: @"";
-  if (text.length == 0) return;
-  NSDictionary *payload = @{
-    @"source_endpoint": @"/sm/Circle/myMoment",
-    @"url": url.absoluteString ?: @"",
-    @"response": text
-  };
-  NSData *body = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];
-  if (body.length == 0) return;
-  NSURL *target = [NSURL URLWithString:[kJLYCollectBaseURL stringByAppendingString:kJLYCollectPath]];
-  if (!target) return;
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:target];
-  request.HTTPMethod = @"POST";
-  request.HTTPBody = body;
-  [request setValue:@"application/json" forHTTPHeaderField:@"content-type"];
-  NSURLSessionDataTask *task = [[NSURLSession sharedSession] jlyc_dataTaskWithRequest:request completionHandler:nil];
-  [task resume];
-}
-@end
+static void JLYPostJSON(NSDictionary *payload) {
+    if (!payload) return;
+    NSURL *url = [NSURL URLWithString:[kJLYBaseURL stringByAppendingString:kJLYIngestPath]];
+    if (!url) return;
+    NSData *body = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];
+    if (!body.length) return;
 
-@implementation NSURLSession (JLYCollectOnlyHooks)
-- (NSURLSessionDataTask *)jlyc_dataTaskWithURL:(NSURL *)url completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler {
-  void (^wrapped)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-    [[JLYCollectOnly shared] reportResponseData:data forURL:url];
-    if (completionHandler) completionHandler(data, response, error);
-  };
-  return [self jlyc_dataTaskWithURL:url completionHandler:wrapped];
+    NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
+    req.HTTPMethod = @"POST";
+    req.HTTPBody = body;
+    [req setValue:@"application/json" forHTTPHeaderField:@"content-type"];
+    [[[NSURLSession sharedSession] dataTaskWithRequest:req] resume];
 }
 
-- (NSURLSessionDataTask *)jlyc_dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler {
-  NSURL *url = request.URL;
-  void (^wrapped)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-    [[JLYCollectOnly shared] reportResponseData:data forURL:url];
-    if (completionHandler) completionHandler(data, response, error);
-  };
-  return [self jlyc_dataTaskWithRequest:request completionHandler:wrapped];
+static void JLYReport(NSString *source, NSString *urlString, id responseObject) {
+    if (!JLYURLLooksInteresting(urlString)) return;
+    NSString *response = JLYJSONStringFromObject(responseObject);
+    if (response.length == 0) return;
+    JLYPostJSON(@{
+        @"source_endpoint": source ?: @"ios-hook",
+        @"url": urlString ?: @"",
+        @"response": response
+    });
 }
 
-- (NSURLSessionUploadTask *)jlyc_uploadTaskWithRequest:(NSURLRequest *)request fromData:(NSData *)bodyData completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler {
-  NSURL *url = request.URL;
-  void (^wrapped)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-    [[JLYCollectOnly shared] reportResponseData:data forURL:url];
-    if (completionHandler) completionHandler(data, response, error);
-  };
-  return [self jlyc_uploadTaskWithRequest:request fromData:bodyData completionHandler:wrapped];
+static void JLYPing(NSString *stage) {
+    JLYPostJSON(@{
+        @"source_endpoint": @"ios-hook-ping",
+        @"url": stage ?: @"loaded",
+        @"response": @"{\"hook_loaded\":true}"
+    });
 }
 
-- (NSURLSessionUploadTask *)jlyc_uploadTaskWithRequest:(NSURLRequest *)request fromFile:(NSURL *)fileURL completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler {
-  NSURL *url = request.URL;
-  void (^wrapped)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-    [[JLYCollectOnly shared] reportResponseData:data forURL:url];
-    if (completionHandler) completionHandler(data, response, error);
-  };
-  return [self jlyc_uploadTaskWithRequest:request fromFile:fileURL completionHandler:wrapped];
-}
-@end
+typedef NSURLSessionDataTask *(*JLYDataTaskReqIMP)(id, SEL, NSURLRequest *, void (^)(NSData *, NSURLResponse *, NSError *));
+typedef NSURLSessionDataTask *(*JLYDataTaskURLIMP)(id, SEL, NSURL *, void (^)(NSData *, NSURLResponse *, NSError *));
+typedef id (*JLYAFDataTaskIMP)(id, SEL, NSString *, NSString *, id, id, id, void (^)(NSURLSessionDataTask *, id), void (^)(NSURLSessionDataTask *, NSError *));
 
-@implementation NSURLConnection (JLYCollectOnlyHooks)
-+ (void)jlyc_sendAsynchronousRequest:(NSURLRequest *)request queue:(NSOperationQueue *)queue completionHandler:(void (^)(NSURLResponse *response, NSData *data, NSError *connectionError))handler {
-  NSURL *url = request.URL;
-  void (^wrapped)(NSURLResponse *, NSData *, NSError *) = ^(NSURLResponse *response, NSData *data, NSError *connectionError) {
-    [[JLYCollectOnly shared] reportResponseData:data forURL:url];
-    if (handler) handler(response, data, connectionError);
-  };
-  [self jlyc_sendAsynchronousRequest:request queue:queue completionHandler:wrapped];
+static JLYDataTaskReqIMP origDataTaskReq = NULL;
+static JLYDataTaskURLIMP origDataTaskURL = NULL;
+static JLYAFDataTaskIMP origAFDataTask = NULL;
+static SEL selDataTaskReq;
+static SEL selDataTaskURL;
+static SEL selAFDataTask;
+
+static void JLYInstallNSURLSessionHooks(void) {
+    Class cls = objc_getClass("NSURLSession");
+    selDataTaskReq = @selector(dataTaskWithRequest:completionHandler:);
+    Method mReq = class_getInstanceMethod(cls, selDataTaskReq);
+    if (mReq) {
+        origDataTaskReq = (JLYDataTaskReqIMP)method_getImplementation(mReq);
+        IMP imp = imp_implementationWithBlock(^NSURLSessionDataTask *(id selfObj, NSURLRequest *request, void (^completion)(NSData *, NSURLResponse *, NSError *)) {
+            NSString *urlString = request.URL.absoluteString;
+            void (^wrapped)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                if (completion) completion(data, response, error);
+                if (data.length) JLYReport(@"NSURLSession request", urlString, data);
+            };
+            return origDataTaskReq(selfObj, selDataTaskReq, request, completion ? wrapped : nil);
+        });
+        method_setImplementation(mReq, imp);
+    }
+
+    selDataTaskURL = @selector(dataTaskWithURL:completionHandler:);
+    Method mURL = class_getInstanceMethod(cls, selDataTaskURL);
+    if (mURL) {
+        origDataTaskURL = (JLYDataTaskURLIMP)method_getImplementation(mURL);
+        IMP imp = imp_implementationWithBlock(^NSURLSessionDataTask *(id selfObj, NSURL *url, void (^completion)(NSData *, NSURLResponse *, NSError *)) {
+            NSString *urlString = url.absoluteString;
+            void (^wrapped)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                if (completion) completion(data, response, error);
+                if (data.length) JLYReport(@"NSURLSession url", urlString, data);
+            };
+            return origDataTaskURL(selfObj, selDataTaskURL, url, completion ? wrapped : nil);
+        });
+        method_setImplementation(mURL, imp);
+    }
 }
 
-+ (NSData *)jlyc_sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error {
-  NSData *data = [self jlyc_sendSynchronousRequest:request returningResponse:response error:error];
-  [[JLYCollectOnly shared] reportResponseData:data forURL:request.URL];
-  return data;
-}
-@end
+static void JLYInstallAFNetworkingHook(void) {
+    Class cls = objc_getClass("AFHTTPSessionManager");
+    if (!cls) return;
+    selAFDataTask = NSSelectorFromString(@"dataTaskWithHTTPMethod:URLString:parameters:uploadProgress:downloadProgress:success:failure:");
+    Method m = class_getInstanceMethod(cls, selAFDataTask);
+    if (!m) return;
 
-static void JLYCExchangeInstanceMethod(Class cls, SEL original, SEL replacement) {
-  Method originalMethod = class_getInstanceMethod(cls, original);
-  Method replacementMethod = class_getInstanceMethod(cls, replacement);
-  if (!originalMethod || !replacementMethod) return;
-  method_exchangeImplementations(originalMethod, replacementMethod);
+    origAFDataTask = (JLYAFDataTaskIMP)method_getImplementation(m);
+    IMP imp = imp_implementationWithBlock(^id(id selfObj, NSString *methodName, NSString *URLString, id parameters, id uploadProgress, id downloadProgress, void (^success)(NSURLSessionDataTask *, id), void (^failure)(NSURLSessionDataTask *, NSError *)) {
+        void (^wrappedSuccess)(NSURLSessionDataTask *, id) = ^(NSURLSessionDataTask *task, id responseObject) {
+            if (success) success(task, responseObject);
+            NSString *urlString = URLString;
+            if (![urlString isKindOfClass:[NSString class]] || urlString.length == 0) {
+                urlString = task.currentRequest.URL.absoluteString ?: task.originalRequest.URL.absoluteString;
+            }
+            JLYReport(@"AFHTTPSessionManager", urlString, responseObject);
+        };
+        return origAFDataTask(selfObj, selAFDataTask, methodName, URLString, parameters, uploadProgress, downloadProgress, success ? wrappedSuccess : nil, failure);
+    });
+    method_setImplementation(m, imp);
 }
 
-static void JLYCExchangeClassMethod(Class cls, SEL original, SEL replacement) {
-  Method originalMethod = class_getClassMethod(cls, original);
-  Method replacementMethod = class_getClassMethod(cls, replacement);
-  if (!originalMethod || !replacementMethod) return;
-  method_exchangeImplementations(originalMethod, replacementMethod);
-}
-
-__attribute__((constructor))
-static void JLYCollectOnlyEntry(void) {
-  @autoreleasepool {
-    Class session = [NSURLSession class];
-    JLYCExchangeInstanceMethod(session, @selector(dataTaskWithURL:completionHandler:), @selector(jlyc_dataTaskWithURL:completionHandler:));
-    JLYCExchangeInstanceMethod(session, @selector(dataTaskWithRequest:completionHandler:), @selector(jlyc_dataTaskWithRequest:completionHandler:));
-    JLYCExchangeInstanceMethod(session, @selector(uploadTaskWithRequest:fromData:completionHandler:), @selector(jlyc_uploadTaskWithRequest:fromData:completionHandler:));
-    JLYCExchangeInstanceMethod(session, @selector(uploadTaskWithRequest:fromFile:completionHandler:), @selector(jlyc_uploadTaskWithRequest:fromFile:completionHandler:));
-    Class connection = [NSURLConnection class];
-    JLYCExchangeClassMethod(connection, @selector(sendAsynchronousRequest:queue:completionHandler:), @selector(jlyc_sendAsynchronousRequest:queue:completionHandler:));
-    JLYCExchangeClassMethod(connection, @selector(sendSynchronousRequest:returningResponse:error:), @selector(jlyc_sendSynchronousRequest:returningResponse:error:));
-  }
+%ctor {
+    @autoreleasepool {
+        JLYInstallNSURLSessionHooks();
+        JLYInstallAFNetworkingHook();
+        JLYPing(@"ctor");
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            JLYInstallAFNetworkingHook();
+            JLYPing(@"ctor-delay");
+        });
+    }
 }
