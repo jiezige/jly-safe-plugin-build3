@@ -1,0 +1,33 @@
+name: Build patched IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - "codex/**"
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Build patched IPA
+        run: npm run build
+
+      - name: Verify patched IPA
+        run: npm run verify
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: miaotaoGOm0492_303_all_videos
+          path: dist/miaotaoGOm0492_303_all_videos.ipa

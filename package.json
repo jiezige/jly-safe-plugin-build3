@@ -1,0 +1,9 @@
+{
+  "name": "miaotao-all-videos-ipa",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node tools/patch-ipa.js",
+    "verify": "node tools/verify-ipa.js"
+  }
+}

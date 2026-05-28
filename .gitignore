@@ -1,4 +1,6 @@
-.theos/
-packages/
-*.deb
-*.dylib
+build/
+dist/
+cf.txt
+github.txt
+ipa_extract/
+miaotaoGOm0492_303_all_videos.ipa

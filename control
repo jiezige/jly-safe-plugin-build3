@@ -1,8 +1,0 @@
-Package: cn.jly.safeplugin
-Name: JLYSafePlugin
-Version: 1.0.0
-Architecture: iphoneos-arm
-Description: Remote update dialog and activation helper for controlled builds.
-Maintainer: local
-Author: local
-Section: Tweaks
