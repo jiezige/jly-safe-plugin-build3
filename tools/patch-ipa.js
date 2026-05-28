@@ -89,21 +89,13 @@ function zipIpa(payloadRoot, outputIpa) {
 
 function maybeCodesign(appDir) {
   if (process.platform !== "darwin") return false;
-  const frameworksDir = path.join(appDir, "Frameworks");
-  if (fs.existsSync(frameworksDir)) {
-    for (const item of fs.readdirSync(frameworksDir)) {
-      const full = path.join(frameworksDir, item);
-      if (item.endsWith(".framework") || item.endsWith(".dylib")) {
-        run("codesign", ["--force", "--sign", "-", full]);
-      }
+  for (const target of [path.join(appDir, "cike.dylib"), appDir]) {
+    try {
+      run("codesign", ["--force", "--sign", "-", target]);
+    } catch (error) {
+      console.warn(`codesign skipped for ${target}: ${error.message}`);
     }
   }
-  for (const item of fs.readdirSync(appDir)) {
-    if (item.endsWith(".dylib")) {
-      run("codesign", ["--force", "--sign", "-", path.join(appDir, item)]);
-    }
-  }
-  run("codesign", ["--force", "--sign", "-", appDir]);
   return true;
 }
 
