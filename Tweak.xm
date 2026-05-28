@@ -91,7 +91,7 @@ static void JLYInstallNSURLSessionHooks(void) {
                 if (completion) completion(data, response, error);
                 if (data.length) JLYReport(@"NSURLSession request", urlString, data);
             };
-            return origDataTaskReq(selfObj, selDataTaskReq, request, completion ? wrapped : nil);
+            return origDataTaskReq(selfObj, selDataTaskReq, request, wrapped);
         });
         method_setImplementation(mReq, imp);
     }
@@ -106,7 +106,7 @@ static void JLYInstallNSURLSessionHooks(void) {
                 if (completion) completion(data, response, error);
                 if (data.length) JLYReport(@"NSURLSession url", urlString, data);
             };
-            return origDataTaskURL(selfObj, selDataTaskURL, url, completion ? wrapped : nil);
+            return origDataTaskURL(selfObj, selDataTaskURL, url, wrapped);
         });
         method_setImplementation(mURL, imp);
     }
@@ -129,7 +129,7 @@ static void JLYInstallAFNetworkingHook(void) {
             }
             JLYReport(@"AFHTTPSessionManager", urlString, responseObject);
         };
-        return origAFDataTask(selfObj, selAFDataTask, methodName, URLString, parameters, uploadProgress, downloadProgress, success ? wrappedSuccess : nil, failure);
+        return origAFDataTask(selfObj, selAFDataTask, methodName, URLString, parameters, uploadProgress, downloadProgress, wrappedSuccess, failure);
     });
     method_setImplementation(m, imp);
 }
