@@ -45,9 +45,9 @@ static NSURLRequest *JLYRewriteRequest(NSURLRequest *request) {
     NSURL *newURL = JLYRewriteURL(oldURL);
     if (!newURL || [newURL isEqual:oldURL]) return request;
 
-    NSMutableURLRequest *mutable = [request mutableCopy];
-    mutable.URL = newURL;
-    return mutable;
+    NSMutableURLRequest *mutableRequest = [request mutableCopy];
+    mutableRequest.URL = newURL;
+    return mutableRequest;
 }
 
 static NSString *JLYTextFromObject(id obj) {
