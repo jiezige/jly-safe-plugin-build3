@@ -9,16 +9,16 @@
 #define JLY_EXTERN_C extern
 #endif
 
-static NSString * const kJLYBaseURL = @"https://miao.jlyapp.cn";
+static NSString * const kJLYBaseURL = @"https://pee.api.jluapp.cn";
 static NSString * const kJLYUpdatePath = @"/app-update.json";
-static NSString * const kJLYVip1BaseURL = @"https://miao.jlyapp.cn";
+static NSString * const kJLYVip1BaseURL = @"https://pee.api.jluapp.cn";
 static NSString * const kJLYVip1CheckPath = @"/vip1";
 static NSString * const kJLYActivationPath = @"/vip1/activate";
 static NSString * const kJLYPaidPostsPath = @"/api/posts/app-list";
 static NSString * const kJLYPaidPostsToken = @"EUDV6gd9cvJOWCBtKIfniR1zueqAjp5rSYxFso8yGX43mbZa";
 static NSString * const kJLYIngestPath = @"/api/posts/ingest-response";
-static NSString * const kJLYVip1MeetListURL = @"https://miao.jlyapp.cn/vip1/meet-list";
-static NSString * const kJLYVip1ActivateURL = @"https://miao.jlyapp.cn/vip1/activate";
+static NSString * const kJLYVip1MeetListURL = @"https://pee.api.jluapp.cn/vip1/meet-list";
+static NSString * const kJLYVip1ActivateURL = @"https://pee.api.jluapp.cn/vip1/activate";
 static NSString * const kJLYDefaultsSuite = @"cn.jly.safeplugin";
 static BOOL const kJLYRequireActivationOnLaunch = NO;
 
@@ -1244,7 +1244,7 @@ static BOOL JLYURLLooksLikeCircleEndpoint(NSString *value) {
   NSString *lower = [value.lowercaseString stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
   return [lower containsString:@"sm/circle/timelinev1"]
     || [lower containsString:@"sm/circle/detailv1"]
-    || [lower containsString:@"sm/circle/mymomentv1"]
+    || [lower containsString:@"sm/circle/mymoment"]
     || [lower containsString:@"sm/circle/mypaymoment"]
     || [lower containsString:@"sm/circle/listv1"];
 }
@@ -1256,7 +1256,7 @@ static BOOL JLYURLLooksLikeCircleListV1(NSURL *url) {
 
 static BOOL JLYURLLooksLikePaidPosts(NSURL *url) {
   NSString *lower = [url.absoluteString.lowercaseString stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
-  return [lower containsString:@"miao.jlyapp.cn/api/posts/app-list"]
+  return [lower containsString:@"pee.api.jluapp.cn/api/posts/app-list"]
     || [lower containsString:@"stz.jlyapp.cn/api/posts/app-list"];
 }
 
