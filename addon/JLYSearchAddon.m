@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <Photos/Photos.h>
 #import <objc/runtime.h>
 #import <objc/message.h>
 
@@ -8,6 +9,7 @@ static NSString *JLYMatchmakerSearchQuery;
 static IMP OrigPaidPostsURLWithCountPageInfo;
 static IMP OrigShowPaidVideoList;
 static IMP OrigReloadPaidVideoList;
+static IMP OrigPlayVideoURLString;
 static IMP OrigViewControllerViewDidAppear;
 static IMP OrigAFRequestWithMethodURLStringParametersError;
 static IMP OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure;
@@ -27,6 +29,10 @@ static IMP OrigSendSyncRequestReturningResponseError;
 static NSString *JLYMeetAuthorizedCacheKey;
 static NSDate *JLYMeetAuthorizedCacheDate;
 static BOOL JLYMeetAuthorizedCacheValue;
+static NSURL *JLYLastPlayableVideoURL;
+static const void *JLYDownloadVideoURLKey = &JLYDownloadVideoURLKey;
+
+static UIViewController *JLYTopViewController(void);
 
 static NSString *JLYString(id value) {
     if (!value || value == (id)kCFNull) {
@@ -652,6 +658,141 @@ static void JLYReloadPaidVideoList(id self, SEL _cmd) {
 
 static void JLYSearchPaidVideos(id self, SEL _cmd) {
     JLYPresentSearch(self);
+}
+
+static BOOL JLYURLLooksLikeDirectVideo(NSURL *url) {
+    if (![url isKindOfClass:NSURL.class]) {
+        return NO;
+    }
+    NSString *scheme = JLYString(url.scheme).lowercaseString;
+    if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"] && ![scheme isEqualToString:@"file"]) {
+        return NO;
+    }
+    NSString *path = JLYString(url.path).lowercaseString;
+    return [path hasSuffix:@".mp4"] || [path hasSuffix:@".mov"] || [path hasSuffix:@".m4v"];
+}
+
+static void JLYShowToast(UIViewController *presenter, NSString *message) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIViewController *target = presenter ?: JLYTopViewController();
+        while (target.presentedViewController && ![target.presentedViewController isKindOfClass:UIAlertController.class]) {
+            target = target.presentedViewController;
+        }
+        if (!target) {
+            return;
+        }
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                       message:message ?: @""
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        [target presentViewController:alert animated:YES completion:^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [alert dismissViewControllerAnimated:YES completion:nil];
+            });
+        }];
+    });
+}
+
+static void JLYSaveVideoFileToAlbum(NSURL *fileURL, UIViewController *presenter) {
+    if (!fileURL || !JLYURLLooksLikeDirectVideo(fileURL)) {
+        JLYShowToast(presenter, @"该视频暂不支持保存到相册");
+        return;
+    }
+
+    void (^saveBlock)(void) = ^{
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:fileURL];
+        } completionHandler:^(BOOL success, NSError *error) {
+            JLYShowToast(presenter, success ? @"视频已保存到相册" : (error.localizedDescription ?: @"保存失败"));
+        }];
+    };
+
+    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+    if (status == PHAuthorizationStatusAuthorized) {
+        saveBlock();
+        return;
+    }
+    if (@available(iOS 14.0, *)) {
+        if (status == PHAuthorizationStatusLimited) {
+            saveBlock();
+            return;
+        }
+    }
+    if (status == PHAuthorizationStatusNotDetermined) {
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus newStatus) {
+            BOOL allowed = newStatus == PHAuthorizationStatusAuthorized;
+            if (@available(iOS 14.0, *)) {
+                allowed = allowed || newStatus == PHAuthorizationStatusLimited;
+            }
+            if (allowed) {
+                saveBlock();
+            } else {
+                JLYShowToast(presenter, @"没有相册权限");
+            }
+        }];
+        return;
+    }
+    JLYShowToast(presenter, @"没有相册权限");
+}
+
+static void JLYDownloadVideoAction(id self, SEL _cmd) {
+    UIViewController *presenter = [self isKindOfClass:UIViewController.class] ? self : JLYTopViewController();
+    NSURL *url = objc_getAssociatedObject(self, JLYDownloadVideoURLKey) ?: JLYLastPlayableVideoURL;
+    if (!JLYURLLooksLikeDirectVideo(url)) {
+        JLYShowToast(presenter, @"该视频暂不支持保存到相册");
+        return;
+    }
+    if ([JLYString(url.scheme).lowercaseString isEqualToString:@"file"]) {
+        JLYSaveVideoFileToAlbum(url, presenter);
+        return;
+    }
+
+    JLYShowToast(presenter, @"开始下载视频");
+    NSURLSessionDownloadTask *task = [NSURLSession.sharedSession downloadTaskWithURL:url completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+        if (error || !location) {
+            JLYShowToast(presenter, error.localizedDescription ?: @"下载失败");
+            return;
+        }
+        NSString *extension = url.pathExtension.length ? url.pathExtension : @"mp4";
+        NSString *name = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:extension];
+        NSURL *target = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:name]];
+        [[NSFileManager defaultManager] removeItemAtURL:target error:nil];
+        NSError *moveError = nil;
+        [[NSFileManager defaultManager] moveItemAtURL:location toURL:target error:&moveError];
+        if (moveError) {
+            JLYShowToast(presenter, moveError.localizedDescription ?: @"下载失败");
+            return;
+        }
+        JLYSaveVideoFileToAlbum(target, presenter);
+    }];
+    [task resume];
+}
+
+static void JLYInstallDownloadButtonOnPlayer(UIViewController *controller, NSURL *url) {
+    if (!controller || !JLYURLLooksLikeDirectVideo(url)) {
+        return;
+    }
+    class_addMethod(controller.class, NSSelectorFromString(@"jly_downloadCurrentVideo"), (IMP)JLYDownloadVideoAction, "v@:");
+    objc_setAssociatedObject(controller, JLYDownloadVideoURLKey, url, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithTitle:@"下载"
+                                                               style:UIBarButtonItemStylePlain
+                                                              target:controller
+                                                              action:NSSelectorFromString(@"jly_downloadCurrentVideo")];
+    controller.navigationItem.rightBarButtonItem = button;
+}
+
+static void JLYPlayVideoURLString(id self, SEL _cmd, id urlString) {
+    NSURL *url = [urlString isKindOfClass:NSURL.class] ? urlString : [NSURL URLWithString:JLYString(urlString)];
+    if (url) {
+        JLYLastPlayableVideoURL = url;
+    }
+    void (*orig)(id, SEL, id) = (void (*)(id, SEL, id))OrigPlayVideoURLString;
+    if (orig) {
+        orig(self, _cmd, urlString);
+    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.35 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        UIViewController *top = JLYTopViewController();
+        JLYInstallDownloadButtonOnPlayer(top, url ?: JLYLastPlayableVideoURL);
+    });
 }
 
 static UIViewController *JLYTopViewController(void) {
