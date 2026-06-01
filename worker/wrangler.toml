@@ -1,0 +1,13 @@
+name = "pee-jlyapp-video-search"
+main = "src/index.js"
+compatibility_date = "2026-05-29"
+workers_dev = false
+
+routes = [
+  { pattern = "pee.jlyapp.cn/app-update.json", zone_name = "jlyapp.cn" },
+  { pattern = "pee.jlyapp.cn/vip1*", zone_name = "jlyapp.cn" },
+  { pattern = "pee.jlyapp.cn/api/posts/*", zone_name = "jlyapp.cn" }
+]
+
+[vars]
+UPSTREAM_BASE = "https://pee.jlyapp.cn"
