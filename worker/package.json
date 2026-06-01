@@ -1,0 +1,11 @@
+{
+  "name": "pee-jlyapp-video-search-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test/search.test.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
