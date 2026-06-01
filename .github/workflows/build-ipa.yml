@@ -98,7 +98,8 @@ jobs:
             echo 'search addon dylib not embedded'
             exit 1
           fi
-          if ! otool -l verify/Payload/*.app/cike.dylib | grep -q '@executable_path/JLYSearchAddon.dylib'; then
+          APP_BIN="$(/usr/libexec/PlistBuddy -c 'Print CFBundleExecutable' verify/Payload/*.app/Info.plist)"
+          if ! otool -l "verify/Payload/"*.app/"$APP_BIN" | grep -q '@executable_path/JLYSearchAddon.dylib'; then
             echo 'search addon load command not found'
             exit 1
           fi
