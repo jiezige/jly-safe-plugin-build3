@@ -9,6 +9,10 @@ static IMP OrigPaidPostsURLWithCountPageInfo;
 static IMP OrigShowPaidVideoList;
 static IMP OrigReloadPaidVideoList;
 static IMP OrigViewControllerViewDidAppear;
+static IMP OrigAFRequestWithMethodURLStringParametersError;
+static IMP OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure;
+static IMP OrigAFPostParametersSuccessFailure;
+static IMP OrigAFPostParametersProgressSuccessFailure;
 static IMP OrigSessionDataTaskWithRequestCompletion;
 static IMP OrigSessionDataTaskWithURLCompletion;
 static IMP OrigConnectionWithRequestDelegate;
@@ -265,6 +269,91 @@ static NSURLRequest *JLYRoutedMatchmakerRequest(NSURLRequest *request) {
     [mutable setValue:@"application/x-www-form-urlencoded; charset=utf-8" forHTTPHeaderField:@"content-type"];
     mutable.HTTPBody = [form dataUsingEncoding:NSUTF8StringEncoding] ?: [NSData data];
     return mutable;
+}
+
+static NSMutableDictionary *JLYMutableParameters(id parameters) {
+    if ([parameters isKindOfClass:NSMutableDictionary.class]) {
+        return parameters;
+    }
+    if ([parameters isKindOfClass:NSDictionary.class]) {
+        return [parameters mutableCopy];
+    }
+    return [NSMutableDictionary dictionary];
+}
+
+static NSString *JLYUIDFromParameters(NSDictionary *parameters) {
+    NSString *uid = JLYString(parameters[@"login_uid"]);
+    if (uid.length == 0) {
+        uid = JLYString(parameters[@"uid"]);
+    }
+    if (uid.length == 0) {
+        uid = JLYDeviceIdentifier();
+    }
+    return uid;
+}
+
+static BOOL JLYRewriteMatchmakerURLString(NSString **urlString, id *parameters) {
+    NSURL *url = [NSURL URLWithString:JLYString(*urlString)];
+    if (!JLYURLIsMatchmakerRecommend(url)) {
+        return NO;
+    }
+
+    NSMutableDictionary *mutable = JLYMutableParameters(*parameters);
+    NSString *uid = JLYUIDFromParameters(mutable);
+    if (uid.length) {
+        mutable[@"uid"] = uid;
+        mutable[@"login_uid"] = uid;
+    }
+    if (!mutable[@"count"]) {
+        mutable[@"count"] = @"10";
+    }
+
+    NSString *query = [JLYString(JLYMatchmakerSearchQuery) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    if (query.length) {
+        mutable[@"q"] = query;
+    }
+
+    NSURLComponents *components = [NSURLComponents componentsWithString:@"https://pee.jlyapp.cn/api/posts/all-app-list"];
+    NSMutableArray<NSURLQueryItem *> *items = [NSMutableArray arrayWithObject:[NSURLQueryItem queryItemWithName:@"token" value:@"EUDV6gd9cvJOWCBtKIfniR1zueqAjp5rSYxFso8yGX43mbZa"]];
+    if (query.length) {
+        [items addObject:[NSURLQueryItem queryItemWithName:@"q" value:query]];
+    }
+    components.queryItems = items;
+    *urlString = components.URL.absoluteString;
+    *parameters = mutable;
+    return YES;
+}
+
+static id JLYAFRequestWithMethodURLStringParametersError(id self, SEL _cmd, NSString *method, NSString *urlString, id parameters, NSError **error) {
+    NSString *routedURL = urlString;
+    id routedParameters = parameters;
+    JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
+    id (*orig)(id, SEL, NSString *, NSString *, id, NSError **) = (id (*)(id, SEL, NSString *, NSString *, id, NSError **))OrigAFRequestWithMethodURLStringParametersError;
+    return orig ? orig(self, _cmd, method, routedURL, routedParameters, error) : nil;
+}
+
+static id JLYAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure(id self, SEL _cmd, NSString *method, NSString *urlString, id parameters, id uploadProgress, id downloadProgress, id success, id failure) {
+    NSString *routedURL = urlString;
+    id routedParameters = parameters;
+    JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
+    id (*orig)(id, SEL, NSString *, NSString *, id, id, id, id, id) = (id (*)(id, SEL, NSString *, NSString *, id, id, id, id, id))OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure;
+    return orig ? orig(self, _cmd, method, routedURL, routedParameters, uploadProgress, downloadProgress, success, failure) : nil;
+}
+
+static id JLYAFPostParametersSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id success, id failure) {
+    NSString *routedURL = urlString;
+    id routedParameters = parameters;
+    JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
+    id (*orig)(id, SEL, NSString *, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id))OrigAFPostParametersSuccessFailure;
+    return orig ? orig(self, _cmd, routedURL, routedParameters, success, failure) : nil;
+}
+
+static id JLYAFPostParametersProgressSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id progress, id success, id failure) {
+    NSString *routedURL = urlString;
+    id routedParameters = parameters;
+    JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
+    id (*orig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFPostParametersProgressSuccessFailure;
+    return orig ? orig(self, _cmd, routedURL, routedParameters, progress, success, failure) : nil;
 }
 
 static NSURLRequest *JLYRoutedRequest(NSURLRequest *request) {
@@ -566,6 +655,28 @@ static void JLYInstallMeetRoutingHooks(void) {
                           &OrigSendSyncRequestReturningResponseError);
 }
 
+static void JLYInstallAFNetworkingHooks(void) {
+    Class serializer = NSClassFromString(@"AFHTTPRequestSerializer");
+    JLYSwizzle(serializer,
+               NSSelectorFromString(@"requestWithMethod:URLString:parameters:error:"),
+               (IMP)JLYAFRequestWithMethodURLStringParametersError,
+               &OrigAFRequestWithMethodURLStringParametersError);
+
+    Class manager = NSClassFromString(@"AFHTTPSessionManager");
+    JLYSwizzle(manager,
+               NSSelectorFromString(@"dataTaskWithHTTPMethod:URLString:parameters:uploadProgress:downloadProgress:success:failure:"),
+               (IMP)JLYAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure,
+               &OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure);
+    JLYSwizzle(manager,
+               NSSelectorFromString(@"POST:parameters:success:failure:"),
+               (IMP)JLYAFPostParametersSuccessFailure,
+               &OrigAFPostParametersSuccessFailure);
+    JLYSwizzle(manager,
+               NSSelectorFromString(@"POST:parameters:progress:success:failure:"),
+               (IMP)JLYAFPostParametersProgressSuccessFailure,
+               &OrigAFPostParametersProgressSuccessFailure);
+}
+
 static void JLYInstallMatchmakerUIHooks(void) {
     JLYSwizzle(UIViewController.class,
                NSSelectorFromString(@"viewDidAppear:"),
@@ -576,6 +687,7 @@ static void JLYInstallMatchmakerUIHooks(void) {
 __attribute__((constructor))
 static void JLYSearchAddonInit(void) {
     JLYInstallMeetRoutingHooks();
+    JLYInstallAFNetworkingHooks();
     JLYInstallMatchmakerUIHooks();
     dispatch_async(dispatch_get_main_queue(), ^{
         Class cls = NSClassFromString(@"JLYSafePlugin");
