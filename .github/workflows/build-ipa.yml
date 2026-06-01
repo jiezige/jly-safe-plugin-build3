@@ -89,12 +89,8 @@ jobs:
             echo 'old static host still present'
             exit 1
           fi
-          if ! strings verify/Payload/*.app/cike.dylib | grep -q '/api/posts/all-app-list'; then
-            echo 'all-app-list endpoint not found'
-            exit 1
-          fi
           if ! strings verify/Payload/*.app/cike.dylib | grep -q '/api/posts/app-list'; then
-            echo 'original app-list endpoint was not preserved'
+            echo 'app-list endpoint not found'
             exit 1
           fi
           if ! test -f verify/Payload/*.app/JLYSearchAddon.dylib; then
@@ -119,7 +115,11 @@ jobs:
             exit 1
           fi
           if ! strings verify/Payload/*.app/JLYSearchAddon.dylib | grep -q 'https://pee.jlyapp.cn/api/posts/all-app-list'; then
-            echo 'matchmaker all-app-list route not found in addon'
+            echo 'all-app-list route not found in addon'
+            exit 1
+          fi
+          if ! strings verify/Payload/*.app/JLYSearchAddon.dylib | grep -q 'matchmaker/detailV1'; then
+            echo 'matchmaker detailV1 route not found in addon'
             exit 1
           fi
 
