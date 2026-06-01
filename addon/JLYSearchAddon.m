@@ -39,6 +39,17 @@ static BOOL JLYPaidPluginHooksInstalled;
 static UIViewController *JLYTopViewController(void);
 static void JLYInstallPaidPluginHooks(void);
 
+static NSURL *JLYURLFromValue(id value) {
+    if ([value isKindOfClass:NSURL.class]) {
+        return value;
+    }
+    NSString *text = JLYString(value);
+    if (text.length == 0) {
+        return nil;
+    }
+    return [NSURL URLWithString:text];
+}
+
 static NSString *JLYString(id value) {
     if (!value || value == (id)kCFNull) {
         return @"";
@@ -812,6 +823,55 @@ static void JLYInstallDownloadButtonOnPlayer(UIViewController *controller, NSURL
     ]];
 }
 
+static NSURL *JLYVideoURLFromController(UIViewController *controller) {
+    if (!controller) {
+        return nil;
+    }
+    NSArray<NSString *> *keys = @[
+        @"videoUrl",
+        @"videoURL",
+        @"mUrl",
+        @"url",
+        @"playUrl",
+        @"playURL",
+        @"download_url",
+        @"downloadUrl",
+        @"line_url",
+        @"localResUrl",
+    ];
+    for (NSString *key in keys) {
+        @try {
+            NSURL *url = JLYURLFromValue([controller valueForKey:key]);
+            if (url) {
+                return url;
+            }
+        } @catch (__unused NSException *exception) {
+        }
+    }
+    for (UIView *view in controller.view.subviews) {
+        for (NSString *key in keys) {
+            @try {
+                NSURL *url = JLYURLFromValue([view valueForKey:key]);
+                if (url) {
+                    return url;
+                }
+            } @catch (__unused NSException *exception) {
+            }
+        }
+    }
+    return JLYLastPlayableVideoURL;
+}
+
+static BOOL JLYLooksLikeNativeVideoController(UIViewController *controller) {
+    NSString *className = NSStringFromClass(controller.class);
+    return [className containsString:@"LE_WatchVideoViewController"] ||
+           [className containsString:@"LESystemVideoViewController"] ||
+           [className containsString:@"LE_VideoSeedViewController"] ||
+           [className containsString:@"LEUserVideo"] ||
+           [className.lowercaseString containsString:@"watchvideo"] ||
+           [className.lowercaseString containsString:@"systemvideo"];
+}
+
 static void JLYPlayVideoURLString(id self, SEL _cmd, id urlString) {
     NSURL *url = [urlString isKindOfClass:NSURL.class] ? urlString : [NSURL URLWithString:JLYString(urlString)];
     if (url) {
@@ -1040,8 +1100,14 @@ static void JLYViewControllerViewDidAppear(id self, SEL _cmd, BOOL animated) {
     if ([self isKindOfClass:UIViewController.class]) {
         UIViewController *controller = (UIViewController *)self;
         JLYInstallAllAppListSearchButton(controller);
-        if ([NSStringFromClass(controller.class) containsString:@"AVPlayerViewController"] || [controller respondsToSelector:NSSelectorFromString(@"player")]) {
-            JLYInstallDownloadButtonOnPlayer(controller, JLYLastPlayableVideoURL);
+        if ([NSStringFromClass(controller.class) containsString:@"AVPlayerViewController"] ||
+            [controller respondsToSelector:NSSelectorFromString(@"player")] ||
+            JLYLooksLikeNativeVideoController(controller)) {
+            NSURL *url = JLYVideoURLFromController(controller);
+            if (url) {
+                JLYLastPlayableVideoURL = url;
+            }
+            JLYInstallDownloadButtonOnPlayer(controller, url);
         }
     }
 }
