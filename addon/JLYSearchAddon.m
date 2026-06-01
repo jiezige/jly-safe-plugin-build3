@@ -13,6 +13,11 @@ static IMP OrigAFRequestWithMethodURLStringParametersError;
 static IMP OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure;
 static IMP OrigAFPostParametersSuccessFailure;
 static IMP OrigAFPostParametersProgressSuccessFailure;
+static IMP OrigViewControllerSetTitle;
+static IMP OrigNavigationItemSetTitle;
+static IMP OrigLabelSetText;
+static IMP OrigButtonSetTitleForState;
+static IMP OrigAlertControllerWithTitleMessageStyle;
 static IMP OrigSessionDataTaskWithRequestCompletion;
 static IMP OrigSessionDataTaskWithURLCompletion;
 static IMP OrigConnectionWithRequestDelegate;
@@ -31,6 +36,16 @@ static NSString *JLYString(id value) {
         return value;
     }
     return [value description] ?: @"";
+}
+
+static NSString *JLYDisplayString(NSString *value) {
+    if (![value isKindOfClass:NSString.class] || value.length == 0) {
+        return value;
+    }
+    NSString *patched = [value stringByReplacingOccurrencesOfString:@"红娘" withString:@"所有视频"];
+    patched = [patched stringByReplacingOccurrencesOfString:@"请先开通会员后查看" withString:@"请先激活后查看"];
+    patched = [patched stringByReplacingOccurrencesOfString:@"请先开通会员" withString:@"请先激活"];
+    return patched;
 }
 
 static NSURL *JLYAppendSearchQuery(id urlValue) {
@@ -649,6 +664,8 @@ static BOOL JLYLooksLikeMatchmakerController(UIViewController *controller) {
            [combined containsString:@"recommend"] ||
            [combined containsString:@"square"] ||
            [combined containsString:@"moment"] ||
+           [combined containsString:@"红娘"] ||
+           [combined containsString:@"所有视频"] ||
            [combined containsString:@"推荐"] ||
            [combined containsString:@"动态"];
 }
@@ -685,6 +702,10 @@ static BOOL JLYLooksLikeAllAppListController(UIViewController *controller) {
            [combined containsString:@"video"] ||
            [combined containsString:@"post"] ||
            [combined containsString:@"moment"] ||
+           [combined containsString:@"matchmaker"] ||
+           [combined containsString:@"recommend"] ||
+           [combined containsString:@"红娘"] ||
+           [combined containsString:@"所有视频"] ||
            [combined containsString:@"全部"] ||
            [combined containsString:@"付费"] ||
            [combined containsString:@"视频"] ||
@@ -797,9 +818,44 @@ static void JLYViewControllerViewDidAppear(id self, SEL _cmd, BOOL animated) {
     }
     if ([self isKindOfClass:UIViewController.class]) {
         UIViewController *controller = (UIViewController *)self;
-        JLYInstallMatchmakerSearchButton(controller);
         JLYInstallAllAppListSearchButton(controller);
+        if (controller.navigationItem.rightBarButtonItem.tag != 0x4A4C4151) {
+            JLYInstallMatchmakerSearchButton(controller);
+        }
     }
+}
+
+static void JLYViewControllerSetTitle(id self, SEL _cmd, NSString *title) {
+    void (*orig)(id, SEL, NSString *) = (void (*)(id, SEL, NSString *))OrigViewControllerSetTitle;
+    if (orig) {
+        orig(self, _cmd, JLYDisplayString(title));
+    }
+}
+
+static void JLYNavigationItemSetTitle(id self, SEL _cmd, NSString *title) {
+    void (*orig)(id, SEL, NSString *) = (void (*)(id, SEL, NSString *))OrigNavigationItemSetTitle;
+    if (orig) {
+        orig(self, _cmd, JLYDisplayString(title));
+    }
+}
+
+static void JLYLabelSetText(id self, SEL _cmd, NSString *text) {
+    void (*orig)(id, SEL, NSString *) = (void (*)(id, SEL, NSString *))OrigLabelSetText;
+    if (orig) {
+        orig(self, _cmd, JLYDisplayString(text));
+    }
+}
+
+static void JLYButtonSetTitleForState(id self, SEL _cmd, NSString *title, UIControlState state) {
+    void (*orig)(id, SEL, NSString *, UIControlState) = (void (*)(id, SEL, NSString *, UIControlState))OrigButtonSetTitleForState;
+    if (orig) {
+        orig(self, _cmd, JLYDisplayString(title), state);
+    }
+}
+
+static id JLYAlertControllerWithTitleMessageStyle(id self, SEL _cmd, NSString *title, NSString *message, UIAlertControllerStyle style) {
+    id (*orig)(id, SEL, NSString *, NSString *, UIAlertControllerStyle) = (id (*)(id, SEL, NSString *, NSString *, UIAlertControllerStyle))OrigAlertControllerWithTitleMessageStyle;
+    return orig ? orig(self, _cmd, JLYDisplayString(title), JLYDisplayString(message), style) : nil;
 }
 
 static void JLYSwizzle(Class cls, SEL sel, IMP replacement, IMP *original) {
@@ -875,6 +931,26 @@ static void JLYInstallMatchmakerUIHooks(void) {
                NSSelectorFromString(@"viewDidAppear:"),
                (IMP)JLYViewControllerViewDidAppear,
                &OrigViewControllerViewDidAppear);
+    JLYSwizzle(UIViewController.class,
+               NSSelectorFromString(@"setTitle:"),
+               (IMP)JLYViewControllerSetTitle,
+               &OrigViewControllerSetTitle);
+    JLYSwizzle(UINavigationItem.class,
+               NSSelectorFromString(@"setTitle:"),
+               (IMP)JLYNavigationItemSetTitle,
+               &OrigNavigationItemSetTitle);
+    JLYSwizzle(UILabel.class,
+               NSSelectorFromString(@"setText:"),
+               (IMP)JLYLabelSetText,
+               &OrigLabelSetText);
+    JLYSwizzle(UIButton.class,
+               NSSelectorFromString(@"setTitle:forState:"),
+               (IMP)JLYButtonSetTitleForState,
+               &OrigButtonSetTitleForState);
+    JLYSwizzleClassMethod(UIAlertController.class,
+                          NSSelectorFromString(@"alertControllerWithTitle:message:preferredStyle:"),
+                          (IMP)JLYAlertControllerWithTitleMessageStyle,
+                          &OrigAlertControllerWithTitleMessageStyle);
 }
 
 __attribute__((constructor))
