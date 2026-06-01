@@ -11,7 +11,7 @@ from pathlib import Path
 
 APK_ALL_LIST_PATH = "/api/posts/all-app-list"
 IPA_APP_LIST_PATH = "/api/posts/app-list"
-IPA_APP_LIST_DETECTOR = "stz.jlyapp.cn/api/posts/app-list"
+IPA_APP_LIST_DETECTOR = "pee.jlyapp.cn/api/posts/app-list"
 
 DEFAULT_REPLACEMENTS = [
     ("https://api.jlyapp.cn", "https://pee.jlyapp.cn"),
