@@ -11,6 +11,7 @@ from pathlib import Path
 
 APK_ALL_LIST_PATH = "/api/posts/all-app-list"
 IPA_APP_LIST_PATH = "/api/posts/app-list"
+IPA_APP_LIST_DETECTOR = "stz.jlyapp.cn/api/posts/app-list"
 
 DEFAULT_REPLACEMENTS = [
     ("https://api.jlyapp.cn", "https://pee.jlyapp.cn"),
@@ -248,7 +249,9 @@ class MachOPatcher:
         old_bytes = old_string.encode()
         new_bytes = new_string.encode() + b"\0"
         header_end = slice_offset + 32 + self._u32(slice_offset + 20)
-        new_fileoff, new_vmaddr = self._write_text_string(text_segment, sections, header_end, new_bytes)
+        new_fileoff, new_vmaddr = self._write_cstring_donor(sections, IPA_APP_LIST_DETECTOR, new_bytes)
+        if new_fileoff is None:
+            new_fileoff, new_vmaddr = self._write_text_string(text_segment, sections, header_end, new_bytes)
         patched = False
 
         start = cfstring["fileoff"]
@@ -348,6 +351,29 @@ class MachOPatcher:
                 return run_start, vmaddr
 
         raise SystemExit("No mapped __TEXT padding large enough for all-app-list endpoint")
+
+    def _write_cstring_donor(self, sections, donor_string, string_bytes):
+        donor = donor_string.encode()
+        cstring = self._section(sections, "__cstring")
+        if cstring is None:
+            return None, None
+
+        start = cstring["fileoff"]
+        end = start + cstring["size"]
+        pos = start
+        while pos < end:
+            try:
+                next_end = self.data.index(0, pos, end)
+            except ValueError:
+                break
+            current = bytes(self.data[pos:next_end])
+            if current == donor and len(string_bytes) <= (next_end - pos + 1):
+                self.data[pos : next_end + 1] = b"\0" * (next_end - pos + 1)
+                self.data[pos : pos + len(string_bytes)] = string_bytes
+                return pos, cstring["addr"] + (pos - cstring["fileoff"])
+            pos = next_end + 1
+
+        return None, None
 
     def _write_in_zero_run(self, start, end, string_bytes):
         run_start = None
