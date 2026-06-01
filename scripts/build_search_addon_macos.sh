@@ -13,6 +13,7 @@ clang -isysroot "$SDK" \
   -framework Foundation \
   -framework UIKit \
   -framework Photos \
+  -framework AVFoundation \
   addon/JLYSearchAddon.m \
   -o "$OUT"
 
