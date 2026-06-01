@@ -1126,5 +1126,6 @@ static void JLYSearchAddonInit(void) {
         JLYSwizzle(cls, NSSelectorFromString(@"paidPostsURLWithCount:pageInfo:"), (IMP)JLYPaidPostsURLWithCountPageInfo, &OrigPaidPostsURLWithCountPageInfo);
         JLYSwizzle(cls, NSSelectorFromString(@"showPaidVideoList"), (IMP)JLYShowPaidVideoList, &OrigShowPaidVideoList);
         JLYSwizzle(cls, NSSelectorFromString(@"reloadPaidVideoList"), (IMP)JLYReloadPaidVideoList, &OrigReloadPaidVideoList);
+        JLYSwizzle(cls, NSSelectorFromString(@"playVideoURLString:"), (IMP)JLYPlayVideoURLString, &OrigPlayVideoURLString);
     });
 }
