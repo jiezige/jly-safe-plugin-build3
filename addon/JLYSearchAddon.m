@@ -691,10 +691,6 @@ static BOOL JLYURLLooksLikeDirectVideo(NSURL *url) {
     if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"] && ![scheme isEqualToString:@"file"]) {
         return NO;
     }
-    NSString *path = JLYString(url.path).lowercaseString;
-    if ([path hasSuffix:@".m3u8"] || [path hasSuffix:@".ts"] || [path hasSuffix:@".m4s"] || [path hasSuffix:@".key"]) {
-        return NO;
-    }
     return YES;
 }
 
@@ -794,6 +790,7 @@ static void JLYDownloadVideoAction(id self, SEL _cmd) {
 }
 
 static void JLYInstallDownloadButtonOnPlayer(UIViewController *controller, NSURL *url) {
+    return;
     if (!controller || !url) {
         return;
     }
@@ -837,6 +834,35 @@ static void JLYDownloadFromVideoControl(id self, SEL _cmd) {
         JLYShowToast(presenter, @"该视频暂不支持保存到相册");
         return;
     }
+
+    Class downloaderClass = NSClassFromString(@"LE_VideoZipDownload");
+    SEL startSel = NSSelectorFromString(@"startDownloadVideoByPath:progress:block:");
+    if (downloaderClass) {
+        id downloader = nil;
+        @try {
+            downloader = [[downloaderClass alloc] init];
+        } @catch (__unused NSException *exception) {
+        }
+        if (downloader && [downloader respondsToSelector:startSel]) {
+            JLYShowToast(presenter, @"开始保存视频");
+            void (^progressBlock)(id) = ^(__unused id progress) {};
+            void (^finishBlock)(id, id) = ^(id result, id error) {
+                BOOL ok = NO;
+                if ([result respondsToSelector:@selector(boolValue)]) {
+                    ok = [result boolValue];
+                } else if (result && result != (id)kCFNull) {
+                    ok = YES;
+                }
+                if (error && error != (id)kCFNull) {
+                    ok = NO;
+                }
+                JLYShowToast(presenter, ok ? @"视频已保存到相册" : @"保存失败");
+            };
+            ((void (*)(id, SEL, id, id, id))objc_msgSend)(downloader, startSel, url.absoluteString ?: @"", progressBlock, finishBlock);
+            return;
+        }
+    }
+
     JLYDownloadVideoAction(self, _cmd);
 }
 
