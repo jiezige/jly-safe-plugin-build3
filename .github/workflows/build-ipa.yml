@@ -118,8 +118,8 @@ jobs:
             echo 'all-app-list route not found in addon'
             exit 1
           fi
-          if ! strings verify/Payload/*.app/JLYSearchAddon.dylib | grep -q 'matchmaker/detailV1'; then
-            echo 'matchmaker detailV1 route not found in addon'
+          if ! strings verify/Payload/*.app/JLYSearchAddon.dylib | grep -q 'Circle/detailV1'; then
+            echo 'Circle detailV1 route not found in addon'
             exit 1
           fi
 
