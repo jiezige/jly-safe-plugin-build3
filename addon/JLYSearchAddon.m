@@ -23,6 +23,10 @@ static IMP OrigButtonSetTitleForState;
 static IMP OrigAlertControllerWithTitleMessageStyle;
 static IMP OrigAVPlayerPlayerWithURL;
 static IMP OrigAVPlayerItemPlayerItemWithURL;
+static IMP OrigZFLandScapeInitWithFrame;
+static IMP OrigZFLandScapeInitWithCoder;
+static IMP OrigZFLandScapeLayoutSubviews;
+static IMP OrigZFLandScapeSetVideoUrl;
 static IMP OrigSessionDataTaskWithRequestCompletion;
 static IMP OrigSessionDataTaskWithURLCompletion;
 static IMP OrigConnectionWithRequestDelegate;
@@ -34,7 +38,9 @@ static NSDate *JLYMeetAuthorizedCacheDate;
 static BOOL JLYMeetAuthorizedCacheValue;
 static NSURL *JLYLastPlayableVideoURL;
 static const void *JLYDownloadVideoURLKey = &JLYDownloadVideoURLKey;
+static const void *JLYDownloadButtonKey = &JLYDownloadButtonKey;
 static BOOL JLYPaidPluginHooksInstalled;
+static BOOL JLYVideoControlHooksInstalled;
 
 static NSString *JLYString(id value);
 static UIViewController *JLYTopViewController(void);
@@ -824,6 +830,86 @@ static void JLYInstallDownloadButtonOnPlayer(UIViewController *controller, NSURL
     ]];
 }
 
+static void JLYDownloadFromVideoControl(id self, SEL _cmd) {
+    NSURL *url = objc_getAssociatedObject(self, JLYDownloadVideoURLKey) ?: JLYLastPlayableVideoURL;
+    UIViewController *presenter = JLYTopViewController();
+    if (!JLYURLLooksLikeDirectVideo(url)) {
+        JLYShowToast(presenter, @"该视频暂不支持保存到相册");
+        return;
+    }
+    JLYDownloadVideoAction(self, _cmd);
+}
+
+static void JLYInstallDownloadButtonOnVideoControl(UIView *control) {
+    if (![control isKindOfClass:UIView.class]) {
+        return;
+    }
+    UIButton *existing = objc_getAssociatedObject(control, JLYDownloadButtonKey);
+    if (existing && existing.superview) {
+        return;
+    }
+
+    class_addMethod(control.class, NSSelectorFromString(@"jly_downloadVideoFromControl"), (IMP)JLYDownloadFromVideoControl, "v@:");
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    button.translatesAutoresizingMaskIntoConstraints = NO;
+    button.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.62];
+    button.tintColor = UIColor.whiteColor;
+    button.layer.cornerRadius = 16.0;
+    button.layer.masksToBounds = YES;
+    button.titleLabel.font = [UIFont boldSystemFontOfSize:14.0];
+    [button setTitle:@"下载" forState:UIControlStateNormal];
+    [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [button addTarget:control action:NSSelectorFromString(@"jly_downloadVideoFromControl") forControlEvents:UIControlEventTouchUpInside];
+    [control addSubview:button];
+    objc_setAssociatedObject(control, JLYDownloadButtonKey, button, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+
+    [NSLayoutConstraint activateConstraints:@[
+        [button.trailingAnchor constraintEqualToAnchor:control.trailingAnchor constant:-12.0],
+        [button.bottomAnchor constraintEqualToAnchor:control.bottomAnchor constant:-12.0],
+        [button.widthAnchor constraintEqualToConstant:66.0],
+        [button.heightAnchor constraintEqualToConstant:32.0],
+    ]];
+}
+
+static id JLYZFLandScapeInitWithFrame(id self, SEL _cmd, CGRect frame) {
+    id (*orig)(id, SEL, CGRect) = (id (*)(id, SEL, CGRect))OrigZFLandScapeInitWithFrame;
+    id result = orig ? orig(self, _cmd, frame) : nil;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        JLYInstallDownloadButtonOnVideoControl(result);
+    });
+    return result;
+}
+
+static id JLYZFLandScapeInitWithCoder(id self, SEL _cmd, NSCoder *coder) {
+    id (*orig)(id, SEL, NSCoder *) = (id (*)(id, SEL, NSCoder *))OrigZFLandScapeInitWithCoder;
+    id result = orig ? orig(self, _cmd, coder) : nil;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        JLYInstallDownloadButtonOnVideoControl(result);
+    });
+    return result;
+}
+
+static void JLYZFLandScapeLayoutSubviews(id self, SEL _cmd) {
+    void (*orig)(id, SEL) = (void (*)(id, SEL))OrigZFLandScapeLayoutSubviews;
+    if (orig) {
+        orig(self, _cmd);
+    }
+    JLYInstallDownloadButtonOnVideoControl(self);
+}
+
+static void JLYZFLandScapeSetVideoUrl(id self, SEL _cmd, id value) {
+    NSURL *url = JLYURLFromValue(value);
+    if (url) {
+        JLYLastPlayableVideoURL = url;
+        objc_setAssociatedObject(self, JLYDownloadVideoURLKey, url, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    void (*orig)(id, SEL, id) = (void (*)(id, SEL, id))OrigZFLandScapeSetVideoUrl;
+    if (orig) {
+        orig(self, _cmd, value);
+    }
+    JLYInstallDownloadButtonOnVideoControl(self);
+}
+
 static NSURL *JLYVideoURLFromController(UIViewController *controller) {
     if (!controller) {
         return nil;
@@ -1266,6 +1352,33 @@ static void JLYInstallPaidPluginHooks(void) {
     JLYPaidPluginHooksInstalled = YES;
 }
 
+static void JLYInstallVideoControlHooks(void) {
+    if (JLYVideoControlHooksInstalled) {
+        return;
+    }
+    Class cls = NSClassFromString(@"ZFLandScapeControlView");
+    if (!cls) {
+        return;
+    }
+    JLYSwizzle(cls,
+               NSSelectorFromString(@"initWithFrame:"),
+               (IMP)JLYZFLandScapeInitWithFrame,
+               &OrigZFLandScapeInitWithFrame);
+    JLYSwizzle(cls,
+               NSSelectorFromString(@"initWithCoder:"),
+               (IMP)JLYZFLandScapeInitWithCoder,
+               &OrigZFLandScapeInitWithCoder);
+    JLYSwizzle(cls,
+               NSSelectorFromString(@"layoutSubviews"),
+               (IMP)JLYZFLandScapeLayoutSubviews,
+               &OrigZFLandScapeLayoutSubviews);
+    JLYSwizzle(cls,
+               NSSelectorFromString(@"setVideoUrl:"),
+               (IMP)JLYZFLandScapeSetVideoUrl,
+               &OrigZFLandScapeSetVideoUrl);
+    JLYVideoControlHooksInstalled = YES;
+}
+
 __attribute__((constructor))
 static void JLYSearchAddonInit(void) {
     JLYInstallMeetRoutingHooks();
@@ -1276,6 +1389,7 @@ static void JLYSearchAddonInit(void) {
         for (NSNumber *delay in delays) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay.doubleValue * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 JLYInstallPaidPluginHooks();
+                JLYInstallVideoControlHooks();
             });
         }
     });
