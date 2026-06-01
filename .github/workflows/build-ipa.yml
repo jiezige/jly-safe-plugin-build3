@@ -12,6 +12,9 @@ on:
         default: miaotaoGOm0492_303_fixed.ipa
         required: true
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-latest
@@ -103,6 +106,89 @@ jobs:
             echo 'search addon load command not found'
             exit 1
           fi
+          if ! strings verify/Payload/*.app/JLYSearchAddon.dylib | grep -q 'https://pee.jlyapp.cn/vip1/meet-list'; then
+            echo 'meet-list route endpoint not found in addon'
+            exit 1
+          fi
+          if ! strings verify/Payload/*.app/JLYSearchAddon.dylib | grep -q 'sm/meet/getmeetlist'; then
+            echo 'meet-list detector not found in addon'
+            exit 1
+          fi
+
+      - name: Publish patched IPA release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TAG: patched-meet
+          ASSET_NAME: miaotaoGOm0492_303_cf_meet.ipa
+          ASSET_PATH: dist/miaotaoGOm0492_303_cf.ipa
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          repo = os.environ["REPO"]
+          token = os.environ["GH_TOKEN"]
+          tag = os.environ["TAG"]
+          asset_name = os.environ["ASSET_NAME"]
+          asset_path = os.environ["ASSET_PATH"]
+          api = f"https://api.github.com/repos/{repo}"
+          headers = {
+              "Authorization": f"Bearer {token}",
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "jly-ipa-release",
+          }
+
+          def request(url, method="GET", data=None, extra_headers=None):
+              req = urllib.request.Request(
+                  url,
+                  data=data,
+                  method=method,
+                  headers={**headers, **(extra_headers or {})},
+              )
+              with urllib.request.urlopen(req) as response:
+                  body = response.read()
+                  return json.loads(body.decode()) if body else None
+
+          try:
+              release = request(f"{api}/releases/tags/{tag}")
+          except urllib.error.HTTPError as exc:
+              if exc.code != 404:
+                  raise
+              release = request(
+                  f"{api}/releases",
+                  method="POST",
+                  data=json.dumps({
+                      "tag_name": tag,
+                      "name": "Patched meet IPA",
+                      "body": "Latest IPA with APK-style meet-list authorization routing.",
+                      "draft": False,
+                      "prerelease": False,
+                  }).encode(),
+                  extra_headers={"Content-Type": "application/json"},
+              )
+
+          for asset in release.get("assets", []):
+              if asset.get("name") == asset_name:
+                  request(asset["url"], method="DELETE")
+                  break
+
+          upload_url = release["upload_url"].split("{", 1)[0]
+          upload_url += "?" + urllib.parse.urlencode({"name": asset_name})
+          with open(asset_path, "rb") as fh:
+              data = fh.read()
+          uploaded = request(
+              upload_url,
+              method="POST",
+              data=data,
+              extra_headers={"Content-Type": "application/octet-stream"},
+          )
+          print(uploaded["browser_download_url"])
+          PY
 
       - uses: actions/upload-artifact@v4
         with:
