@@ -76,6 +76,16 @@ static BOOL JLYURLIsMatchmakerRecommend(NSURL *url) {
            [absolute containsString:@"/matchmaker/recommenduser"];
 }
 
+static BOOL JLYURLIsMatchmakerDetail(NSURL *url) {
+    NSString *absolute = JLYString(url.absoluteString).lowercaseString;
+    if ([absolute containsString:@"matchmaker/detailv1"]) {
+        return NO;
+    }
+    return [absolute containsString:@"sm/matchmaker/detail"] ||
+           [absolute containsString:@"/matchmaker/detail"] ||
+           [absolute hasSuffix:@"matchmaker/detail"];
+}
+
 static NSString *JLYURLDecode(NSString *value) {
     NSString *plusFixed = [value stringByReplacingOccurrencesOfString:@"+" withString:@" "];
     return [plusFixed stringByRemovingPercentEncoding] ?: value ?: @"";
@@ -271,6 +281,24 @@ static NSURLRequest *JLYRoutedMatchmakerRequest(NSURLRequest *request) {
     return mutable;
 }
 
+static NSURLRequest *JLYRoutedMatchmakerDetailRequest(NSURLRequest *request) {
+    if (!request || !JLYURLIsMatchmakerDetail(request.URL)) {
+        return request;
+    }
+
+    NSURLComponents *components = [NSURLComponents componentsWithURL:request.URL resolvingAgainstBaseURL:NO];
+    if (!components) {
+        return request;
+    }
+    components.path = [components.path stringByReplacingOccurrencesOfString:@"matchmaker/detail"
+                                                                 withString:@"matchmaker/detailV1"
+                                                                    options:NSCaseInsensitiveSearch
+                                                                      range:NSMakeRange(0, components.path.length)];
+    NSMutableURLRequest *mutable = [request mutableCopy];
+    mutable.URL = components.URL;
+    return mutable;
+}
+
 static NSMutableDictionary *JLYMutableParameters(id parameters) {
     if ([parameters isKindOfClass:NSMutableDictionary.class]) {
         return parameters;
@@ -324,10 +352,25 @@ static BOOL JLYRewriteMatchmakerURLString(NSString **urlString, id *parameters) 
     return YES;
 }
 
+static BOOL JLYRewriteMatchmakerDetailURLString(NSString **urlString) {
+    NSURL *url = [NSURL URLWithString:JLYString(*urlString)];
+    if (!JLYURLIsMatchmakerDetail(url)) {
+        return NO;
+    }
+
+    NSString *routed = [JLYString(*urlString) stringByReplacingOccurrencesOfString:@"matchmaker/detail"
+                                                                        withString:@"matchmaker/detailV1"
+                                                                           options:NSCaseInsensitiveSearch
+                                                                             range:NSMakeRange(0, JLYString(*urlString).length)];
+    *urlString = routed;
+    return YES;
+}
+
 static id JLYAFRequestWithMethodURLStringParametersError(id self, SEL _cmd, NSString *method, NSString *urlString, id parameters, NSError **error) {
     NSString *routedURL = urlString;
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
+    JLYRewriteMatchmakerDetailURLString(&routedURL);
     id (*orig)(id, SEL, NSString *, NSString *, id, NSError **) = (id (*)(id, SEL, NSString *, NSString *, id, NSError **))OrigAFRequestWithMethodURLStringParametersError;
     return orig ? orig(self, _cmd, method, routedURL, routedParameters, error) : nil;
 }
@@ -336,6 +379,7 @@ static id JLYAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure(i
     NSString *routedURL = urlString;
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
+    JLYRewriteMatchmakerDetailURLString(&routedURL);
     id (*orig)(id, SEL, NSString *, NSString *, id, id, id, id, id) = (id (*)(id, SEL, NSString *, NSString *, id, id, id, id, id))OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure;
     return orig ? orig(self, _cmd, method, routedURL, routedParameters, uploadProgress, downloadProgress, success, failure) : nil;
 }
@@ -344,6 +388,7 @@ static id JLYAFPostParametersSuccessFailure(id self, SEL _cmd, NSString *urlStri
     NSString *routedURL = urlString;
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
+    JLYRewriteMatchmakerDetailURLString(&routedURL);
     id (*orig)(id, SEL, NSString *, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id))OrigAFPostParametersSuccessFailure;
     return orig ? orig(self, _cmd, routedURL, routedParameters, success, failure) : nil;
 }
@@ -352,6 +397,7 @@ static id JLYAFPostParametersProgressSuccessFailure(id self, SEL _cmd, NSString 
     NSString *routedURL = urlString;
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
+    JLYRewriteMatchmakerDetailURLString(&routedURL);
     id (*orig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFPostParametersProgressSuccessFailure;
     return orig ? orig(self, _cmd, routedURL, routedParameters, progress, success, failure) : nil;
 }
@@ -359,6 +405,7 @@ static id JLYAFPostParametersProgressSuccessFailure(id self, SEL _cmd, NSString 
 static NSURLRequest *JLYRoutedRequest(NSURLRequest *request) {
     NSURLRequest *routed = JLYRoutedMeetRequest(request);
     routed = JLYRoutedMatchmakerRequest(routed);
+    routed = JLYRoutedMatchmakerDetailRequest(routed);
     return routed;
 }
 
