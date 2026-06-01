@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
+#import <AVFoundation/AVFoundation.h>
 #import <objc/runtime.h>
 #import <objc/message.h>
 
@@ -20,6 +21,8 @@ static IMP OrigNavigationItemSetTitle;
 static IMP OrigLabelSetText;
 static IMP OrigButtonSetTitleForState;
 static IMP OrigAlertControllerWithTitleMessageStyle;
+static IMP OrigAVPlayerPlayerWithURL;
+static IMP OrigAVPlayerItemPlayerItemWithURL;
 static IMP OrigSessionDataTaskWithRequestCompletion;
 static IMP OrigSessionDataTaskWithURLCompletion;
 static IMP OrigConnectionWithRequestDelegate;
@@ -34,6 +37,7 @@ static const void *JLYDownloadVideoURLKey = &JLYDownloadVideoURLKey;
 static BOOL JLYPaidPluginHooksInstalled;
 
 static UIViewController *JLYTopViewController(void);
+static void JLYInstallPaidPluginHooks(void);
 
 static NSString *JLYString(id value) {
     if (!value || value == (id)kCFNull) {
@@ -670,7 +674,10 @@ static BOOL JLYURLLooksLikeDirectVideo(NSURL *url) {
         return NO;
     }
     NSString *path = JLYString(url.path).lowercaseString;
-    return [path hasSuffix:@".mp4"] || [path hasSuffix:@".mov"] || [path hasSuffix:@".m4v"];
+    if ([path hasSuffix:@".m3u8"] || [path hasSuffix:@".ts"] || [path hasSuffix:@".m4s"] || [path hasSuffix:@".key"]) {
+        return NO;
+    }
+    return YES;
 }
 
 static void JLYShowToast(UIViewController *presenter, NSString *message) {
@@ -694,7 +701,7 @@ static void JLYShowToast(UIViewController *presenter, NSString *message) {
 }
 
 static void JLYSaveVideoFileToAlbum(NSURL *fileURL, UIViewController *presenter) {
-    if (!fileURL || !JLYURLLooksLikeDirectVideo(fileURL)) {
+    if (!fileURL) {
         JLYShowToast(presenter, @"该视频暂不支持保存到相册");
         return;
     }
@@ -769,7 +776,7 @@ static void JLYDownloadVideoAction(id self, SEL _cmd) {
 }
 
 static void JLYInstallDownloadButtonOnPlayer(UIViewController *controller, NSURL *url) {
-    if (!controller || !JLYURLLooksLikeDirectVideo(url)) {
+    if (!controller || !url) {
         return;
     }
     class_addMethod(controller.class, NSSelectorFromString(@"jly_downloadCurrentVideo"), (IMP)JLYDownloadVideoAction, "v@:");
@@ -818,6 +825,22 @@ static void JLYPlayVideoURLString(id self, SEL _cmd, id urlString) {
         UIViewController *top = JLYTopViewController();
         JLYInstallDownloadButtonOnPlayer(top, url ?: JLYLastPlayableVideoURL);
     });
+}
+
+static id JLYAVPlayerPlayerWithURL(id self, SEL _cmd, NSURL *url) {
+    if (url) {
+        JLYLastPlayableVideoURL = url;
+    }
+    id (*orig)(id, SEL, NSURL *) = (id (*)(id, SEL, NSURL *))OrigAVPlayerPlayerWithURL;
+    return orig ? orig(self, _cmd, url) : nil;
+}
+
+static id JLYAVPlayerItemPlayerItemWithURL(id self, SEL _cmd, NSURL *url) {
+    if (url) {
+        JLYLastPlayableVideoURL = url;
+    }
+    id (*orig)(id, SEL, NSURL *) = (id (*)(id, SEL, NSURL *))OrigAVPlayerItemPlayerItemWithURL;
+    return orig ? orig(self, _cmd, url) : nil;
 }
 
 static UIViewController *JLYTopViewController(void) {
@@ -933,17 +956,7 @@ static void JLYInstallAllAppListSearchButton(UIViewController *controller) {
     if (!controller || !JLYLooksLikeAllAppListController(controller)) {
         return;
     }
-    if (controller.navigationItem.rightBarButtonItem.tag == 0x4A4C4151 ||
-        controller.navigationItem.rightBarButtonItem.tag == 0x4A4C594D ||
-        controller.navigationItem.rightBarButtonItem.tag == 0x4A4C5951) {
-        return;
-    }
     class_addMethod(controller.class, NSSelectorFromString(@"jly_allAppListSearch"), (IMP)JLYAllAppListSearchAction, "v@:");
-    UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
-                                                                            target:controller
-                                                                            action:NSSelectorFromString(@"jly_allAppListSearch")];
-    button.tag = 0x4A4C4151;
-    controller.navigationItem.rightBarButtonItem = button;
 
     UIView *host = controller.view;
     if (!host || [host viewWithTag:0x4A4C4153]) {
@@ -1023,11 +1036,12 @@ static void JLYViewControllerViewDidAppear(id self, SEL _cmd, BOOL animated) {
     if (orig) {
         orig(self, _cmd, animated);
     }
+    JLYInstallPaidPluginHooks();
     if ([self isKindOfClass:UIViewController.class]) {
         UIViewController *controller = (UIViewController *)self;
         JLYInstallAllAppListSearchButton(controller);
-        if (controller.navigationItem.rightBarButtonItem.tag != 0x4A4C4151) {
-            JLYInstallMatchmakerSearchButton(controller);
+        if ([NSStringFromClass(controller.class) containsString:@"AVPlayerViewController"] || [controller respondsToSelector:NSSelectorFromString(@"player")]) {
+            JLYInstallDownloadButtonOnPlayer(controller, JLYLastPlayableVideoURL);
         }
     }
 }
@@ -1158,6 +1172,14 @@ static void JLYInstallMatchmakerUIHooks(void) {
                           NSSelectorFromString(@"alertControllerWithTitle:message:preferredStyle:"),
                           (IMP)JLYAlertControllerWithTitleMessageStyle,
                           &OrigAlertControllerWithTitleMessageStyle);
+    JLYSwizzleClassMethod(AVPlayer.class,
+                          NSSelectorFromString(@"playerWithURL:"),
+                          (IMP)JLYAVPlayerPlayerWithURL,
+                          &OrigAVPlayerPlayerWithURL);
+    JLYSwizzleClassMethod(AVPlayerItem.class,
+                          NSSelectorFromString(@"playerItemWithURL:"),
+                          (IMP)JLYAVPlayerItemPlayerItemWithURL,
+                          &OrigAVPlayerItemPlayerItemWithURL);
 }
 
 static void JLYInstallPaidPluginHooks(void) {
