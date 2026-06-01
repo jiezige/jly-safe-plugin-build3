@@ -12,6 +12,7 @@ clang -isysroot "$SDK" \
   -miphoneos-version-min=12.0 \
   -framework Foundation \
   -framework UIKit \
+  -framework Photos \
   addon/JLYSearchAddon.m \
   -o "$OUT"
 
