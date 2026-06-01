@@ -347,10 +347,27 @@ static NSURLRequest *JLYRoutedAllAppListSearchRequest(NSURLRequest *request) {
     mutable.URL = components.URL;
     if ([JLYString(mutable.HTTPMethod).uppercaseString isEqualToString:@"POST"]) {
         NSMutableString *form = [NSMutableString stringWithString:JLYRequestBodyString(request)];
-        if (form.length) {
-            JLYSetOrAppendFormValue(form, @"q", query);
-            mutable.HTTPBody = [form dataUsingEncoding:NSUTF8StringEncoding] ?: mutable.HTTPBody;
+        NSString *uid = JLYValueFromRequest(request, @"login_uid");
+        if (uid.length == 0) {
+            uid = JLYValueFromRequest(request, @"uid");
         }
+        if (uid.length == 0) {
+            uid = JLYDeviceIdentifier();
+        }
+        JLYSetOrAppendFormValue(form, @"q", query);
+        if (uid.length) {
+            JLYSetOrAppendFormValue(form, @"uid", uid);
+            JLYSetOrAppendFormValue(form, @"login_uid", uid);
+        }
+        if (JLYFormValue(form, @"count").length == 0) {
+            JLYSetOrAppendFormValue(form, @"count", @"10");
+        }
+        NSString *pageInfo = JLYValueFromRequest(request, @"page_info");
+        if (pageInfo.length && JLYFormValue(form, @"page_info").length == 0) {
+            JLYSetOrAppendFormValue(form, @"page_info", pageInfo);
+        }
+        [mutable setValue:@"application/x-www-form-urlencoded; charset=utf-8" forHTTPHeaderField:@"content-type"];
+        mutable.HTTPBody = [form dataUsingEncoding:NSUTF8StringEncoding] ?: mutable.HTTPBody;
     }
     return mutable;
 }
