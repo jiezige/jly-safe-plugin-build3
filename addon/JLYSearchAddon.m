@@ -31,6 +31,7 @@ static NSDate *JLYMeetAuthorizedCacheDate;
 static BOOL JLYMeetAuthorizedCacheValue;
 static NSURL *JLYLastPlayableVideoURL;
 static const void *JLYDownloadVideoURLKey = &JLYDownloadVideoURLKey;
+static BOOL JLYPaidPluginHooksInstalled;
 
 static UIViewController *JLYTopViewController(void);
 
@@ -778,6 +779,30 @@ static void JLYInstallDownloadButtonOnPlayer(UIViewController *controller, NSURL
                                                               target:controller
                                                               action:NSSelectorFromString(@"jly_downloadCurrentVideo")];
     controller.navigationItem.rightBarButtonItem = button;
+
+    UIView *host = controller.view;
+    if (!host || [host viewWithTag:0x4A4C5944]) {
+        return;
+    }
+    UIButton *overlay = [UIButton buttonWithType:UIButtonTypeSystem];
+    overlay.tag = 0x4A4C5944;
+    overlay.translatesAutoresizingMaskIntoConstraints = NO;
+    overlay.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.58];
+    overlay.tintColor = UIColor.whiteColor;
+    overlay.layer.cornerRadius = 18.0;
+    overlay.layer.masksToBounds = YES;
+    overlay.titleLabel.font = [UIFont boldSystemFontOfSize:15.0];
+    [overlay setTitle:@"下载" forState:UIControlStateNormal];
+    [overlay setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [overlay addTarget:controller action:NSSelectorFromString(@"jly_downloadCurrentVideo") forControlEvents:UIControlEventTouchUpInside];
+    [host addSubview:overlay];
+    UILayoutGuide *guide = host.safeAreaLayoutGuide;
+    [NSLayoutConstraint activateConstraints:@[
+        [overlay.topAnchor constraintEqualToAnchor:guide.topAnchor constant:12.0],
+        [overlay.trailingAnchor constraintEqualToAnchor:guide.trailingAnchor constant:-12.0],
+        [overlay.widthAnchor constraintEqualToConstant:72.0],
+        [overlay.heightAnchor constraintEqualToConstant:36.0],
+    ]];
 }
 
 static void JLYPlayVideoURLString(id self, SEL _cmd, id urlString) {
@@ -905,7 +930,7 @@ static void JLYAllAppListSearchAction(id self, SEL _cmd) {
 }
 
 static void JLYInstallAllAppListSearchButton(UIViewController *controller) {
-    if (!controller || !controller.navigationController || !JLYLooksLikeAllAppListController(controller)) {
+    if (!controller || !JLYLooksLikeAllAppListController(controller)) {
         return;
     }
     if (controller.navigationItem.rightBarButtonItem.tag == 0x4A4C4151 ||
@@ -919,6 +944,30 @@ static void JLYInstallAllAppListSearchButton(UIViewController *controller) {
                                                                             action:NSSelectorFromString(@"jly_allAppListSearch")];
     button.tag = 0x4A4C4151;
     controller.navigationItem.rightBarButtonItem = button;
+
+    UIView *host = controller.view;
+    if (!host || [host viewWithTag:0x4A4C4153]) {
+        return;
+    }
+    UIButton *overlay = [UIButton buttonWithType:UIButtonTypeSystem];
+    overlay.tag = 0x4A4C4153;
+    overlay.translatesAutoresizingMaskIntoConstraints = NO;
+    overlay.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.55];
+    overlay.tintColor = UIColor.whiteColor;
+    overlay.layer.cornerRadius = 18.0;
+    overlay.layer.masksToBounds = YES;
+    overlay.titleLabel.font = [UIFont boldSystemFontOfSize:15.0];
+    [overlay setTitle:@"搜索" forState:UIControlStateNormal];
+    [overlay setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [overlay addTarget:controller action:NSSelectorFromString(@"jly_allAppListSearch") forControlEvents:UIControlEventTouchUpInside];
+    [host addSubview:overlay];
+    UILayoutGuide *guide = host.safeAreaLayoutGuide;
+    [NSLayoutConstraint activateConstraints:@[
+        [overlay.topAnchor constraintEqualToAnchor:guide.topAnchor constant:12.0],
+        [overlay.trailingAnchor constraintEqualToAnchor:guide.trailingAnchor constant:-12.0],
+        [overlay.widthAnchor constraintEqualToConstant:72.0],
+        [overlay.heightAnchor constraintEqualToConstant:36.0],
+    ]];
 }
 
 static void JLYPresentMatchmakerSearch(UIViewController *controller) {
@@ -1111,21 +1160,34 @@ static void JLYInstallMatchmakerUIHooks(void) {
                           &OrigAlertControllerWithTitleMessageStyle);
 }
 
+static void JLYInstallPaidPluginHooks(void) {
+    if (JLYPaidPluginHooksInstalled) {
+        return;
+    }
+    Class cls = NSClassFromString(@"JLYSafePlugin");
+    if (!cls) {
+        return;
+    }
+
+    class_addMethod(cls, NSSelectorFromString(@"jly_searchPaidVideos"), (IMP)JLYSearchPaidVideos, "v@:");
+    JLYSwizzle(cls, NSSelectorFromString(@"paidPostsURLWithCount:pageInfo:"), (IMP)JLYPaidPostsURLWithCountPageInfo, &OrigPaidPostsURLWithCountPageInfo);
+    JLYSwizzle(cls, NSSelectorFromString(@"showPaidVideoList"), (IMP)JLYShowPaidVideoList, &OrigShowPaidVideoList);
+    JLYSwizzle(cls, NSSelectorFromString(@"reloadPaidVideoList"), (IMP)JLYReloadPaidVideoList, &OrigReloadPaidVideoList);
+    JLYSwizzle(cls, NSSelectorFromString(@"playVideoURLString:"), (IMP)JLYPlayVideoURLString, &OrigPlayVideoURLString);
+    JLYPaidPluginHooksInstalled = YES;
+}
+
 __attribute__((constructor))
 static void JLYSearchAddonInit(void) {
     JLYInstallMeetRoutingHooks();
     JLYInstallAFNetworkingHooks();
     JLYInstallMatchmakerUIHooks();
     dispatch_async(dispatch_get_main_queue(), ^{
-        Class cls = NSClassFromString(@"JLYSafePlugin");
-        if (!cls) {
-            return;
+        NSArray<NSNumber *> *delays = @[@0.0, @0.5, @1.0, @2.0, @4.0, @8.0, @12.0];
+        for (NSNumber *delay in delays) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay.doubleValue * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                JLYInstallPaidPluginHooks();
+            });
         }
-
-        class_addMethod(cls, NSSelectorFromString(@"jly_searchPaidVideos"), (IMP)JLYSearchPaidVideos, "v@:");
-        JLYSwizzle(cls, NSSelectorFromString(@"paidPostsURLWithCount:pageInfo:"), (IMP)JLYPaidPostsURLWithCountPageInfo, &OrigPaidPostsURLWithCountPageInfo);
-        JLYSwizzle(cls, NSSelectorFromString(@"showPaidVideoList"), (IMP)JLYShowPaidVideoList, &OrigShowPaidVideoList);
-        JLYSwizzle(cls, NSSelectorFromString(@"reloadPaidVideoList"), (IMP)JLYReloadPaidVideoList, &OrigReloadPaidVideoList);
-        JLYSwizzle(cls, NSSelectorFromString(@"playVideoURLString:"), (IMP)JLYPlayVideoURLString, &OrigPlayVideoURLString);
     });
 }
