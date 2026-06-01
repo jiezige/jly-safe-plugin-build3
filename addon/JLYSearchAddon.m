@@ -135,6 +135,11 @@ static BOOL JLYURLIsAllAppList(NSURL *url) {
     return [absolute containsString:@"/api/posts/all-app-list"];
 }
 
+static BOOL JLYURLIsPaidAppList(NSURL *url) {
+    NSString *absolute = JLYString(url.absoluteString).lowercaseString;
+    return [absolute containsString:@"/api/posts/app-list"] && ![absolute containsString:@"/api/posts/all-app-list"];
+}
+
 static NSString *JLYURLDecode(NSString *value) {
     NSString *plusFixed = [value stringByReplacingOccurrencesOfString:@"+" withString:@" "];
     return [plusFixed stringByRemovingPercentEncoding] ?: value ?: @"";
@@ -401,6 +406,61 @@ static NSURLRequest *JLYRoutedAllAppListSearchRequest(NSURLRequest *request) {
     return mutable;
 }
 
+static NSURLRequest *JLYRoutedPaidAppListPostRequest(NSURLRequest *request) {
+    if (!request || !JLYURLIsPaidAppList(request.URL)) {
+        return request;
+    }
+
+    NSURLComponents *components = [NSURLComponents componentsWithURL:request.URL resolvingAgainstBaseURL:NO];
+    if (!components) {
+        return request;
+    }
+
+    NSString *query = [JLYString(JLYSearchQuery) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    NSMutableArray<NSURLQueryItem *> *items = [components.queryItems mutableCopy] ?: [NSMutableArray array];
+    NSIndexSet *existing = [items indexesOfObjectsPassingTest:^BOOL(NSURLQueryItem *item, NSUInteger idx, BOOL *stop) {
+        return [item.name isEqualToString:@"q"] || [item.name isEqualToString:@"id"];
+    }];
+    if (existing.count) {
+        [items removeObjectsAtIndexes:existing];
+    }
+    if (query.length) {
+        [items addObject:[NSURLQueryItem queryItemWithName:@"q" value:query]];
+    }
+    components.queryItems = items;
+
+    NSMutableString *form = [NSMutableString stringWithString:JLYRequestBodyString(request)];
+    NSString *uid = JLYValueFromRequest(request, @"login_uid");
+    if (uid.length == 0) {
+        uid = JLYValueFromRequest(request, @"uid");
+    }
+    if (uid.length == 0) {
+        uid = JLYDeviceIdentifier();
+    }
+    if (uid.length) {
+        JLYSetOrAppendFormValue(form, @"uid", uid);
+        JLYSetOrAppendFormValue(form, @"login_uid", uid);
+    }
+    if (JLYFormValue(form, @"count").length == 0) {
+        NSString *count = JLYValueFromRequest(request, @"count");
+        JLYSetOrAppendFormValue(form, @"count", count.length ? count : @"10");
+    }
+    NSString *pageInfo = JLYValueFromRequest(request, @"page_info");
+    if (pageInfo.length) {
+        JLYSetOrAppendFormValue(form, @"page_info", pageInfo);
+    }
+    if (query.length) {
+        JLYSetOrAppendFormValue(form, @"q", query);
+    }
+
+    NSMutableURLRequest *mutable = [request mutableCopy];
+    mutable.URL = components.URL;
+    mutable.HTTPMethod = @"POST";
+    [mutable setValue:@"application/x-www-form-urlencoded; charset=utf-8" forHTTPHeaderField:@"content-type"];
+    mutable.HTTPBody = [form dataUsingEncoding:NSUTF8StringEncoding] ?: [NSData data];
+    return mutable;
+}
+
 static NSMutableDictionary *JLYMutableParameters(id parameters) {
     if ([parameters isKindOfClass:NSMutableDictionary.class]) {
         return parameters;
@@ -500,11 +560,52 @@ static BOOL JLYRewriteAllAppListURLString(NSString **urlString, id *parameters) 
     return YES;
 }
 
+static BOOL JLYRewritePaidAppListURLString(NSString **urlString, id *parameters) {
+    NSURL *url = [NSURL URLWithString:JLYString(*urlString)];
+    if (!JLYURLIsPaidAppList(url)) {
+        return NO;
+    }
+
+    NSString *query = [JLYString(JLYSearchQuery) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+    if (!components) {
+        return NO;
+    }
+    NSMutableArray<NSURLQueryItem *> *items = [components.queryItems mutableCopy] ?: [NSMutableArray array];
+    NSIndexSet *existing = [items indexesOfObjectsPassingTest:^BOOL(NSURLQueryItem *item, NSUInteger idx, BOOL *stop) {
+        return [item.name isEqualToString:@"q"] || [item.name isEqualToString:@"id"];
+    }];
+    if (existing.count) {
+        [items removeObjectsAtIndexes:existing];
+    }
+    if (query.length) {
+        [items addObject:[NSURLQueryItem queryItemWithName:@"q" value:query]];
+    }
+    components.queryItems = items;
+    *urlString = components.URL.absoluteString;
+
+    NSMutableDictionary *mutable = JLYMutableParameters(*parameters);
+    NSString *uid = JLYUIDFromParameters(mutable);
+    if (uid.length) {
+        mutable[@"uid"] = uid;
+        mutable[@"login_uid"] = uid;
+    }
+    if (!mutable[@"count"]) {
+        mutable[@"count"] = @"10";
+    }
+    if (query.length) {
+        mutable[@"q"] = query;
+    }
+    *parameters = mutable;
+    return YES;
+}
+
 static id JLYAFRequestWithMethodURLStringParametersError(id self, SEL _cmd, NSString *method, NSString *urlString, id parameters, NSError **error) {
     NSString *routedURL = urlString;
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
+    JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, NSString *, id, NSError **) = (id (*)(id, SEL, NSString *, NSString *, id, NSError **))OrigAFRequestWithMethodURLStringParametersError;
     return orig ? orig(self, _cmd, method, routedURL, routedParameters, error) : nil;
@@ -515,6 +616,7 @@ static id JLYAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure(i
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
+    JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, NSString *, id, id, id, id, id) = (id (*)(id, SEL, NSString *, NSString *, id, id, id, id, id))OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure;
     return orig ? orig(self, _cmd, method, routedURL, routedParameters, uploadProgress, downloadProgress, success, failure) : nil;
@@ -525,6 +627,7 @@ static id JLYAFPostParametersSuccessFailure(id self, SEL _cmd, NSString *urlStri
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
+    JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id))OrigAFPostParametersSuccessFailure;
     return orig ? orig(self, _cmd, routedURL, routedParameters, success, failure) : nil;
@@ -535,6 +638,7 @@ static id JLYAFPostParametersProgressSuccessFailure(id self, SEL _cmd, NSString 
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
+    JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFPostParametersProgressSuccessFailure;
     return orig ? orig(self, _cmd, routedURL, routedParameters, progress, success, failure) : nil;
@@ -544,6 +648,7 @@ static NSURLRequest *JLYRoutedRequest(NSURLRequest *request) {
     NSURLRequest *routed = JLYRoutedMeetRequest(request);
     routed = JLYRoutedMatchmakerRequest(routed);
     routed = JLYRoutedMatchmakerDetailRequest(routed);
+    routed = JLYRoutedPaidAppListPostRequest(routed);
     routed = JLYRoutedAllAppListSearchRequest(routed);
     return routed;
 }
@@ -555,7 +660,7 @@ static id JLYSessionDataTaskWithRequestCompletion(id self, SEL _cmd, NSURLReques
 
 static id JLYSessionDataTaskWithURLCompletion(id self, SEL _cmd, NSURL *url, id completion) {
     id (*orig)(id, SEL, NSURL *, id) = (id (*)(id, SEL, NSURL *, id))OrigSessionDataTaskWithURLCompletion;
-    if (!JLYURLIsMeetList(url) && !JLYURLIsMatchmakerRecommend(url)) {
+    if (!JLYURLIsMeetList(url) && !JLYURLIsMatchmakerRecommend(url) && !JLYURLIsPaidAppList(url) && !JLYURLIsAllAppList(url)) {
         return orig ? orig(self, _cmd, url, completion) : nil;
     }
     NSURLRequest *request = JLYRoutedRequest([NSURLRequest requestWithURL:url]);
