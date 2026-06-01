@@ -7,12 +7,59 @@ on:
         description: Input IPA path in the repository
         default: miaotaoGOm0492_303_fixed.ipa
         required: true
+      input_ipa_release_asset:
+        description: Release asset name to download when input_ipa is not in the repository
+        default: miaotaoGOm0492_303_fixed.ipa
+        required: true
 
 jobs:
   build:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download input IPA from release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_IPA: ${{ inputs.input_ipa }}
+          ASSET_NAME: ${{ inputs.input_ipa_release_asset }}
+        run: |
+          if [[ -f "$INPUT_IPA" ]]; then
+            echo "Using repository IPA: $INPUT_IPA"
+            exit 0
+          fi
+
+          echo "Downloading release asset: $ASSET_NAME"
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          repo = os.environ["GITHUB_REPOSITORY"]
+          token = os.environ["GH_TOKEN"]
+          asset_name = os.environ["ASSET_NAME"]
+          output = os.environ["INPUT_IPA"]
+          headers = {
+              "Authorization": f"Bearer {token}",
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "jly-ipa-build",
+          }
+
+          req = urllib.request.Request(f"https://api.github.com/repos/{repo}/releases", headers=headers)
+          releases = json.load(urllib.request.urlopen(req))
+          for release in releases:
+              for asset in release.get("assets", []):
+                  if asset.get("name") == asset_name:
+                      download_headers = dict(headers)
+                      download_headers["Accept"] = "application/octet-stream"
+                      dl_req = urllib.request.Request(asset["url"], headers=download_headers)
+                      with urllib.request.urlopen(dl_req) as response, open(output, "wb") as fh:
+                          fh.write(response.read())
+                      print(f"Downloaded {asset_name} to {output}")
+                      raise SystemExit(0)
+          raise SystemExit(f"Release asset not found: {asset_name}")
+          PY
 
       - name: Build patched IPA
         env:
