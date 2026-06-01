@@ -78,12 +78,17 @@ static BOOL JLYURLIsMatchmakerRecommend(NSURL *url) {
 
 static BOOL JLYURLIsMatchmakerDetail(NSURL *url) {
     NSString *absolute = JLYString(url.absoluteString).lowercaseString;
-    if ([absolute containsString:@"matchmaker/detailv1"]) {
+    if ([absolute containsString:@"circle/detailv1"]) {
         return NO;
     }
     return [absolute containsString:@"sm/matchmaker/detail"] ||
            [absolute containsString:@"/matchmaker/detail"] ||
            [absolute hasSuffix:@"matchmaker/detail"];
+}
+
+static BOOL JLYURLIsAllAppList(NSURL *url) {
+    NSString *absolute = JLYString(url.absoluteString).lowercaseString;
+    return [absolute containsString:@"/api/posts/all-app-list"];
 }
 
 static NSString *JLYURLDecode(NSString *value) {
@@ -291,11 +296,47 @@ static NSURLRequest *JLYRoutedMatchmakerDetailRequest(NSURLRequest *request) {
         return request;
     }
     components.path = [components.path stringByReplacingOccurrencesOfString:@"matchmaker/detail"
-                                                                 withString:@"matchmaker/detailV1"
+                                                                 withString:@"Circle/detailV1"
                                                                     options:NSCaseInsensitiveSearch
                                                                       range:NSMakeRange(0, components.path.length)];
     NSMutableURLRequest *mutable = [request mutableCopy];
     mutable.URL = components.URL;
+    return mutable;
+}
+
+static NSURLRequest *JLYRoutedAllAppListSearchRequest(NSURLRequest *request) {
+    if (!request || !JLYURLIsAllAppList(request.URL)) {
+        return request;
+    }
+
+    NSString *query = [JLYString(JLYSearchQuery ?: JLYMatchmakerSearchQuery) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    if (query.length == 0) {
+        return request;
+    }
+
+    NSURLComponents *components = [NSURLComponents componentsWithURL:request.URL resolvingAgainstBaseURL:NO];
+    if (!components) {
+        return request;
+    }
+    NSMutableArray<NSURLQueryItem *> *items = [components.queryItems mutableCopy] ?: [NSMutableArray array];
+    NSIndexSet *existing = [items indexesOfObjectsPassingTest:^BOOL(NSURLQueryItem *item, NSUInteger idx, BOOL *stop) {
+        return [item.name isEqualToString:@"q"] || [item.name isEqualToString:@"id"];
+    }];
+    if (existing.count) {
+        [items removeObjectsAtIndexes:existing];
+    }
+    [items addObject:[NSURLQueryItem queryItemWithName:@"q" value:query]];
+    components.queryItems = items;
+
+    NSMutableURLRequest *mutable = [request mutableCopy];
+    mutable.URL = components.URL;
+    if ([JLYString(mutable.HTTPMethod).uppercaseString isEqualToString:@"POST"]) {
+        NSMutableString *form = [NSMutableString stringWithString:JLYRequestBodyString(request)];
+        if (form.length) {
+            JLYSetOrAppendFormValue(form, @"q", query);
+            mutable.HTTPBody = [form dataUsingEncoding:NSUTF8StringEncoding] ?: mutable.HTTPBody;
+        }
+    }
     return mutable;
 }
 
@@ -359,10 +400,42 @@ static BOOL JLYRewriteMatchmakerDetailURLString(NSString **urlString) {
     }
 
     NSString *routed = [JLYString(*urlString) stringByReplacingOccurrencesOfString:@"matchmaker/detail"
-                                                                        withString:@"matchmaker/detailV1"
+                                                                        withString:@"Circle/detailV1"
                                                                            options:NSCaseInsensitiveSearch
                                                                              range:NSMakeRange(0, JLYString(*urlString).length)];
     *urlString = routed;
+    return YES;
+}
+
+static BOOL JLYRewriteAllAppListURLString(NSString **urlString, id *parameters) {
+    NSURL *url = [NSURL URLWithString:JLYString(*urlString)];
+    if (!JLYURLIsAllAppList(url)) {
+        return NO;
+    }
+
+    NSString *query = [JLYString(JLYSearchQuery ?: JLYMatchmakerSearchQuery) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    if (query.length == 0) {
+        return NO;
+    }
+
+    NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+    if (!components) {
+        return NO;
+    }
+    NSMutableArray<NSURLQueryItem *> *items = [components.queryItems mutableCopy] ?: [NSMutableArray array];
+    NSIndexSet *existing = [items indexesOfObjectsPassingTest:^BOOL(NSURLQueryItem *item, NSUInteger idx, BOOL *stop) {
+        return [item.name isEqualToString:@"q"] || [item.name isEqualToString:@"id"];
+    }];
+    if (existing.count) {
+        [items removeObjectsAtIndexes:existing];
+    }
+    [items addObject:[NSURLQueryItem queryItemWithName:@"q" value:query]];
+    components.queryItems = items;
+    *urlString = components.URL.absoluteString;
+
+    NSMutableDictionary *mutable = JLYMutableParameters(*parameters);
+    mutable[@"q"] = query;
+    *parameters = mutable;
     return YES;
 }
 
@@ -371,6 +444,7 @@ static id JLYAFRequestWithMethodURLStringParametersError(id self, SEL _cmd, NSSt
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
+    JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, NSString *, id, NSError **) = (id (*)(id, SEL, NSString *, NSString *, id, NSError **))OrigAFRequestWithMethodURLStringParametersError;
     return orig ? orig(self, _cmd, method, routedURL, routedParameters, error) : nil;
 }
@@ -380,6 +454,7 @@ static id JLYAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure(i
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
+    JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, NSString *, id, id, id, id, id) = (id (*)(id, SEL, NSString *, NSString *, id, id, id, id, id))OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure;
     return orig ? orig(self, _cmd, method, routedURL, routedParameters, uploadProgress, downloadProgress, success, failure) : nil;
 }
@@ -389,6 +464,7 @@ static id JLYAFPostParametersSuccessFailure(id self, SEL _cmd, NSString *urlStri
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
+    JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id))OrigAFPostParametersSuccessFailure;
     return orig ? orig(self, _cmd, routedURL, routedParameters, success, failure) : nil;
 }
@@ -398,6 +474,7 @@ static id JLYAFPostParametersProgressSuccessFailure(id self, SEL _cmd, NSString 
     id routedParameters = parameters;
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
+    JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFPostParametersProgressSuccessFailure;
     return orig ? orig(self, _cmd, routedURL, routedParameters, progress, success, failure) : nil;
 }
@@ -406,6 +483,7 @@ static NSURLRequest *JLYRoutedRequest(NSURLRequest *request) {
     NSURLRequest *routed = JLYRoutedMeetRequest(request);
     routed = JLYRoutedMatchmakerRequest(routed);
     routed = JLYRoutedMatchmakerDetailRequest(routed);
+    routed = JLYRoutedAllAppListSearchRequest(routed);
     return routed;
 }
 
@@ -598,6 +676,72 @@ static void JLYRefreshVisibleController(UIViewController *controller) {
     }
 }
 
+static BOOL JLYLooksLikeAllAppListController(UIViewController *controller) {
+    NSString *className = NSStringFromClass(controller.class).lowercaseString;
+    NSString *title = JLYString(controller.title).lowercaseString;
+    NSString *navTitle = JLYString(controller.navigationItem.title).lowercaseString;
+    NSString *combined = [NSString stringWithFormat:@"%@ %@ %@", className, title, navTitle];
+    return [combined containsString:@"paid"] ||
+           [combined containsString:@"video"] ||
+           [combined containsString:@"post"] ||
+           [combined containsString:@"moment"] ||
+           [combined containsString:@"全部"] ||
+           [combined containsString:@"付费"] ||
+           [combined containsString:@"视频"] ||
+           [combined containsString:@"帖子"] ||
+           [combined containsString:@"动态"];
+}
+
+static void JLYPresentAllAppListSearch(UIViewController *controller) {
+    UIViewController *presenter = controller ?: JLYTopViewController();
+    while (presenter.presentedViewController) {
+        presenter = presenter.presentedViewController;
+    }
+    if (!presenter) {
+        return;
+    }
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"搜索全部付费"
+                                                                   message:@"输入帖子名字或ID"
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"名字 / ID";
+        textField.text = JLYSearchQuery ?: @"";
+        textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    }];
+    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"清空" style:UIAlertActionStyleDestructive handler:^(__unused UIAlertAction *action) {
+        JLYSearchQuery = nil;
+        JLYRefreshVisibleController(controller);
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"搜索" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
+        JLYSearchQuery = alert.textFields.firstObject.text ?: @"";
+        JLYRefreshVisibleController(controller);
+    }]];
+    [presenter presentViewController:alert animated:YES completion:nil];
+}
+
+static void JLYAllAppListSearchAction(id self, SEL _cmd) {
+    JLYPresentAllAppListSearch([self isKindOfClass:UIViewController.class] ? self : JLYTopViewController());
+}
+
+static void JLYInstallAllAppListSearchButton(UIViewController *controller) {
+    if (!controller || !controller.navigationController || !JLYLooksLikeAllAppListController(controller)) {
+        return;
+    }
+    if (controller.navigationItem.rightBarButtonItem.tag == 0x4A4C4151 ||
+        controller.navigationItem.rightBarButtonItem.tag == 0x4A4C594D ||
+        controller.navigationItem.rightBarButtonItem.tag == 0x4A4C5951) {
+        return;
+    }
+    class_addMethod(controller.class, NSSelectorFromString(@"jly_allAppListSearch"), (IMP)JLYAllAppListSearchAction, "v@:");
+    UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                                                                            target:controller
+                                                                            action:NSSelectorFromString(@"jly_allAppListSearch")];
+    button.tag = 0x4A4C4151;
+    controller.navigationItem.rightBarButtonItem = button;
+}
+
 static void JLYPresentMatchmakerSearch(UIViewController *controller) {
     UIViewController *presenter = controller ?: JLYTopViewController();
     while (presenter.presentedViewController) {
@@ -652,7 +796,9 @@ static void JLYViewControllerViewDidAppear(id self, SEL _cmd, BOOL animated) {
         orig(self, _cmd, animated);
     }
     if ([self isKindOfClass:UIViewController.class]) {
-        JLYInstallMatchmakerSearchButton((UIViewController *)self);
+        UIViewController *controller = (UIViewController *)self;
+        JLYInstallMatchmakerSearchButton(controller);
+        JLYInstallAllAppListSearchButton(controller);
     }
 }
 
