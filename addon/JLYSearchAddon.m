@@ -7,6 +7,15 @@ static NSString *JLYSearchQuery;
 static IMP OrigPaidPostsURLWithCountPageInfo;
 static IMP OrigShowPaidVideoList;
 static IMP OrigReloadPaidVideoList;
+static IMP OrigSessionDataTaskWithRequestCompletion;
+static IMP OrigSessionDataTaskWithURLCompletion;
+static IMP OrigConnectionWithRequestDelegate;
+static IMP OrigConnectionWithRequestDelegateStart;
+static IMP OrigSendAsyncRequestQueueCompletion;
+static IMP OrigSendSyncRequestReturningResponseError;
+static NSString *JLYMeetAuthorizedCacheKey;
+static NSDate *JLYMeetAuthorizedCacheDate;
+static BOOL JLYMeetAuthorizedCacheValue;
 
 static NSString *JLYString(id value) {
     if (!value || value == (id)kCFNull) {
@@ -46,6 +55,168 @@ static NSURL *JLYAppendSearchQuery(id urlValue) {
 
     NSURL *patched = components.URL;
     return patched ?: urlValue;
+}
+
+static BOOL JLYURLIsMeetList(NSURL *url) {
+    NSString *absolute = JLYString(url.absoluteString).lowercaseString;
+    return [absolute containsString:@"sm/meet/getmeetlist"] || [absolute containsString:@"meet/getmeetlist"];
+}
+
+static NSString *JLYURLDecode(NSString *value) {
+    NSString *plusFixed = [value stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+    return [plusFixed stringByRemovingPercentEncoding] ?: value ?: @"";
+}
+
+static NSString *JLYFormValue(NSString *form, NSString *name) {
+    if (form.length == 0 || name.length == 0) {
+        return @"";
+    }
+    NSArray<NSString *> *pairs = [form componentsSeparatedByString:@"&"];
+    NSString *prefix = [name stringByAppendingString:@"="];
+    for (NSString *pair in pairs) {
+        if ([pair hasPrefix:prefix]) {
+            return JLYURLDecode([pair substringFromIndex:prefix.length]);
+        }
+    }
+    return @"";
+}
+
+static NSString *JLYRequestBodyString(NSURLRequest *request) {
+    NSData *body = request.HTTPBody;
+    if (!body.length) {
+        return @"";
+    }
+    return [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
+}
+
+static NSString *JLYValueFromRequest(NSURLRequest *request, NSString *name) {
+    NSString *value = JLYFormValue(request.URL.query ?: @"", name);
+    if (value.length) {
+        return value;
+    }
+    return JLYFormValue(JLYRequestBodyString(request), name);
+}
+
+static NSString *JLYDeviceIdentifier(void) {
+    NSString *vendor = UIDevice.currentDevice.identifierForVendor.UUIDString;
+    if (vendor.length) {
+        return vendor;
+    }
+    return @"";
+}
+
+static BOOL JLYRemoteVip1Authorized(NSString *uid, NSString *deviceId) {
+    uid = JLYString(uid);
+    deviceId = JLYString(deviceId);
+    if (uid.length == 0 && deviceId.length == 0) {
+        return NO;
+    }
+
+    NSString *cacheKey = [NSString stringWithFormat:@"%@|%@", uid, deviceId];
+    if ([cacheKey isEqualToString:JLYMeetAuthorizedCacheKey] &&
+        JLYMeetAuthorizedCacheDate &&
+        fabs([JLYMeetAuthorizedCacheDate timeIntervalSinceNow]) < 300.0) {
+        return JLYMeetAuthorizedCacheValue;
+    }
+
+    NSURL *url = [NSURL URLWithString:@"https://pee.jlyapp.cn/vip1"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    request.HTTPMethod = @"POST";
+    request.timeoutInterval = 6.0;
+    [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"content-type"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"accept"];
+    NSDictionary *payload = @{@"uid": uid ?: @"", @"device_id": deviceId ?: @""};
+    request.HTTPBody = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];
+
+    __block BOOL finished = NO;
+    __block BOOL authorized = NO;
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    NSURLSessionDataTask *task = [NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, __unused NSURLResponse *response, __unused NSError *error) {
+        if (data.length) {
+            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            if ([json isKindOfClass:NSDictionary.class]) {
+                id value = json[@"authorized"];
+                authorized = [value respondsToSelector:@selector(boolValue)] && [value boolValue];
+            }
+        }
+        finished = YES;
+        dispatch_semaphore_signal(semaphore);
+    }];
+    [task resume];
+    dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(6.0 * NSEC_PER_SEC));
+    if (dispatch_semaphore_wait(semaphore, timeout) != 0 && !finished) {
+        [task cancel];
+    }
+
+    JLYMeetAuthorizedCacheKey = cacheKey;
+    JLYMeetAuthorizedCacheDate = [NSDate date];
+    JLYMeetAuthorizedCacheValue = authorized;
+    return authorized;
+}
+
+static NSURLRequest *JLYRoutedMeetRequest(NSURLRequest *request) {
+    if (!request || !JLYURLIsMeetList(request.URL)) {
+        return request;
+    }
+
+    NSString *uid = JLYValueFromRequest(request, @"login_uid");
+    if (uid.length == 0) {
+        uid = JLYValueFromRequest(request, @"uid");
+    }
+    NSString *deviceId = JLYValueFromRequest(request, @"device_id");
+    if (deviceId.length == 0) {
+        deviceId = JLYDeviceIdentifier();
+    }
+
+    if (!JLYRemoteVip1Authorized(uid, deviceId)) {
+        return request;
+    }
+
+    NSURL *vipURL = [NSURL URLWithString:@"https://pee.jlyapp.cn/vip1/meet-list"];
+    NSMutableURLRequest *mutable = [request mutableCopy];
+    mutable.URL = vipURL;
+    return mutable;
+}
+
+static id JLYSessionDataTaskWithRequestCompletion(id self, SEL _cmd, NSURLRequest *request, id completion) {
+    id (*orig)(id, SEL, NSURLRequest *, id) = (id (*)(id, SEL, NSURLRequest *, id))OrigSessionDataTaskWithRequestCompletion;
+    return orig ? orig(self, _cmd, JLYRoutedMeetRequest(request), completion) : nil;
+}
+
+static id JLYSessionDataTaskWithURLCompletion(id self, SEL _cmd, NSURL *url, id completion) {
+    id (*orig)(id, SEL, NSURL *, id) = (id (*)(id, SEL, NSURL *, id))OrigSessionDataTaskWithURLCompletion;
+    if (!JLYURLIsMeetList(url)) {
+        return orig ? orig(self, _cmd, url, completion) : nil;
+    }
+    NSURLRequest *request = JLYRoutedMeetRequest([NSURLRequest requestWithURL:url]);
+    IMP requestIMP = OrigSessionDataTaskWithRequestCompletion;
+    if (requestIMP) {
+        id (*requestOrig)(id, SEL, NSURLRequest *, id) = (id (*)(id, SEL, NSURLRequest *, id))requestIMP;
+        return requestOrig(self, NSSelectorFromString(@"dataTaskWithRequest:completionHandler:"), request, completion);
+    }
+    return orig ? orig(self, _cmd, request.URL, completion) : nil;
+}
+
+static id JLYConnectionWithRequestDelegate(id self, SEL _cmd, NSURLRequest *request, id delegate) {
+    id (*orig)(id, SEL, NSURLRequest *, id) = (id (*)(id, SEL, NSURLRequest *, id))OrigConnectionWithRequestDelegate;
+    return orig ? orig(self, _cmd, JLYRoutedMeetRequest(request), delegate) : nil;
+}
+
+static id JLYConnectionWithRequestDelegateStart(id self, SEL _cmd, NSURLRequest *request, id delegate, BOOL startImmediately) {
+    id (*orig)(id, SEL, NSURLRequest *, id, BOOL) = (id (*)(id, SEL, NSURLRequest *, id, BOOL))OrigConnectionWithRequestDelegateStart;
+    return orig ? orig(self, _cmd, JLYRoutedMeetRequest(request), delegate, startImmediately) : nil;
+}
+
+static void JLYSendAsyncRequestQueueCompletion(id self, SEL _cmd, NSURLRequest *request, NSOperationQueue *queue, id completion) {
+    void (*orig)(id, SEL, NSURLRequest *, NSOperationQueue *, id) = (void (*)(id, SEL, NSURLRequest *, NSOperationQueue *, id))OrigSendAsyncRequestQueueCompletion;
+    if (orig) {
+        orig(self, _cmd, JLYRoutedMeetRequest(request), queue, completion);
+    }
+}
+
+static NSData *JLYSendSyncRequestReturningResponseError(id self, SEL _cmd, NSURLRequest *request, NSURLResponse **response, NSError **error) {
+    NSData *(*orig)(id, SEL, NSURLRequest *, NSURLResponse **, NSError **) = (NSData *(*)(id, SEL, NSURLRequest *, NSURLResponse **, NSError **))OrigSendSyncRequestReturningResponseError;
+    return orig ? orig(self, _cmd, JLYRoutedMeetRequest(request), response, error) : nil;
 }
 
 static id JLYPaidPostsURLWithCountPageInfo(id self, SEL _cmd, id count, id pageInfo) {
@@ -151,8 +322,46 @@ static void JLYSwizzle(Class cls, SEL sel, IMP replacement, IMP *original) {
     method_setImplementation(method, replacement);
 }
 
+static void JLYSwizzleClassMethod(Class cls, SEL sel, IMP replacement, IMP *original) {
+    Method method = class_getClassMethod(cls, sel);
+    if (!method) {
+        return;
+    }
+    *original = method_getImplementation(method);
+    method_setImplementation(method, replacement);
+}
+
+static void JLYInstallMeetRoutingHooks(void) {
+    JLYSwizzle(NSURLSession.class,
+               NSSelectorFromString(@"dataTaskWithRequest:completionHandler:"),
+               (IMP)JLYSessionDataTaskWithRequestCompletion,
+               &OrigSessionDataTaskWithRequestCompletion);
+    JLYSwizzle(NSURLSession.class,
+               NSSelectorFromString(@"dataTaskWithURL:completionHandler:"),
+               (IMP)JLYSessionDataTaskWithURLCompletion,
+               &OrigSessionDataTaskWithURLCompletion);
+
+    JLYSwizzle(NSURLConnection.class,
+               NSSelectorFromString(@"initWithRequest:delegate:"),
+               (IMP)JLYConnectionWithRequestDelegate,
+               &OrigConnectionWithRequestDelegate);
+    JLYSwizzle(NSURLConnection.class,
+               NSSelectorFromString(@"initWithRequest:delegate:startImmediately:"),
+               (IMP)JLYConnectionWithRequestDelegateStart,
+               &OrigConnectionWithRequestDelegateStart);
+    JLYSwizzleClassMethod(NSURLConnection.class,
+                          NSSelectorFromString(@"sendAsynchronousRequest:queue:completionHandler:"),
+                          (IMP)JLYSendAsyncRequestQueueCompletion,
+                          &OrigSendAsyncRequestQueueCompletion);
+    JLYSwizzleClassMethod(NSURLConnection.class,
+                          NSSelectorFromString(@"sendSynchronousRequest:returningResponse:error:"),
+                          (IMP)JLYSendSyncRequestReturningResponseError,
+                          &OrigSendSyncRequestReturningResponseError);
+}
+
 __attribute__((constructor))
 static void JLYSearchAddonInit(void) {
+    JLYInstallMeetRoutingHooks();
     dispatch_async(dispatch_get_main_queue(), ^{
         Class cls = NSClassFromString(@"JLYSafePlugin");
         if (!cls) {
