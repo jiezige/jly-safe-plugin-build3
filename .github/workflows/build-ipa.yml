@@ -1,0 +1,62 @@
+name: Build patched IPA
+
+on:
+  workflow_dispatch:
+    inputs:
+      input_ipa:
+        description: Input IPA path in the repository
+        default: miaotaoGOm0492_303_fixed.ipa
+        required: true
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build patched IPA
+        env:
+          SIGNING_CERT_P12_BASE64: ${{ secrets.SIGNING_CERT_P12_BASE64 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
+          MOBILEPROVISION_BASE64: ${{ secrets.MOBILEPROVISION_BASE64 }}
+          CODESIGN_IDENTITY: ${{ secrets.CODESIGN_IDENTITY }}
+        run: |
+          chmod +x scripts/resign_ipa_macos.sh
+          scripts/resign_ipa_macos.sh "${{ inputs.input_ipa }}" dist/miaotaoGOm0492_303_cf.ipa
+
+      - name: Verify patched host
+        run: |
+          unzip -q dist/miaotaoGOm0492_303_cf.ipa -d verify
+          if ! strings verify/Payload/*.app/cike.dylib | grep -q 'https://pee.jlyapp.cn'; then
+            echo 'patched host not found'
+            exit 1
+          fi
+          if strings verify/Payload/*.app/cike.dylib | grep -q 'https://api.jlyapp.cn'; then
+            echo 'old host still present'
+            exit 1
+          fi
+          if strings verify/Payload/*.app/cike.dylib | grep -q 'https://stz.jlyapp.cn'; then
+            echo 'old static host still present'
+            exit 1
+          fi
+          if ! strings verify/Payload/*.app/cike.dylib | grep -q '/api/posts/all-app-list'; then
+            echo 'all-app-list endpoint not found'
+            exit 1
+          fi
+          if ! strings verify/Payload/*.app/cike.dylib | grep -q '/api/posts/app-list'; then
+            echo 'original app-list endpoint was not preserved'
+            exit 1
+          fi
+          if ! test -f verify/Payload/*.app/JLYSearchAddon.dylib; then
+            echo 'search addon dylib not embedded'
+            exit 1
+          fi
+          if ! otool -l verify/Payload/*.app/cike.dylib | grep -q '@executable_path/JLYSearchAddon.dylib'; then
+            echo 'search addon load command not found'
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: miaotaoGOm0492_303_cf
+          path: dist/miaotaoGOm0492_303_cf.ipa
