@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import re
 import shutil
 import subprocess
 import struct
@@ -78,7 +79,8 @@ def main():
     if args.search_addon:
         addon_name = args.search_addon.name
         shutil.copy2(args.search_addon, app_dir / addon_name)
-        inject_dylib_load_command(dylib_path, f"@executable_path/{addon_name}")
+        executable_path = app_dir / read_bundle_executable(app_dir)
+        inject_dylib_load_command(executable_path, f"@executable_path/{addon_name}")
         print(f"Embedded and linked {addon_name}")
 
     if args.output_ipa.exists():
@@ -97,6 +99,29 @@ def inject_dylib_load_command(macho_path, dylib_name):
     data = bytearray(macho_path.read_bytes())
     injector = MachOLoadCommandInjector(data)
     macho_path.write_bytes(injector.inject(dylib_name))
+
+
+def read_bundle_executable(app_dir):
+    plist_path = app_dir / "Info.plist"
+    data = plist_path.read_bytes()
+    match = re.search(br"<key>CFBundleExecutable</key>\s*<string>([^<]+)</string>", data)
+    if match:
+        return match.group(1).decode("utf-8")
+
+    try:
+        output = subprocess.check_output(
+            ["plutil", "-extract", "CFBundleExecutable", "raw", "-o", "-", str(plist_path)],
+            text=True,
+        ).strip()
+        if output:
+            return output
+    except Exception:
+        pass
+
+    candidates = [path for path in app_dir.iterdir() if path.is_file() and not path.suffix]
+    if not candidates:
+        raise SystemExit("Could not determine app executable")
+    return candidates[0].name
 
 
 class MachOLoadCommandInjector:
