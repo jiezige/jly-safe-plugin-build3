@@ -36,6 +36,7 @@ static NSURL *JLYLastPlayableVideoURL;
 static const void *JLYDownloadVideoURLKey = &JLYDownloadVideoURLKey;
 static BOOL JLYPaidPluginHooksInstalled;
 
+static NSString *JLYString(id value);
 static UIViewController *JLYTopViewController(void);
 static void JLYInstallPaidPluginHooks(void);
 
