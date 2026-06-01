@@ -1,0 +1,73 @@
+name: Build search addon dylib
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build addon
+        run: |
+          chmod +x scripts/build_search_addon_macos.sh
+          scripts/build_search_addon_macos.sh build/JLYSearchAddon.dylib
+
+      - name: Commit compiled addon
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TARGET: build-artifacts/JLYSearchAddon.dylib
+        run: |
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          repo = os.environ["REPO"]
+          token = os.environ["GH_TOKEN"]
+          target = os.environ["TARGET"]
+          source = "build/JLYSearchAddon.dylib"
+          api_path = urllib.parse.quote(target)
+          url = f"https://api.github.com/repos/{repo}/contents/{api_path}"
+          headers = {
+              "Authorization": f"Bearer {token}",
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "jly-addon-build",
+          }
+
+          sha = None
+          try:
+              req = urllib.request.Request(url + "?ref=main", headers=headers)
+              with urllib.request.urlopen(req) as response:
+                  sha = json.load(response).get("sha")
+          except urllib.error.HTTPError as exc:
+              if exc.code != 404:
+                  raise
+
+          with open(source, "rb") as fh:
+              content = base64.b64encode(fh.read()).decode()
+          body = {
+              "message": "Build JLYSearchAddon dylib",
+              "content": content,
+              "branch": "main",
+          }
+          if sha:
+              body["sha"] = sha
+          req = urllib.request.Request(
+              url,
+              data=json.dumps(body).encode(),
+              headers={**headers, "Content-Type": "application/json"},
+              method="PUT",
+          )
+          with urllib.request.urlopen(req) as response:
+              print(json.load(response)["commit"]["sha"])
+          PY
