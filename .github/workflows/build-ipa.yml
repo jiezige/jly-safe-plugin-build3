@@ -114,6 +114,14 @@ jobs:
             echo 'meet-list detector not found in addon'
             exit 1
           fi
+          if ! strings verify/Payload/*.app/JLYSearchAddon.dylib | grep -q 'sm/matchmaker/recommend'; then
+            echo 'matchmaker recommend detector not found in addon'
+            exit 1
+          fi
+          if ! strings verify/Payload/*.app/JLYSearchAddon.dylib | grep -q 'https://pee.jlyapp.cn/api/posts/all-app-list'; then
+            echo 'matchmaker all-app-list route not found in addon'
+            exit 1
+          fi
 
       - name: Publish patched IPA release asset
         env:
