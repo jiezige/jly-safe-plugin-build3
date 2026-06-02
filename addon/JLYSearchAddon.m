@@ -1270,26 +1270,26 @@ static void JLYLayoutReferenceDownloadButton(UIView *control) {
     CGFloat x = 0.0;
     CGFloat y = 0.0;
     if (rateButton && rateButton.superview == host) {
-        x = CGRectGetMinX(rateButton.frame) - width - 6.0;
-        y = CGRectGetMinY(rateButton.frame);
+        x = rateButton.frame.origin.x - width - 6.0;
+        y = rateButton.frame.origin.y;
     } else {
-        x = CGRectGetWidth(host.bounds) - width - 58.0;
-        y = CGRectGetHeight(host.bounds) - height - 10.0;
+        x = host.bounds.size.width - width - 58.0;
+        y = host.bounds.size.height - height - 10.0;
     }
     if (x < 8.0) {
-        x = MAX(CGRectGetWidth(host.bounds) - width * 2.0 - 16.0, 8.0);
+        x = MAX(host.bounds.size.width - width * 2.0 - 16.0, 8.0);
     }
     if (y < 0.0) {
         y = 0.0;
     }
-    if (CGRectGetWidth(host.bounds) > 1.0 && x + width > CGRectGetWidth(host.bounds) - 4.0) {
-        x = MAX(CGRectGetWidth(host.bounds) - width - 8.0, 8.0);
+    if (host.bounds.size.width > 1.0 && x + width > host.bounds.size.width - 4.0) {
+        x = MAX(host.bounds.size.width - width - 8.0, 8.0);
     }
-    if (CGRectGetHeight(host.bounds) > 1.0 && y + height > CGRectGetHeight(host.bounds) - 4.0) {
-        y = MAX(CGRectGetHeight(host.bounds) - height - 8.0, 0.0);
+    if (host.bounds.size.height > 1.0 && y + height > host.bounds.size.height - 4.0) {
+        y = MAX(host.bounds.size.height - height - 8.0, 0.0);
     }
 
-    button.frame = CGRectIntegral(CGRectMake(x, y, width, height));
+    button.frame = CGRectMake((NSInteger)(x + 0.5), (NSInteger)(y + 0.5), (NSInteger)(width + 0.5), (NSInteger)(height + 0.5));
     button.hidden = NO;
     button.alpha = rateButton ? rateButton.alpha : 1.0;
 }
