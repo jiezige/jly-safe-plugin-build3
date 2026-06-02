@@ -39,6 +39,7 @@ static NSString *JLYMeetAuthorizedCacheKey;
 static NSDate *JLYMeetAuthorizedCacheDate;
 static BOOL JLYMeetAuthorizedCacheValue;
 static NSURL *JLYLastPlayableVideoURL;
+static NSString *JLYLastLoginUID;
 static const void *JLYDownloadVideoURLKey = &JLYDownloadVideoURLKey;
 static const void *JLYDownloadButtonKey = &JLYDownloadButtonKey;
 static BOOL JLYPaidPluginHooksInstalled;
@@ -208,6 +209,33 @@ static NSString *JLYValueFromRequest(NSURLRequest *request, NSString *name) {
     return JLYFormValue(JLYRequestBodyString(request), name);
 }
 
+static void JLYRememberLoginUID(NSString *uid) {
+    uid = [JLYString(uid) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    if (uid.length) {
+        JLYLastLoginUID = uid;
+    }
+}
+
+static NSString *JLYRequestLoginUID(NSURLRequest *request) {
+    NSString *uid = JLYValueFromRequest(request, @"login_uid");
+    if (uid.length == 0) {
+        uid = JLYValueFromRequest(request, @"uid");
+    }
+    JLYRememberLoginUID(uid);
+    return uid.length ? uid : JLYString(JLYLastLoginUID);
+}
+
+static void JLYRememberLoginUIDFromRequest(NSURLRequest *request) {
+    if (!request) {
+        return;
+    }
+    NSString *uid = JLYValueFromRequest(request, @"login_uid");
+    if (uid.length == 0) {
+        uid = JLYValueFromRequest(request, @"uid");
+    }
+    JLYRememberLoginUID(uid);
+}
+
 static NSString *JLYDeviceIdentifier(void) {
     NSString *vendor = UIDevice.currentDevice.identifierForVendor.UUIDString;
     if (vendor.length) {
@@ -297,13 +325,7 @@ static NSURLRequest *JLYRoutedMatchmakerRequest(NSURLRequest *request) {
     NSString *body = JLYRequestBodyString(request);
     NSMutableString *form = [NSMutableString stringWithString:body ?: @""];
 
-    NSString *uid = JLYValueFromRequest(request, @"login_uid");
-    if (uid.length == 0) {
-        uid = JLYValueFromRequest(request, @"uid");
-    }
-    if (uid.length == 0) {
-        uid = JLYDeviceIdentifier();
-    }
+    NSString *uid = JLYRequestLoginUID(request);
 
     if (uid.length) {
         JLYSetOrAppendFormValue(form, @"uid", uid);
@@ -383,13 +405,7 @@ static NSURLRequest *JLYRoutedAllAppListSearchRequest(NSURLRequest *request) {
     mutable.URL = components.URL;
     if ([JLYString(mutable.HTTPMethod).uppercaseString isEqualToString:@"POST"]) {
         NSMutableString *form = [NSMutableString stringWithString:JLYRequestBodyString(request)];
-        NSString *uid = JLYValueFromRequest(request, @"login_uid");
-        if (uid.length == 0) {
-            uid = JLYValueFromRequest(request, @"uid");
-        }
-        if (uid.length == 0) {
-            uid = JLYDeviceIdentifier();
-        }
+        NSString *uid = JLYRequestLoginUID(request);
         JLYSetOrAppendFormValue(form, @"q", query);
         if (uid.length) {
             JLYSetOrAppendFormValue(form, @"uid", uid);
@@ -432,13 +448,7 @@ static NSURLRequest *JLYRoutedPaidAppListPostRequest(NSURLRequest *request) {
     components.queryItems = items;
 
     NSMutableString *form = [NSMutableString stringWithString:JLYRequestBodyString(request)];
-    NSString *uid = JLYValueFromRequest(request, @"login_uid");
-    if (uid.length == 0) {
-        uid = JLYValueFromRequest(request, @"uid");
-    }
-    if (uid.length == 0) {
-        uid = JLYDeviceIdentifier();
-    }
+    NSString *uid = JLYRequestLoginUID(request);
     if (uid.length) {
         JLYSetOrAppendFormValue(form, @"uid", uid);
         JLYSetOrAppendFormValue(form, @"login_uid", uid);
@@ -478,10 +488,8 @@ static NSString *JLYUIDFromParameters(NSDictionary *parameters) {
     if (uid.length == 0) {
         uid = JLYString(parameters[@"uid"]);
     }
-    if (uid.length == 0) {
-        uid = JLYDeviceIdentifier();
-    }
-    return uid;
+    JLYRememberLoginUID(uid);
+    return uid.length ? uid : JLYString(JLYLastLoginUID);
 }
 
 static BOOL JLYRewriteMatchmakerURLString(NSString **urlString, id *parameters) {
@@ -681,6 +689,7 @@ static id JLYAFGetParametersProgressSuccessFailure(id self, SEL _cmd, NSString *
 }
 
 static NSURLRequest *JLYRoutedRequest(NSURLRequest *request) {
+    JLYRememberLoginUIDFromRequest(request);
     NSURLRequest *routed = JLYRoutedMeetRequest(request);
     routed = JLYRoutedMatchmakerRequest(routed);
     routed = JLYRoutedMatchmakerDetailRequest(routed);
