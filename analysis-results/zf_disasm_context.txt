@@ -1,0 +1,4370 @@
+
+===== _$ZFLandScapeControlView_clickDownloadBtn_constructor: =====
+   43214:	b.ne	0x4321c
+   43218:	b	0x43220
+   4321c:	bl	0x1f6b20 ; symbol stub for: ___stack_chk_fail
+   43220:	ldur	x0, [x29, #-0x48]
+   43224:	mov	sp, x0
+   43228:	mov	sp, x29
+   4322c:	ldp	x29, x30, [sp], #0x10
+   43230:	ret
+_$ZFLandScapeControlView_clickDownloadBtn_constructor:
+   43234:	stp	x29, x30, [sp, #-0x10]!
+   43238:	mov	x29, sp
+   4323c:	sub	sp, sp, #0x60
+   43240:	adrp	x8, 565 ; 0x278000
+   43244:	ldr	x8, [x8, #0x1e8] ; literal pool symbol address: ___stack_chk_guard
+   43248:	ldr	x8, [x8]
+   4324c:	stur	x8, [x29, #-0x8]
+   43250:	adrp	x0, 471 ; 0x21a000
+   43254:	add	x0, x0, #0xb02 ; literal pool for: "ZFLandScapeControlView"
+   43258:	bl	0x1f7210 ; symbol stub for: _objc_getClass
+   4325c:	mov	x1, x0
+   43260:	adrp	x0, 684 ; 0x2ef000
+   43264:	add	x0, x0, #0xdf8
+   43268:	stur	x0, [x29, #-0x40]
+   4326c:	bl	_CHLoadClass_
+   43270:	ldur	x8, [x29, #-0x40]
+   43274:	mov	x0, sp
+   43278:	stur	x0, [x29, #-0x38]
+   4327c:	ldr	x0, [x8]
+   43280:	adrp	x8, 664 ; 0x2db000
+   43284:	ldr	x1, [x8, #0x648] ; Objc selector ref: clickDownloadBtn
+   43288:	bl	0x1f6c40 ; symbol stub for: _class_getInstanceMethod
+   4328c:	stur	x0, [x29, #-0x10]
+   43290:	ldur	x8, [x29, #-0x10]
+   43294:	cbz	x8, 0x43318
+   43298:	b	0x4329c
+   4329c:	ldur	x0, [x29, #-0x10]
+   432a0:	bl	0x1f70f0 ; symbol stub for: _method_getImplementation
+   432a4:	adrp	x8, 685 ; 0x2f0000
+   432a8:	str	x0, [x8, #0x5d0]
+   432ac:	adrp	x8, 684 ; 0x2ef000
+   432b0:	ldr	x8, [x8, #0xdf8]
+   432b4:	stur	x8, [x29, #-0x48]
+   432b8:	adrp	x8, 664 ; 0x2db000
+   432bc:	ldr	x8, [x8, #0x648] ; Objc selector ref: clickDownloadBtn
+   432c0:	stur	x8, [x29, #-0x50]
+   432c4:	ldur	x0, [x29, #-0x10]
+   432c8:	bl	0x1f7120 ; symbol stub for: _method_getTypeEncoding
+   432cc:	ldur	x1, [x29, #-0x50]
+   432d0:	mov	x3, x0
+   432d4:	ldur	x0, [x29, #-0x48]
+   432d8:	adrp	x2, 34 ; 0x65000
+   432dc:	add	x2, x2, #0xf5c
+   432e0:	bl	0x1f6c04 ; symbol stub for: _class_addMethod
+   432e4:	cbz	w0, 0x43300
+   432e8:	b	0x432ec
+   432ec:	adrp	x9, 685 ; 0x2f0000
+   432f0:	adrp	x8, 35 ; 0x66000
+   432f4:	add	x8, x8, #0x188
+   432f8:	str	x8, [x9, #0x5d0]
+   432fc:	b	0x43314
+   43300:	ldur	x0, [x29, #-0x10]
+   43304:	adrp	x1, 34 ; 0x65000
+   43308:	add	x1, x1, #0xf5c
+   4330c:	bl	0x1f712c ; symbol stub for: _method_setImplementation
+   43310:	b	0x43314
+   43314:	b	0x433c0
+   43318:	adrp	x8, 472 ; 0x21b000
+   4331c:	add	x8, x8, #0x1a8 ; literal pool for: "v"
+   43320:	stur	x8, [x29, #-0x18]
+   43324:	ldur	x0, [x29, #-0x18]
+   43328:	bl	0x1f76d8 ; symbol stub for: _strlen
+   4332c:	stur	x0, [x29, #-0x20]
+   43330:	ldur	x9, [x29, #-0x20]
+   43334:	add	x8, x9, #0x3
+   43338:	mov	x10, sp
+   4333c:	stur	x10, [x29, #-0x28]
+   43340:	add	x9, x9, #0x12
+   43344:	and	x10, x9, #0xfffffffffffffff0
+   43348:	mov	x9, sp
+   4334c:	subs	x0, x9, x10
+   43350:	stur	x0, [x29, #-0x58]
+   43354:	mov	sp, x0
+   43358:	stur	x8, [x29, #-0x30]
+   4335c:	ldur	x1, [x29, #-0x18]
+   43360:	ldur	x2, [x29, #-0x20]
+   43364:	bl	0x1f70a8 ; symbol stub for: _memcpy
+   43368:	ldur	x3, [x29, #-0x58]
+   4336c:	ldur	x9, [x29, #-0x20]
+   43370:	mov	w8, #0x40
+   43374:	strb	w8, [x3, x9]
+   43378:	ldur	x8, [x29, #-0x20]
+   4337c:	add	x9, x8, x3
+   43380:	mov	w8, #0x3a
+   43384:	strb	w8, [x9, #0x1]
+   43388:	ldur	x8, [x29, #-0x20]
+   4338c:	add	x9, x8, x3
+   43390:	mov	w8, #0x0
+   43394:	strb	w8, [x9, #0x2]
+   43398:	adrp	x8, 684 ; 0x2ef000
+   4339c:	ldr	x0, [x8, #0xdf8]
+   433a0:	adrp	x8, 664 ; 0x2db000
+   433a4:	ldr	x1, [x8, #0x648] ; Objc selector ref: clickDownloadBtn
+   433a8:	adrp	x2, 34 ; 0x65000
+   433ac:	add	x2, x2, #0xf5c
+   433b0:	bl	0x1f6c04 ; symbol stub for: _class_addMethod
+   433b4:	ldur	x8, [x29, #-0x28]
+   433b8:	mov	sp, x8
+   433bc:	b	0x433c0
+   433c0:	ldur	x9, [x29, #-0x8]
+   433c4:	adrp	x8, 565 ; 0x278000
+   433c8:	ldr	x8, [x8, #0x1e8] ; literal pool symbol address: ___stack_chk_guard
+   433cc:	ldr	x8, [x8]
+   433d0:	subs	x8, x8, x9
+   433d4:	b.ne	0x433dc
+   433d8:	b	0x433e0
+   433dc:	bl	0x1f6b20 ; symbol stub for: ___stack_chk_fail
+   433e0:	ldur	x0, [x29, #-0x38]
+   433e4:	mov	sp, x0
+   433e8:	mov	sp, x29
+   433ec:	ldp	x29, x30, [sp], #0x10
+   433f0:	ret
+_$NTESAnchorLiveViewController_clickSetBtn_constructor:
+   433f4:	stp	x29, x30, [sp, #-0x10]!
+   433f8:	mov	x29, sp
+   433fc:	sub	sp, sp, #0x60
+   43400:	adrp	x8, 565 ; 0x278000
+   43404:	ldr	x8, [x8, #0x1e8] ; literal pool symbol address: ___stack_chk_guard
+   43408:	ldr	x8, [x8]
+   4340c:	stur	x8, [x29, #-0x8]
+   43410:	adrp	x0, 471 ; 0x21a000
+   43414:	add	x0, x0, #0xb19 ; literal pool for: "NTESAnchorLiveViewController"
+   43418:	bl	0x1f7210 ; symbol stub for: _objc_getClass
+   4341c:	mov	x1, x0
+   43420:	adrp	x0, 684 ; 0x2ef000
+   43424:	add	x0, x0, #0xe10
+   43428:	stur	x0, [x29, #-0x40]
+   4342c:	bl	_CHLoadClass_
+   43430:	ldur	x8, [x29, #-0x40]
+   43434:	mov	x0, sp
+   43438:	stur	x0, [x29, #-0x38]
+   4343c:	ldr	x0, [x8]
+   43440:	adrp	x8, 664 ; 0x2db000
+   43444:	ldr	x1, [x8, #0x660] ; Objc selector ref: clickSetBtn
+   43448:	bl	0x1f6c40 ; symbol stub for: _class_getInstanceMethod
+   4344c:	stur	x0, [x29, #-0x10]
+   43450:	ldur	x8, [x29, #-0x10]
+   43454:	cbz	x8, 0x434d8
+   43458:	b	0x4345c
+   4345c:	ldur	x0, [x29, #-0x10]
+   43460:	bl	0x1f70f0 ; symbol stub for: _method_getImplementation
+   43464:	adrp	x8, 685 ; 0x2f0000
+   43468:	str	x0, [x8, #0x5d8]
+   4346c:	adrp	x8, 684 ; 0x2ef000
+   43470:	ldr	x8, [x8, #0xe10]
+   43474:	stur	x8, [x29, #-0x48]
+   43478:	adrp	x8, 664 ; 0x2db000
+   4347c:	ldr	x8, [x8, #0x660] ; Objc selector ref: clickSetBtn
+   43480:	stur	x8, [x29, #-0x50]
+   43484:	ldur	x0, [x29, #-0x10]
+   43488:	bl	0x1f7120 ; symbol stub for: _method_getTypeEncoding
+   4348c:	ldur	x1, [x29, #-0x50]
+   43490:	mov	x3, x0
+   43494:	ldur	x0, [x29, #-0x48]
+   43498:	adrp	x2, 35 ; 0x66000
+   4349c:	add	x2, x2, #0x59c
+   434a0:	bl	0x1f6c04 ; symbol stub for: _class_addMethod
+   434a4:	cbz	w0, 0x434c0
+   434a8:	b	0x434ac
+   434ac:	adrp	x9, 685 ; 0x2f0000
+   434b0:	adrp	x8, 35 ; 0x66000
+   434b4:	add	x8, x8, #0x638
+   434b8:	str	x8, [x9, #0x5d8]
+   434bc:	b	0x434d4
+   434c0:	ldur	x0, [x29, #-0x10]
+   434c4:	adrp	x1, 35 ; 0x66000
+   434c8:	add	x1, x1, #0x59c
+   434cc:	bl	0x1f712c ; symbol stub for: _method_setImplementation
+   434d0:	b	0x434d4
+   434d4:	b	0x43580
+   434d8:	adrp	x8, 472 ; 0x21b000
+   434dc:	add	x8, x8, #0x1a8 ; literal pool for: "v"
+   434e0:	stur	x8, [x29, #-0x18]
+   434e4:	ldur	x0, [x29, #-0x18]
+   434e8:	bl	0x1f76d8 ; symbol stub for: _strlen
+   434ec:	stur	x0, [x29, #-0x20]
+   434f0:	ldur	x9, [x29, #-0x20]
+   434f4:	add	x8, x9, #0x3
+   434f8:	mov	x10, sp
+
+===== _$ZFLandScapeControlView_clickDownloadBtn_method: =====
+   65f40:	ret
+___$ZFLandScapeControlView_clickRateBtn$_method_block_invoke.355:
+   65f44:	sub	sp, sp, #0x10
+   65f48:	mov	x8, x0
+   65f4c:	str	x8, [sp, #0x8]
+   65f50:	str	x0, [sp]
+   65f54:	add	sp, sp, #0x10
+   65f58:	ret
+_$ZFLandScapeControlView_clickDownloadBtn_method:
+   65f5c:	sub	sp, sp, #0xe0
+   65f60:	stp	x29, x30, [sp, #0xd0]
+   65f64:	add	x29, sp, #0xd0
+   65f68:	str	x0, [sp, #0x50]
+   65f6c:	mov	x0, x1
+   65f70:	ldr	x1, [sp, #0x50]
+   65f74:	str	x0, [sp, #0x58]
+   65f78:	sub	x0, x29, #0x8
+   65f7c:	stur	xzr, [x29, #-0x8]
+   65f80:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   65f84:	ldr	x8, [sp, #0x58]
+   65f88:	ldr	x1, [sp, #0x60]
+   65f8c:	stur	x8, [x29, #-0x10]
+   65f90:	ldur	x0, [x29, #-0x8]
+   65f94:	bl	_objc_msgSend$videoUrl
+   65f98:	mov	x29, x29
+   65f9c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   65fa0:	str	x0, [sp, #0x68]
+   65fa4:	adrp	x8, 531 ; 0x278000
+   65fa8:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   65fac:	blr	x8
+   65fb0:	ldr	x0, [sp, #0x68]
+   65fb4:	cbz	x0, 0x6614c
+   65fb8:	b	0x65fbc
+   65fbc:	adrp	x0, 539 ; 0x280000
+   65fc0:	add	x0, x0, #0x1f8 ; Objc cfstring ref: @"LE_VideoZipDownload"
+   65fc4:	bl	0x1f66f4 ; symbol stub for: _NSClassFromString
+   65fc8:	stur	x0, [x29, #-0x18]
+   65fcc:	ldur	x0, [x29, #-0x18]
+   65fd0:	adrp	x8, 630 ; 0x2db000
+   65fd4:	ldr	x1, [x8, #0x650] ; Objc selector ref: shareManager
+   65fd8:	bl	0x1f7264 ; Objc message: +[NSString shareManager]
+   65fdc:	mov	x29, x29
+   65fe0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   65fe4:	ldr	x1, [sp, #0x60]
+   65fe8:	sub	x8, x29, #0x20
+   65fec:	str	x8, [sp, #0x40]
+   65ff0:	stur	x0, [x29, #-0x20]
+   65ff4:	adrp	x8, 639 ; 0x2e4000
+   65ff8:	ldr	x0, [x8, #0x988] ; Objc class ref: JLYHook
+   65ffc:	ldur	x3, [x29, #-0x8]
+   66000:	adrp	x2, 538 ; 0x280000
+   66004:	add	x2, x2, #0x218 ; Objc cfstring ref: @"
+N}�-N"
+   66008:	bl	"_objc_msgSend$showLoadingWithText:in:"
+   6600c:	mov	x29, x29
+   66010:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   66014:	sub	x8, x29, #0x28
+   66018:	str	x8, [sp, #0x38]
+   6601c:	stur	x0, [x29, #-0x28]
+   66020:	sub	x8, x29, #0x60
+   66024:	str	x8, [sp]
+   66028:	adrp	x9, 530 ; 0x278000
+   6602c:	ldr	x9, [x9, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+   66030:	stur	x9, [x29, #-0x60]
+   66034:	mov	w9, #-0x3e000000
+   66038:	stur	w9, [x29, #-0x58]
+   6603c:	stur	wzr, [x29, #-0x54]
+   66040:	adrp	x9, 0 ; 0x66000
+   66044:	add	x9, x9, #0x204
+   66048:	stur	x9, [x29, #-0x50]
+   6604c:	adrp	x9, 531 ; 0x279000
+   66050:	add	x9, x9, #0xc00
+   66054:	stur	x9, [x29, #-0x48]
+   66058:	add	x8, x8, #0x20
+   6605c:	str	x8, [sp, #0x30]
+   66060:	ldur	x0, [x29, #-0x28]
+   66064:	adrp	x8, 530 ; 0x278000
+   66068:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+   6606c:	blr	x8
+   66070:	ldr	x8, [sp]
+   66074:	stur	x0, [x29, #-0x40]
+   66078:	add	x8, x8, #0x28
+   6607c:	str	x8, [sp, #0x28]
+   66080:	ldur	x0, [x29, #-0x8]
+   66084:	adrp	x8, 530 ; 0x278000
+   66088:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+   6608c:	blr	x8
+   66090:	mov	x8, x0
+   66094:	ldr	x0, [sp]
+   66098:	stur	x8, [x29, #-0x38]
+   6609c:	bl	0x1f72c4 ; symbol stub for: _objc_retainBlock
+   660a0:	ldr	x1, [sp, #0x60]
+   660a4:	sub	x8, x29, #0x30
+   660a8:	str	x8, [sp, #0x20]
+   660ac:	stur	x0, [x29, #-0x30]
+   660b0:	ldur	x8, [x29, #-0x20]
+   660b4:	str	x8, [sp, #0x10]
+   660b8:	adrp	x8, 629 ; 0x2db000
+   660bc:	ldr	x8, [x8, #0x658] ; Objc selector ref: startDownloadVideoByPath:progress:block:
+   660c0:	str	x8, [sp, #0x8]
+   660c4:	ldur	x0, [x29, #-0x8]
+   660c8:	bl	_objc_msgSend$videoUrl
+   660cc:	mov	x29, x29
+   660d0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   660d4:	ldr	x1, [sp, #0x8]
+   660d8:	mov	x2, x0
+   660dc:	ldr	x0, [sp, #0x10]
+   660e0:	str	x2, [sp, #0x18]
+   660e4:	ldur	x4, [x29, #-0x30]
+   660e8:	mov	x3, #0x0
+   660ec:	str	x3, [sp, #0x48]
+   660f0:	bl	0x1f7264 ; Objc message: +[JLYHook startDownloadVideoByPath:progress:block:]
+   660f4:	mov	x29, x29
+   660f8:	bl	0x1f7348 ; symbol stub for: _objc_unsafeClaimAutoreleasedReturnValue
+   660fc:	ldr	x0, [sp, #0x18]
+   66100:	adrp	x8, 530 ; 0x278000
+   66104:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   66108:	blr	x8
+   6610c:	ldr	x0, [sp, #0x20]
+   66110:	ldr	x1, [sp, #0x48]
+   66114:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66118:	ldr	x0, [sp, #0x28]
+   6611c:	ldr	x1, [sp, #0x48]
+   66120:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66124:	ldr	x0, [sp, #0x30]
+   66128:	ldr	x1, [sp, #0x48]
+   6612c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66130:	ldr	x0, [sp, #0x38]
+   66134:	ldr	x1, [sp, #0x48]
+   66138:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6613c:	ldr	x0, [sp, #0x40]
+   66140:	ldr	x1, [sp, #0x48]
+   66144:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66148:	b	0x66170
+   6614c:	ldr	x1, [sp, #0x60]
+   66150:	ldur	x0, [x29, #-0x8]
+   66154:	adrp	x2, 538 ; 0x280000
+   66158:	add	x2, x2, #0x258 ; Objc cfstring ref: @"�OX[1Y%�"
+   6615c:	fmov	d0, #1.50000000
+   66160:	adrp	x3, 537 ; 0x27f000
+   66164:	add	x3, x3, #0x38 ; Objc cfstring ref: @"CSToastPositionCenter"
+   66168:	bl	"_objc_msgSend$makeToast:duration:position:"
+   6616c:	b	0x66170
+   66170:	sub	x0, x29, #0x8
+   66174:	mov	x1, #0x0
+   66178:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6617c:	ldp	x29, x30, [sp, #0xd0]
+   66180:	add	sp, sp, #0xe0
+   66184:	ret
+_$ZFLandScapeControlView_clickDownloadBtn_closure:
+   66188:	sub	sp, sp, #0x50
+   6618c:	stp	x29, x30, [sp, #0x40]
+   66190:	add	x29, sp, #0x40
+   66194:	str	x0, [sp, #0x8]
+   66198:	mov	x0, x1
+   6619c:	ldr	x1, [sp, #0x8]
+   661a0:	str	x0, [sp, #0x10]
+   661a4:	sub	x0, x29, #0x8
+   661a8:	str	x0, [sp, #0x18]
+   661ac:	mov	x8, #0x0
+   661b0:	str	x8, [sp, #0x20]
+   661b4:	stur	xzr, [x29, #-0x8]
+   661b8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   661bc:	ldr	x1, [sp, #0x10]
+   661c0:	stur	x1, [x29, #-0x10]
+   661c4:	adrp	x8, 649 ; 0x2ef000
+   661c8:	add	x8, x8, #0xdf8
+   661cc:	ldr	x0, [x8, #0x10]
+   661d0:	ldur	x1, [x29, #-0x10]
+   661d4:	bl	0x1f6c64 ; symbol stub for: _class_getMethodImplementation
+   661d8:	stur	x0, [x29, #-0x18]
+   661dc:	ldur	x8, [x29, #-0x18]
+   661e0:	ldur	x0, [x29, #-0x8]
+   661e4:	ldur	x1, [x29, #-0x10]
+   661e8:	blr	x8
+   661ec:	ldr	x0, [sp, #0x18]
+   661f0:	ldr	x1, [sp, #0x20]
+   661f4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   661f8:	ldp	x29, x30, [sp, #0x40]
+   661fc:	add	sp, sp, #0x50
+   66200:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke:
+   66204:	sub	sp, sp, #0xe0
+   66208:	stp	x29, x30, [sp, #0xd0]
+   6620c:	add	x29, sp, #0xd0
+   66210:	str	x0, [sp, #0x50]
+   66214:	stur	x0, [x29, #-0x8]
+   66218:	sub	x0, x29, #0x10
+
+===== _$ZFLandScapeControlView_clickDownloadBtn_closure: =====
+   66168:	bl	"_objc_msgSend$makeToast:duration:position:"
+   6616c:	b	0x66170
+   66170:	sub	x0, x29, #0x8
+   66174:	mov	x1, #0x0
+   66178:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6617c:	ldp	x29, x30, [sp, #0xd0]
+   66180:	add	sp, sp, #0xe0
+   66184:	ret
+_$ZFLandScapeControlView_clickDownloadBtn_closure:
+   66188:	sub	sp, sp, #0x50
+   6618c:	stp	x29, x30, [sp, #0x40]
+   66190:	add	x29, sp, #0x40
+   66194:	str	x0, [sp, #0x8]
+   66198:	mov	x0, x1
+   6619c:	ldr	x1, [sp, #0x8]
+   661a0:	str	x0, [sp, #0x10]
+   661a4:	sub	x0, x29, #0x8
+   661a8:	str	x0, [sp, #0x18]
+   661ac:	mov	x8, #0x0
+   661b0:	str	x8, [sp, #0x20]
+   661b4:	stur	xzr, [x29, #-0x8]
+   661b8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   661bc:	ldr	x1, [sp, #0x10]
+   661c0:	stur	x1, [x29, #-0x10]
+   661c4:	adrp	x8, 649 ; 0x2ef000
+   661c8:	add	x8, x8, #0xdf8
+   661cc:	ldr	x0, [x8, #0x10]
+   661d0:	ldur	x1, [x29, #-0x10]
+   661d4:	bl	0x1f6c64 ; symbol stub for: _class_getMethodImplementation
+   661d8:	stur	x0, [x29, #-0x18]
+   661dc:	ldur	x8, [x29, #-0x18]
+   661e0:	ldur	x0, [x29, #-0x8]
+   661e4:	ldur	x1, [x29, #-0x10]
+   661e8:	blr	x8
+   661ec:	ldr	x0, [sp, #0x18]
+   661f0:	ldr	x1, [sp, #0x20]
+   661f4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   661f8:	ldp	x29, x30, [sp, #0x40]
+   661fc:	add	sp, sp, #0x50
+   66200:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke:
+   66204:	sub	sp, sp, #0xe0
+   66208:	stp	x29, x30, [sp, #0xd0]
+   6620c:	add	x29, sp, #0xd0
+   66210:	str	x0, [sp, #0x50]
+   66214:	stur	x0, [x29, #-0x8]
+   66218:	sub	x0, x29, #0x10
+   6621c:	stur	xzr, [x29, #-0x10]
+   66220:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66224:	ldr	x8, [sp, #0x50]
+   66228:	ldr	x1, [sp, #0x58]
+   6622c:	mov	x0, x8
+   66230:	stur	x0, [x29, #-0x18]
+   66234:	adrp	x9, 638 ; 0x2e4000
+   66238:	ldr	x0, [x9, #0x988] ; Objc class ref: JLYHook
+   6623c:	ldr	x2, [x8, #0x20]
+   66240:	bl	"_objc_msgSend$hideLoadingWithHud:"
+   66244:	ldr	x1, [sp, #0x58]
+   66248:	ldur	x0, [x29, #-0x10]
+   6624c:	bl	_objc_msgSend$length
+   66250:	subs	x8, x0, #0x0
+   66254:	b.ls	0x663a4
+   66258:	b	0x6625c
+   6625c:	ldr	x1, [sp, #0x58]
+   66260:	adrp	x8, 638 ; 0x2e4000
+   66264:	ldr	x0, [x8, #0x9c0] ; Objc class ref: _OBJC_CLASS_$_NSURL
+   66268:	ldur	x2, [x29, #-0x10]
+   6626c:	bl	"_objc_msgSend$fileURLWithPath:"
+   66270:	mov	x29, x29
+   66274:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   66278:	ldr	x1, [sp, #0x58]
+   6627c:	sub	x8, x29, #0x20
+   66280:	str	x8, [sp, #0x40]
+   66284:	stur	x0, [x29, #-0x20]
+   66288:	adrp	x8, 638 ; 0x2e4000
+   6628c:	ldr	x0, [x8, #0xad0] ; Objc class ref: _OBJC_CLASS_$_PHPhotoLibrary
+   66290:	bl	_objc_msgSend$sharedPhotoLibrary
+   66294:	mov	x29, x29
+   66298:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   6629c:	str	x0, [sp, #0x28]
+   662a0:	sub	x8, x29, #0x48
+   662a4:	str	x8, [sp, #0x18]
+   662a8:	adrp	x9, 530 ; 0x278000
+   662ac:	ldr	x9, [x9, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+   662b0:	str	x9, [sp, #0x8]
+   662b4:	stur	x9, [x29, #-0x48]
+   662b8:	mov	w9, #-0x3e000000
+   662bc:	str	w9, [sp, #0x14]
+   662c0:	stur	w9, [x29, #-0x40]
+   662c4:	stur	wzr, [x29, #-0x3c]
+   662c8:	adrp	x9, 0 ; 0x66000
+   662cc:	add	x9, x9, #0x3e4
+   662d0:	stur	x9, [x29, #-0x38]
+   662d4:	adrp	x9, 531 ; 0x279000
+   662d8:	add	x9, x9, #0x468
+   662dc:	stur	x9, [x29, #-0x30]
+   662e0:	add	x8, x8, #0x20
+   662e4:	str	x8, [sp, #0x38]
+   662e8:	ldur	x0, [x29, #-0x20]
+   662ec:	adrp	x8, 530 ; 0x278000
+   662f0:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+   662f4:	blr	x8
+   662f8:	ldr	x11, [sp, #0x8]
+   662fc:	ldr	w10, [sp, #0x14]
+   66300:	ldr	x8, [sp, #0x50]
+   66304:	stur	x0, [x29, #-0x28]
+   66308:	add	x9, sp, #0x60
+   6630c:	str	x9, [sp, #0x20]
+   66310:	str	x11, [sp, #0x60]
+   66314:	str	w10, [sp, #0x68]
+   66318:	str	wzr, [sp, #0x6c]
+   6631c:	adrp	x10, 0 ; 0x66000
+   66320:	add	x10, x10, #0x458
+   66324:	str	x10, [sp, #0x70]
+   66328:	adrp	x10, 531 ; 0x279000
+   6632c:	add	x10, x10, #0xbd0
+   66330:	str	x10, [sp, #0x78]
+   66334:	add	x9, x9, #0x20
+   66338:	str	x9, [sp, #0x30]
+   6633c:	ldr	x0, [x8, #0x28]
+   66340:	adrp	x8, 530 ; 0x278000
+   66344:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+   66348:	blr	x8
+   6634c:	ldr	x1, [sp, #0x58]
+   66350:	ldr	x2, [sp, #0x18]
+   66354:	ldr	x3, [sp, #0x20]
+   66358:	mov	x8, x0
+   6635c:	ldr	x0, [sp, #0x28]
+   66360:	str	x8, [sp, #0x80]
+   66364:	bl	"_objc_msgSend$performChanges:completionHandler:"
+   66368:	ldr	x0, [sp, #0x28]
+   6636c:	adrp	x8, 530 ; 0x278000
+   66370:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   66374:	blr	x8
+   66378:	ldr	x0, [sp, #0x30]
+   6637c:	mov	x1, #0x0
+   66380:	str	x1, [sp, #0x48]
+   66384:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66388:	ldr	x0, [sp, #0x38]
+   6638c:	ldr	x1, [sp, #0x48]
+   66390:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66394:	ldr	x0, [sp, #0x40]
+   66398:	ldr	x1, [sp, #0x48]
+   6639c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   663a0:	b	0x663cc
+   663a4:	ldr	x1, [sp, #0x58]
+   663a8:	ldr	x8, [sp, #0x50]
+   663ac:	ldr	x0, [x8, #0x28]
+   663b0:	adrp	x2, 538 ; 0x280000
+   663b4:	add	x2, x2, #0x258 ; Objc cfstring ref: @"�OX[1Y%�"
+   663b8:	fmov	d0, #1.50000000
+   663bc:	adrp	x3, 537 ; 0x27f000
+   663c0:	add	x3, x3, #0x38 ; Objc cfstring ref: @"CSToastPositionCenter"
+   663c4:	bl	"_objc_msgSend$makeToast:duration:position:"
+   663c8:	b	0x663cc
+   663cc:	sub	x0, x29, #0x10
+   663d0:	mov	x1, #0x0
+   663d4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   663d8:	ldp	x29, x30, [sp, #0xd0]
+   663dc:	add	sp, sp, #0xe0
+   663e0:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2:
+   663e4:	sub	sp, sp, #0x40
+   663e8:	stp	x29, x30, [sp, #0x30]
+   663ec:	add	x29, sp, #0x30
+   663f0:	str	x0, [sp]
+   663f4:	mov	x8, x0
+   663f8:	stur	x8, [x29, #-0x8]
+   663fc:	stur	x0, [x29, #-0x10]
+   66400:	adrp	x8, 638 ; 0x2e4000
+   66404:	ldr	x0, [x8, #0xad8] ; Objc class ref: _OBJC_CLASS_$_PHAssetResourceCreationOptions
+   66408:	bl	0x1f7168 ; symbol stub for: _objc_alloc
+   6640c:	ldr	x1, [sp, #0x8]
+   66410:	bl	_objc_msgSend$init
+   66414:	ldr	x8, [sp]
+   66418:	ldr	x1, [sp, #0x8]
+   6641c:	add	x9, sp, #0x18
+   66420:	str	x9, [sp, #0x10]
+   66424:	str	x0, [sp, #0x18]
+   66428:	adrp	x9, 638 ; 0x2e4000
+   6642c:	ldr	x0, [x9, #0xae0] ; Objc class ref: _OBJC_CLASS_$_PHAssetCreationRequest
+   66430:	ldr	x2, [x8, #0x20]
+   66434:	bl	"_objc_msgSend$creationRequestForAssetFromVideoAtFileURL:"
+   66438:	mov	x29, x29
+   6643c:	bl	0x1f7348 ; symbol stub for: _objc_unsafeClaimAutoreleasedReturnValue
+   66440:	ldr	x0, [sp, #0x10]
+   66444:	mov	x1, #0x0
+   66448:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+
+===== ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke: =====
+   661e4:	ldur	x1, [x29, #-0x10]
+   661e8:	blr	x8
+   661ec:	ldr	x0, [sp, #0x18]
+   661f0:	ldr	x1, [sp, #0x20]
+   661f4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   661f8:	ldp	x29, x30, [sp, #0x40]
+   661fc:	add	sp, sp, #0x50
+   66200:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke:
+   66204:	sub	sp, sp, #0xe0
+   66208:	stp	x29, x30, [sp, #0xd0]
+   6620c:	add	x29, sp, #0xd0
+   66210:	str	x0, [sp, #0x50]
+   66214:	stur	x0, [x29, #-0x8]
+   66218:	sub	x0, x29, #0x10
+   6621c:	stur	xzr, [x29, #-0x10]
+   66220:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66224:	ldr	x8, [sp, #0x50]
+   66228:	ldr	x1, [sp, #0x58]
+   6622c:	mov	x0, x8
+   66230:	stur	x0, [x29, #-0x18]
+   66234:	adrp	x9, 638 ; 0x2e4000
+   66238:	ldr	x0, [x9, #0x988] ; Objc class ref: JLYHook
+   6623c:	ldr	x2, [x8, #0x20]
+   66240:	bl	"_objc_msgSend$hideLoadingWithHud:"
+   66244:	ldr	x1, [sp, #0x58]
+   66248:	ldur	x0, [x29, #-0x10]
+   6624c:	bl	_objc_msgSend$length
+   66250:	subs	x8, x0, #0x0
+   66254:	b.ls	0x663a4
+   66258:	b	0x6625c
+   6625c:	ldr	x1, [sp, #0x58]
+   66260:	adrp	x8, 638 ; 0x2e4000
+   66264:	ldr	x0, [x8, #0x9c0] ; Objc class ref: _OBJC_CLASS_$_NSURL
+   66268:	ldur	x2, [x29, #-0x10]
+   6626c:	bl	"_objc_msgSend$fileURLWithPath:"
+   66270:	mov	x29, x29
+   66274:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   66278:	ldr	x1, [sp, #0x58]
+   6627c:	sub	x8, x29, #0x20
+   66280:	str	x8, [sp, #0x40]
+   66284:	stur	x0, [x29, #-0x20]
+   66288:	adrp	x8, 638 ; 0x2e4000
+   6628c:	ldr	x0, [x8, #0xad0] ; Objc class ref: _OBJC_CLASS_$_PHPhotoLibrary
+   66290:	bl	_objc_msgSend$sharedPhotoLibrary
+   66294:	mov	x29, x29
+   66298:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   6629c:	str	x0, [sp, #0x28]
+   662a0:	sub	x8, x29, #0x48
+   662a4:	str	x8, [sp, #0x18]
+   662a8:	adrp	x9, 530 ; 0x278000
+   662ac:	ldr	x9, [x9, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+   662b0:	str	x9, [sp, #0x8]
+   662b4:	stur	x9, [x29, #-0x48]
+   662b8:	mov	w9, #-0x3e000000
+   662bc:	str	w9, [sp, #0x14]
+   662c0:	stur	w9, [x29, #-0x40]
+   662c4:	stur	wzr, [x29, #-0x3c]
+   662c8:	adrp	x9, 0 ; 0x66000
+   662cc:	add	x9, x9, #0x3e4
+   662d0:	stur	x9, [x29, #-0x38]
+   662d4:	adrp	x9, 531 ; 0x279000
+   662d8:	add	x9, x9, #0x468
+   662dc:	stur	x9, [x29, #-0x30]
+   662e0:	add	x8, x8, #0x20
+   662e4:	str	x8, [sp, #0x38]
+   662e8:	ldur	x0, [x29, #-0x20]
+   662ec:	adrp	x8, 530 ; 0x278000
+   662f0:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+   662f4:	blr	x8
+   662f8:	ldr	x11, [sp, #0x8]
+   662fc:	ldr	w10, [sp, #0x14]
+   66300:	ldr	x8, [sp, #0x50]
+   66304:	stur	x0, [x29, #-0x28]
+   66308:	add	x9, sp, #0x60
+   6630c:	str	x9, [sp, #0x20]
+   66310:	str	x11, [sp, #0x60]
+   66314:	str	w10, [sp, #0x68]
+   66318:	str	wzr, [sp, #0x6c]
+   6631c:	adrp	x10, 0 ; 0x66000
+   66320:	add	x10, x10, #0x458
+   66324:	str	x10, [sp, #0x70]
+   66328:	adrp	x10, 531 ; 0x279000
+   6632c:	add	x10, x10, #0xbd0
+   66330:	str	x10, [sp, #0x78]
+   66334:	add	x9, x9, #0x20
+   66338:	str	x9, [sp, #0x30]
+   6633c:	ldr	x0, [x8, #0x28]
+   66340:	adrp	x8, 530 ; 0x278000
+   66344:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+   66348:	blr	x8
+   6634c:	ldr	x1, [sp, #0x58]
+   66350:	ldr	x2, [sp, #0x18]
+   66354:	ldr	x3, [sp, #0x20]
+   66358:	mov	x8, x0
+   6635c:	ldr	x0, [sp, #0x28]
+   66360:	str	x8, [sp, #0x80]
+   66364:	bl	"_objc_msgSend$performChanges:completionHandler:"
+   66368:	ldr	x0, [sp, #0x28]
+   6636c:	adrp	x8, 530 ; 0x278000
+   66370:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   66374:	blr	x8
+   66378:	ldr	x0, [sp, #0x30]
+   6637c:	mov	x1, #0x0
+   66380:	str	x1, [sp, #0x48]
+   66384:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66388:	ldr	x0, [sp, #0x38]
+   6638c:	ldr	x1, [sp, #0x48]
+   66390:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66394:	ldr	x0, [sp, #0x40]
+   66398:	ldr	x1, [sp, #0x48]
+   6639c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   663a0:	b	0x663cc
+   663a4:	ldr	x1, [sp, #0x58]
+   663a8:	ldr	x8, [sp, #0x50]
+   663ac:	ldr	x0, [x8, #0x28]
+   663b0:	adrp	x2, 538 ; 0x280000
+   663b4:	add	x2, x2, #0x258 ; Objc cfstring ref: @"�OX[1Y%�"
+   663b8:	fmov	d0, #1.50000000
+   663bc:	adrp	x3, 537 ; 0x27f000
+   663c0:	add	x3, x3, #0x38 ; Objc cfstring ref: @"CSToastPositionCenter"
+   663c4:	bl	"_objc_msgSend$makeToast:duration:position:"
+   663c8:	b	0x663cc
+   663cc:	sub	x0, x29, #0x10
+   663d0:	mov	x1, #0x0
+   663d4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   663d8:	ldp	x29, x30, [sp, #0xd0]
+   663dc:	add	sp, sp, #0xe0
+   663e0:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2:
+   663e4:	sub	sp, sp, #0x40
+   663e8:	stp	x29, x30, [sp, #0x30]
+   663ec:	add	x29, sp, #0x30
+   663f0:	str	x0, [sp]
+   663f4:	mov	x8, x0
+   663f8:	stur	x8, [x29, #-0x8]
+   663fc:	stur	x0, [x29, #-0x10]
+   66400:	adrp	x8, 638 ; 0x2e4000
+   66404:	ldr	x0, [x8, #0xad8] ; Objc class ref: _OBJC_CLASS_$_PHAssetResourceCreationOptions
+   66408:	bl	0x1f7168 ; symbol stub for: _objc_alloc
+   6640c:	ldr	x1, [sp, #0x8]
+   66410:	bl	_objc_msgSend$init
+   66414:	ldr	x8, [sp]
+   66418:	ldr	x1, [sp, #0x8]
+   6641c:	add	x9, sp, #0x18
+   66420:	str	x9, [sp, #0x10]
+   66424:	str	x0, [sp, #0x18]
+   66428:	adrp	x9, 638 ; 0x2e4000
+   6642c:	ldr	x0, [x9, #0xae0] ; Objc class ref: _OBJC_CLASS_$_PHAssetCreationRequest
+   66430:	ldr	x2, [x8, #0x20]
+   66434:	bl	"_objc_msgSend$creationRequestForAssetFromVideoAtFileURL:"
+   66438:	mov	x29, x29
+   6643c:	bl	0x1f7348 ; symbol stub for: _objc_unsafeClaimAutoreleasedReturnValue
+   66440:	ldr	x0, [sp, #0x10]
+   66444:	mov	x1, #0x0
+   66448:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6644c:	ldp	x29, x30, [sp, #0x30]
+   66450:	add	sp, sp, #0x40
+   66454:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke.370:
+   66458:	sub	sp, sp, #0x90
+   6645c:	stp	x29, x30, [sp, #0x80]
+   66460:	add	x29, sp, #0x80
+   66464:	str	x0, [sp, #0x8]
+   66468:	mov	x8, x1
+   6646c:	mov	x1, x2
+   66470:	stur	x0, [x29, #-0x8]
+   66474:	sturb	w8, [x29, #-0x9]
+   66478:	sub	x0, x29, #0x18
+   6647c:	str	x0, [sp, #0x28]
+   66480:	mov	x8, #0x0
+   66484:	str	x8, [sp, #0x30]
+   66488:	stur	xzr, [x29, #-0x18]
+   6648c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66490:	ldr	x0, [sp, #0x8]
+   66494:	stur	x0, [x29, #-0x20]
+   66498:	adrp	x0, 530 ; 0x278000
+   6649c:	ldr	x0, [x0, #0x208] ; literal pool symbol address: __dispatch_main_q
+   664a0:	str	x0, [sp]
+   664a4:	bl	0x1f72ac ; symbol stub for: _objc_retainAutoreleaseReturnValue
+   664a8:	ldr	x0, [sp]
+   664ac:	mov	x29, x29
+   664b0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   664b4:	mov	x1, x0
+   664b8:	ldr	x0, [sp, #0x8]
+   664bc:	str	x1, [sp, #0x18]
+   664c0:	add	x8, sp, #0x38
+   664c4:	str	x8, [sp, #0x10]
+
+===== ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2: =====
+   663c4:	bl	"_objc_msgSend$makeToast:duration:position:"
+   663c8:	b	0x663cc
+   663cc:	sub	x0, x29, #0x10
+   663d0:	mov	x1, #0x0
+   663d4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   663d8:	ldp	x29, x30, [sp, #0xd0]
+   663dc:	add	sp, sp, #0xe0
+   663e0:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2:
+   663e4:	sub	sp, sp, #0x40
+   663e8:	stp	x29, x30, [sp, #0x30]
+   663ec:	add	x29, sp, #0x30
+   663f0:	str	x0, [sp]
+   663f4:	mov	x8, x0
+   663f8:	stur	x8, [x29, #-0x8]
+   663fc:	stur	x0, [x29, #-0x10]
+   66400:	adrp	x8, 638 ; 0x2e4000
+   66404:	ldr	x0, [x8, #0xad8] ; Objc class ref: _OBJC_CLASS_$_PHAssetResourceCreationOptions
+   66408:	bl	0x1f7168 ; symbol stub for: _objc_alloc
+   6640c:	ldr	x1, [sp, #0x8]
+   66410:	bl	_objc_msgSend$init
+   66414:	ldr	x8, [sp]
+   66418:	ldr	x1, [sp, #0x8]
+   6641c:	add	x9, sp, #0x18
+   66420:	str	x9, [sp, #0x10]
+   66424:	str	x0, [sp, #0x18]
+   66428:	adrp	x9, 638 ; 0x2e4000
+   6642c:	ldr	x0, [x9, #0xae0] ; Objc class ref: _OBJC_CLASS_$_PHAssetCreationRequest
+   66430:	ldr	x2, [x8, #0x20]
+   66434:	bl	"_objc_msgSend$creationRequestForAssetFromVideoAtFileURL:"
+   66438:	mov	x29, x29
+   6643c:	bl	0x1f7348 ; symbol stub for: _objc_unsafeClaimAutoreleasedReturnValue
+   66440:	ldr	x0, [sp, #0x10]
+   66444:	mov	x1, #0x0
+   66448:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6644c:	ldp	x29, x30, [sp, #0x30]
+   66450:	add	sp, sp, #0x40
+   66454:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke.370:
+   66458:	sub	sp, sp, #0x90
+   6645c:	stp	x29, x30, [sp, #0x80]
+   66460:	add	x29, sp, #0x80
+   66464:	str	x0, [sp, #0x8]
+   66468:	mov	x8, x1
+   6646c:	mov	x1, x2
+   66470:	stur	x0, [x29, #-0x8]
+   66474:	sturb	w8, [x29, #-0x9]
+   66478:	sub	x0, x29, #0x18
+   6647c:	str	x0, [sp, #0x28]
+   66480:	mov	x8, #0x0
+   66484:	str	x8, [sp, #0x30]
+   66488:	stur	xzr, [x29, #-0x18]
+   6648c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66490:	ldr	x0, [sp, #0x8]
+   66494:	stur	x0, [x29, #-0x20]
+   66498:	adrp	x0, 530 ; 0x278000
+   6649c:	ldr	x0, [x0, #0x208] ; literal pool symbol address: __dispatch_main_q
+   664a0:	str	x0, [sp]
+   664a4:	bl	0x1f72ac ; symbol stub for: _objc_retainAutoreleaseReturnValue
+   664a8:	ldr	x0, [sp]
+   664ac:	mov	x29, x29
+   664b0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   664b4:	mov	x1, x0
+   664b8:	ldr	x0, [sp, #0x8]
+   664bc:	str	x1, [sp, #0x18]
+   664c0:	add	x8, sp, #0x38
+   664c4:	str	x8, [sp, #0x10]
+   664c8:	adrp	x8, 530 ; 0x278000
+   664cc:	ldr	x8, [x8, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+   664d0:	str	x8, [sp, #0x38]
+   664d4:	mov	w8, #-0x3e000000
+   664d8:	str	w8, [sp, #0x40]
+   664dc:	str	wzr, [sp, #0x44]
+   664e0:	adrp	x8, 0 ; 0x66000
+   664e4:	add	x8, x8, #0x558
+   664e8:	str	x8, [sp, #0x48]
+   664ec:	adrp	x8, 531 ; 0x279000
+   664f0:	add	x8, x8, #0x468
+   664f4:	str	x8, [sp, #0x50]
+   664f8:	ldr	x0, [x0, #0x20]
+   664fc:	adrp	x8, 530 ; 0x278000
+   66500:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+   66504:	blr	x8
+   66508:	ldr	x1, [sp, #0x10]
+   6650c:	mov	x8, x0
+   66510:	ldr	x0, [sp, #0x18]
+   66514:	add	x9, x1, #0x20
+   66518:	str	x9, [sp, #0x20]
+   6651c:	str	x8, [sp, #0x58]
+   66520:	bl	0x1f6d0c ; symbol stub for: _dispatch_async
+   66524:	ldr	x0, [sp, #0x18]
+   66528:	adrp	x8, 530 ; 0x278000
+   6652c:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   66530:	blr	x8
+   66534:	ldr	x0, [sp, #0x20]
+   66538:	ldr	x1, [sp, #0x30]
+   6653c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66540:	ldr	x0, [sp, #0x28]
+   66544:	ldr	x1, [sp, #0x30]
+   66548:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6654c:	ldp	x29, x30, [sp, #0x80]
+   66550:	add	sp, sp, #0x90
+   66554:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2.371:
+   66558:	sub	sp, sp, #0x20
+   6655c:	stp	x29, x30, [sp, #0x10]
+   66560:	add	x29, sp, #0x10
+   66564:	mov	x8, x0
+   66568:	str	x8, [sp, #0x8]
+   6656c:	mov	x8, x0
+   66570:	str	x8, [sp]
+   66574:	ldr	x0, [x0, #0x20]
+   66578:	adrp	x2, 538 ; 0x280000
+   6657c:	add	x2, x2, #0x238 ; Objc cfstring ref: @"�OX[b�R"
+   66580:	fmov	d0, #1.50000000
+   66584:	adrp	x3, 537 ; 0x27f000
+   66588:	add	x3, x3, #0x38 ; Objc cfstring ref: @"CSToastPositionCenter"
+   6658c:	bl	"_objc_msgSend$makeToast:duration:position:"
+   66590:	ldp	x29, x30, [sp, #0x10]
+   66594:	add	sp, sp, #0x20
+   66598:	ret
+_$NTESAnchorLiveViewController_clickSetBtn_method:
+   6659c:	sub	sp, sp, #0x60
+   665a0:	stp	x29, x30, [sp, #0x50]
+   665a4:	add	x29, sp, #0x50
+   665a8:	str	x0, [sp, #0x8]
+   665ac:	mov	x0, x1
+   665b0:	ldr	x1, [sp, #0x8]
+   665b4:	str	x0, [sp, #0x10]
+   665b8:	sub	x0, x29, #0x8
+   665bc:	str	x0, [sp, #0x28]
+   665c0:	mov	x8, #0x0
+   665c4:	stur	x8, [x29, #-0x20]
+   665c8:	stur	xzr, [x29, #-0x8]
+   665cc:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   665d0:	ldr	x1, [sp, #0x10]
+   665d4:	stur	x1, [x29, #-0x10]
+   665d8:	adrp	x8, 638 ; 0x2e4000
+   665dc:	ldr	x0, [x8, #0xae8] ; Objc class ref: JLYHookLiveSettingController
+   665e0:	bl	0x1f7168 ; symbol stub for: _objc_alloc
+   665e4:	ldr	x1, [sp, #0x18]
+   665e8:	bl	_objc_msgSend$init
+   665ec:	ldr	x1, [sp, #0x18]
+   665f0:	ldur	x4, [x29, #-0x20]
+   665f4:	sub	x8, x29, #0x18
+   665f8:	str	x8, [sp, #0x20]
+   665fc:	stur	x0, [x29, #-0x18]
+   66600:	ldur	x0, [x29, #-0x8]
+   66604:	ldur	x2, [x29, #-0x18]
+   66608:	mov	w8, #0x1
+   6660c:	and	w3, w8, #0x1
+   66610:	bl	"_objc_msgSend$presentViewController:animated:completion:"
+   66614:	ldr	x0, [sp, #0x20]
+   66618:	ldur	x1, [x29, #-0x20]
+   6661c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66620:	ldr	x0, [sp, #0x28]
+   66624:	ldur	x1, [x29, #-0x20]
+   66628:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6662c:	ldp	x29, x30, [sp, #0x50]
+   66630:	add	sp, sp, #0x60
+   66634:	ret
+_$NTESAnchorLiveViewController_clickSetBtn_closure:
+   66638:	sub	sp, sp, #0x50
+   6663c:	stp	x29, x30, [sp, #0x40]
+   66640:	add	x29, sp, #0x40
+   66644:	str	x0, [sp, #0x8]
+   66648:	mov	x0, x1
+   6664c:	ldr	x1, [sp, #0x8]
+   66650:	str	x0, [sp, #0x10]
+   66654:	sub	x0, x29, #0x8
+   66658:	str	x0, [sp, #0x18]
+   6665c:	mov	x8, #0x0
+   66660:	str	x8, [sp, #0x20]
+   66664:	stur	xzr, [x29, #-0x8]
+   66668:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6666c:	ldr	x1, [sp, #0x10]
+   66670:	stur	x1, [x29, #-0x10]
+   66674:	adrp	x8, 649 ; 0x2ef000
+   66678:	add	x8, x8, #0xe10
+   6667c:	ldr	x0, [x8, #0x10]
+   66680:	ldur	x1, [x29, #-0x10]
+   66684:	bl	0x1f6c64 ; symbol stub for: _class_getMethodImplementation
+   66688:	stur	x0, [x29, #-0x18]
+   6668c:	ldur	x8, [x29, #-0x18]
+   66690:	ldur	x0, [x29, #-0x8]
+   66694:	ldur	x1, [x29, #-0x10]
+   66698:	blr	x8
+   6669c:	ldr	x0, [sp, #0x18]
+
+===== ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke.370: =====
+   66438:	mov	x29, x29
+   6643c:	bl	0x1f7348 ; symbol stub for: _objc_unsafeClaimAutoreleasedReturnValue
+   66440:	ldr	x0, [sp, #0x10]
+   66444:	mov	x1, #0x0
+   66448:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6644c:	ldp	x29, x30, [sp, #0x30]
+   66450:	add	sp, sp, #0x40
+   66454:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke.370:
+   66458:	sub	sp, sp, #0x90
+   6645c:	stp	x29, x30, [sp, #0x80]
+   66460:	add	x29, sp, #0x80
+   66464:	str	x0, [sp, #0x8]
+   66468:	mov	x8, x1
+   6646c:	mov	x1, x2
+   66470:	stur	x0, [x29, #-0x8]
+   66474:	sturb	w8, [x29, #-0x9]
+   66478:	sub	x0, x29, #0x18
+   6647c:	str	x0, [sp, #0x28]
+   66480:	mov	x8, #0x0
+   66484:	str	x8, [sp, #0x30]
+   66488:	stur	xzr, [x29, #-0x18]
+   6648c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66490:	ldr	x0, [sp, #0x8]
+   66494:	stur	x0, [x29, #-0x20]
+   66498:	adrp	x0, 530 ; 0x278000
+   6649c:	ldr	x0, [x0, #0x208] ; literal pool symbol address: __dispatch_main_q
+   664a0:	str	x0, [sp]
+   664a4:	bl	0x1f72ac ; symbol stub for: _objc_retainAutoreleaseReturnValue
+   664a8:	ldr	x0, [sp]
+   664ac:	mov	x29, x29
+   664b0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   664b4:	mov	x1, x0
+   664b8:	ldr	x0, [sp, #0x8]
+   664bc:	str	x1, [sp, #0x18]
+   664c0:	add	x8, sp, #0x38
+   664c4:	str	x8, [sp, #0x10]
+   664c8:	adrp	x8, 530 ; 0x278000
+   664cc:	ldr	x8, [x8, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+   664d0:	str	x8, [sp, #0x38]
+   664d4:	mov	w8, #-0x3e000000
+   664d8:	str	w8, [sp, #0x40]
+   664dc:	str	wzr, [sp, #0x44]
+   664e0:	adrp	x8, 0 ; 0x66000
+   664e4:	add	x8, x8, #0x558
+   664e8:	str	x8, [sp, #0x48]
+   664ec:	adrp	x8, 531 ; 0x279000
+   664f0:	add	x8, x8, #0x468
+   664f4:	str	x8, [sp, #0x50]
+   664f8:	ldr	x0, [x0, #0x20]
+   664fc:	adrp	x8, 530 ; 0x278000
+   66500:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+   66504:	blr	x8
+   66508:	ldr	x1, [sp, #0x10]
+   6650c:	mov	x8, x0
+   66510:	ldr	x0, [sp, #0x18]
+   66514:	add	x9, x1, #0x20
+   66518:	str	x9, [sp, #0x20]
+   6651c:	str	x8, [sp, #0x58]
+   66520:	bl	0x1f6d0c ; symbol stub for: _dispatch_async
+   66524:	ldr	x0, [sp, #0x18]
+   66528:	adrp	x8, 530 ; 0x278000
+   6652c:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   66530:	blr	x8
+   66534:	ldr	x0, [sp, #0x20]
+   66538:	ldr	x1, [sp, #0x30]
+   6653c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66540:	ldr	x0, [sp, #0x28]
+   66544:	ldr	x1, [sp, #0x30]
+   66548:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6654c:	ldp	x29, x30, [sp, #0x80]
+   66550:	add	sp, sp, #0x90
+   66554:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2.371:
+   66558:	sub	sp, sp, #0x20
+   6655c:	stp	x29, x30, [sp, #0x10]
+   66560:	add	x29, sp, #0x10
+   66564:	mov	x8, x0
+   66568:	str	x8, [sp, #0x8]
+   6656c:	mov	x8, x0
+   66570:	str	x8, [sp]
+   66574:	ldr	x0, [x0, #0x20]
+   66578:	adrp	x2, 538 ; 0x280000
+   6657c:	add	x2, x2, #0x238 ; Objc cfstring ref: @"�OX[b�R"
+   66580:	fmov	d0, #1.50000000
+   66584:	adrp	x3, 537 ; 0x27f000
+   66588:	add	x3, x3, #0x38 ; Objc cfstring ref: @"CSToastPositionCenter"
+   6658c:	bl	"_objc_msgSend$makeToast:duration:position:"
+   66590:	ldp	x29, x30, [sp, #0x10]
+   66594:	add	sp, sp, #0x20
+   66598:	ret
+_$NTESAnchorLiveViewController_clickSetBtn_method:
+   6659c:	sub	sp, sp, #0x60
+   665a0:	stp	x29, x30, [sp, #0x50]
+   665a4:	add	x29, sp, #0x50
+   665a8:	str	x0, [sp, #0x8]
+   665ac:	mov	x0, x1
+   665b0:	ldr	x1, [sp, #0x8]
+   665b4:	str	x0, [sp, #0x10]
+   665b8:	sub	x0, x29, #0x8
+   665bc:	str	x0, [sp, #0x28]
+   665c0:	mov	x8, #0x0
+   665c4:	stur	x8, [x29, #-0x20]
+   665c8:	stur	xzr, [x29, #-0x8]
+   665cc:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   665d0:	ldr	x1, [sp, #0x10]
+   665d4:	stur	x1, [x29, #-0x10]
+   665d8:	adrp	x8, 638 ; 0x2e4000
+   665dc:	ldr	x0, [x8, #0xae8] ; Objc class ref: JLYHookLiveSettingController
+   665e0:	bl	0x1f7168 ; symbol stub for: _objc_alloc
+   665e4:	ldr	x1, [sp, #0x18]
+   665e8:	bl	_objc_msgSend$init
+   665ec:	ldr	x1, [sp, #0x18]
+   665f0:	ldur	x4, [x29, #-0x20]
+   665f4:	sub	x8, x29, #0x18
+   665f8:	str	x8, [sp, #0x20]
+   665fc:	stur	x0, [x29, #-0x18]
+   66600:	ldur	x0, [x29, #-0x8]
+   66604:	ldur	x2, [x29, #-0x18]
+   66608:	mov	w8, #0x1
+   6660c:	and	w3, w8, #0x1
+   66610:	bl	"_objc_msgSend$presentViewController:animated:completion:"
+   66614:	ldr	x0, [sp, #0x20]
+   66618:	ldur	x1, [x29, #-0x20]
+   6661c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66620:	ldr	x0, [sp, #0x28]
+   66624:	ldur	x1, [x29, #-0x20]
+   66628:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6662c:	ldp	x29, x30, [sp, #0x50]
+   66630:	add	sp, sp, #0x60
+   66634:	ret
+_$NTESAnchorLiveViewController_clickSetBtn_closure:
+   66638:	sub	sp, sp, #0x50
+   6663c:	stp	x29, x30, [sp, #0x40]
+   66640:	add	x29, sp, #0x40
+   66644:	str	x0, [sp, #0x8]
+   66648:	mov	x0, x1
+   6664c:	ldr	x1, [sp, #0x8]
+   66650:	str	x0, [sp, #0x10]
+   66654:	sub	x0, x29, #0x8
+   66658:	str	x0, [sp, #0x18]
+   6665c:	mov	x8, #0x0
+   66660:	str	x8, [sp, #0x20]
+   66664:	stur	xzr, [x29, #-0x8]
+   66668:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6666c:	ldr	x1, [sp, #0x10]
+   66670:	stur	x1, [x29, #-0x10]
+   66674:	adrp	x8, 649 ; 0x2ef000
+   66678:	add	x8, x8, #0xe10
+   6667c:	ldr	x0, [x8, #0x10]
+   66680:	ldur	x1, [x29, #-0x10]
+   66684:	bl	0x1f6c64 ; symbol stub for: _class_getMethodImplementation
+   66688:	stur	x0, [x29, #-0x18]
+   6668c:	ldur	x8, [x29, #-0x18]
+   66690:	ldur	x0, [x29, #-0x8]
+   66694:	ldur	x1, [x29, #-0x10]
+   66698:	blr	x8
+   6669c:	ldr	x0, [sp, #0x18]
+   666a0:	ldr	x1, [sp, #0x20]
+   666a4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   666a8:	ldp	x29, x30, [sp, #0x40]
+   666ac:	add	sp, sp, #0x50
+   666b0:	ret
+_$NTESAudienceLiveViewController_clickSetBtn_method:
+   666b4:	sub	sp, sp, #0xb0
+   666b8:	stp	x29, x30, [sp, #0xa0]
+   666bc:	add	x29, sp, #0xa0
+   666c0:	str	x0, [sp, #0x18]
+   666c4:	mov	x0, x1
+   666c8:	ldr	x1, [sp, #0x18]
+   666cc:	str	x0, [sp, #0x20]
+   666d0:	sub	x0, x29, #0x8
+   666d4:	stur	xzr, [x29, #-0x8]
+   666d8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   666dc:	ldr	x1, [sp, #0x20]
+   666e0:	stur	x1, [x29, #-0x10]
+   666e4:	adrp	x8, 638 ; 0x2e4000
+   666e8:	ldr	x0, [x8, #0xae8] ; Objc class ref: JLYHookLiveSettingController
+   666ec:	bl	0x1f7168 ; symbol stub for: _objc_alloc
+   666f0:	ldr	x1, [sp, #0x30]
+   666f4:	bl	_objc_msgSend$init
+   666f8:	stur	x0, [x29, #-0x18]
+   666fc:	ldur	x1, [x29, #-0x8]
+   66700:	sub	x0, x29, #0x20
+   66704:	str	x0, [sp, #0x28]
+   66708:	bl	0x1f7240 ; symbol stub for: _objc_initWeak
+   6670c:	ldr	x1, [sp, #0x28]
+   66710:	add	x8, sp, #0x50
+
+===== ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2.371: =====
+   66538:	ldr	x1, [sp, #0x30]
+   6653c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66540:	ldr	x0, [sp, #0x28]
+   66544:	ldr	x1, [sp, #0x30]
+   66548:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6654c:	ldp	x29, x30, [sp, #0x80]
+   66550:	add	sp, sp, #0x90
+   66554:	ret
+___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2.371:
+   66558:	sub	sp, sp, #0x20
+   6655c:	stp	x29, x30, [sp, #0x10]
+   66560:	add	x29, sp, #0x10
+   66564:	mov	x8, x0
+   66568:	str	x8, [sp, #0x8]
+   6656c:	mov	x8, x0
+   66570:	str	x8, [sp]
+   66574:	ldr	x0, [x0, #0x20]
+   66578:	adrp	x2, 538 ; 0x280000
+   6657c:	add	x2, x2, #0x238 ; Objc cfstring ref: @"�OX[b�R"
+   66580:	fmov	d0, #1.50000000
+   66584:	adrp	x3, 537 ; 0x27f000
+   66588:	add	x3, x3, #0x38 ; Objc cfstring ref: @"CSToastPositionCenter"
+   6658c:	bl	"_objc_msgSend$makeToast:duration:position:"
+   66590:	ldp	x29, x30, [sp, #0x10]
+   66594:	add	sp, sp, #0x20
+   66598:	ret
+_$NTESAnchorLiveViewController_clickSetBtn_method:
+   6659c:	sub	sp, sp, #0x60
+   665a0:	stp	x29, x30, [sp, #0x50]
+   665a4:	add	x29, sp, #0x50
+   665a8:	str	x0, [sp, #0x8]
+   665ac:	mov	x0, x1
+   665b0:	ldr	x1, [sp, #0x8]
+   665b4:	str	x0, [sp, #0x10]
+   665b8:	sub	x0, x29, #0x8
+   665bc:	str	x0, [sp, #0x28]
+   665c0:	mov	x8, #0x0
+   665c4:	stur	x8, [x29, #-0x20]
+   665c8:	stur	xzr, [x29, #-0x8]
+   665cc:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   665d0:	ldr	x1, [sp, #0x10]
+   665d4:	stur	x1, [x29, #-0x10]
+   665d8:	adrp	x8, 638 ; 0x2e4000
+   665dc:	ldr	x0, [x8, #0xae8] ; Objc class ref: JLYHookLiveSettingController
+   665e0:	bl	0x1f7168 ; symbol stub for: _objc_alloc
+   665e4:	ldr	x1, [sp, #0x18]
+   665e8:	bl	_objc_msgSend$init
+   665ec:	ldr	x1, [sp, #0x18]
+   665f0:	ldur	x4, [x29, #-0x20]
+   665f4:	sub	x8, x29, #0x18
+   665f8:	str	x8, [sp, #0x20]
+   665fc:	stur	x0, [x29, #-0x18]
+   66600:	ldur	x0, [x29, #-0x8]
+   66604:	ldur	x2, [x29, #-0x18]
+   66608:	mov	w8, #0x1
+   6660c:	and	w3, w8, #0x1
+   66610:	bl	"_objc_msgSend$presentViewController:animated:completion:"
+   66614:	ldr	x0, [sp, #0x20]
+   66618:	ldur	x1, [x29, #-0x20]
+   6661c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   66620:	ldr	x0, [sp, #0x28]
+   66624:	ldur	x1, [x29, #-0x20]
+   66628:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6662c:	ldp	x29, x30, [sp, #0x50]
+   66630:	add	sp, sp, #0x60
+   66634:	ret
+_$NTESAnchorLiveViewController_clickSetBtn_closure:
+   66638:	sub	sp, sp, #0x50
+   6663c:	stp	x29, x30, [sp, #0x40]
+   66640:	add	x29, sp, #0x40
+   66644:	str	x0, [sp, #0x8]
+   66648:	mov	x0, x1
+   6664c:	ldr	x1, [sp, #0x8]
+   66650:	str	x0, [sp, #0x10]
+   66654:	sub	x0, x29, #0x8
+   66658:	str	x0, [sp, #0x18]
+   6665c:	mov	x8, #0x0
+   66660:	str	x8, [sp, #0x20]
+   66664:	stur	xzr, [x29, #-0x8]
+   66668:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   6666c:	ldr	x1, [sp, #0x10]
+   66670:	stur	x1, [x29, #-0x10]
+   66674:	adrp	x8, 649 ; 0x2ef000
+   66678:	add	x8, x8, #0xe10
+   6667c:	ldr	x0, [x8, #0x10]
+   66680:	ldur	x1, [x29, #-0x10]
+   66684:	bl	0x1f6c64 ; symbol stub for: _class_getMethodImplementation
+   66688:	stur	x0, [x29, #-0x18]
+   6668c:	ldur	x8, [x29, #-0x18]
+   66690:	ldur	x0, [x29, #-0x8]
+   66694:	ldur	x1, [x29, #-0x10]
+   66698:	blr	x8
+   6669c:	ldr	x0, [sp, #0x18]
+   666a0:	ldr	x1, [sp, #0x20]
+   666a4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   666a8:	ldp	x29, x30, [sp, #0x40]
+   666ac:	add	sp, sp, #0x50
+   666b0:	ret
+_$NTESAudienceLiveViewController_clickSetBtn_method:
+   666b4:	sub	sp, sp, #0xb0
+   666b8:	stp	x29, x30, [sp, #0xa0]
+   666bc:	add	x29, sp, #0xa0
+   666c0:	str	x0, [sp, #0x18]
+   666c4:	mov	x0, x1
+   666c8:	ldr	x1, [sp, #0x18]
+   666cc:	str	x0, [sp, #0x20]
+   666d0:	sub	x0, x29, #0x8
+   666d4:	stur	xzr, [x29, #-0x8]
+   666d8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   666dc:	ldr	x1, [sp, #0x20]
+   666e0:	stur	x1, [x29, #-0x10]
+   666e4:	adrp	x8, 638 ; 0x2e4000
+   666e8:	ldr	x0, [x8, #0xae8] ; Objc class ref: JLYHookLiveSettingController
+   666ec:	bl	0x1f7168 ; symbol stub for: _objc_alloc
+   666f0:	ldr	x1, [sp, #0x30]
+   666f4:	bl	_objc_msgSend$init
+   666f8:	stur	x0, [x29, #-0x18]
+   666fc:	ldur	x1, [x29, #-0x8]
+   66700:	sub	x0, x29, #0x20
+   66704:	str	x0, [sp, #0x28]
+   66708:	bl	0x1f7240 ; symbol stub for: _objc_initWeak
+   6670c:	ldr	x1, [sp, #0x28]
+   66710:	add	x8, sp, #0x50
+   66714:	str	x8, [sp, #0x38]
+   66718:	adrp	x9, 530 ; 0x278000
+   6671c:	ldr	x9, [x9, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+   66720:	str	x9, [sp, #0x50]
+   66724:	mov	w9, #-0x3e000000
+   66728:	str	w9, [sp, #0x58]
+   6672c:	str	wzr, [sp, #0x5c]
+   66730:	adrp	x9, 0 ; 0x66000
+   66734:	add	x9, x9, #0x8b0
+   66738:	str	x9, [sp, #0x60]
+   6673c:	adrp	x9, 531 ; 0x279000
+   66740:	add	x9, x9, #0xcc0
+   66744:	str	x9, [sp, #0x68]
+   66748:	add	x0, x8, #0x28
+   6674c:	bl	0x1f71bc ; symbol stub for: _objc_copyWeak
+   66750:	ldur	x0, [x29, #-0x8]
+   66754:	adrp	x8, 530 ; 0x278000
+   66758:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+   6675c:	blr	x8
+   66760:	ldr	x1, [sp, #0x30]
+   66764:	ldr	x2, [sp, #0x38]
+   66768:	str	x0, [sp, #0x70]
+   6676c:	ldur	x0, [x29, #-0x18]
+   66770:	bl	"_objc_msgSend$setActionBlock:"
+   66774:	b	0x66778
+   66778:	ldr	x1, [sp, #0x30]
+   6677c:	ldur	x0, [x29, #-0x8]
+   66780:	ldur	x2, [x29, #-0x18]
+   66784:	mov	w8, #0x1
+   66788:	and	w3, w8, #0x1
+   6678c:	mov	x4, #0x0
+   66790:	bl	"_objc_msgSend$presentViewController:animated:completion:"
+   66794:	b	0x66798
+   66798:	add	x8, sp, #0x50
+   6679c:	str	x8, [sp, #0x8]
+   667a0:	add	x0, x8, #0x20
+   667a4:	mov	x1, #0x0
+   667a8:	str	x1, [sp, #0x10]
+   667ac:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   667b0:	ldr	x8, [sp, #0x8]
+   667b4:	add	x0, x8, #0x28
+   667b8:	bl	0x1f71c8 ; symbol stub for: _objc_destroyWeak
+   667bc:	sub	x0, x29, #0x20
+   667c0:	bl	0x1f71c8 ; symbol stub for: _objc_destroyWeak
+   667c4:	ldr	x1, [sp, #0x10]
+   667c8:	sub	x0, x29, #0x18
+   667cc:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   667d0:	ldr	x1, [sp, #0x10]
+   667d4:	sub	x0, x29, #0x8
+   667d8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   667dc:	ldp	x29, x30, [sp, #0xa0]
+   667e0:	add	sp, sp, #0xb0
+   667e4:	ret
+   667e8:	str	x0, [sp, #0x48]
+   667ec:	mov	x8, x1
+   667f0:	str	w8, [sp, #0x44]
+   667f4:	add	x8, sp, #0x50
+   667f8:	add	x0, x8, #0x28
+   667fc:	bl	0x1f71c8 ; symbol stub for: _objc_destroyWeak
+   66800:	b	0x66820
+   66804:	str	x0, [sp, #0x48]
+   66808:	mov	x8, x1
+   6680c:	str	w8, [sp, #0x44]
+   66810:	add	x8, sp, #0x50
+   66814:	add	x0, x8, #0x28
+
+===== _$ZFLandScapeControlView_initWithFrame$_method: =====
+   82820:	ldr	x8, [sp]
+   82824:	ldr	x0, [sp, #0x8]
+   82828:	ldr	x1, [sp, #0x10]
+   8282c:	str	x8, [sp, #0x18]
+   82830:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   82834:	ldp	x29, x30, [sp, #0x30]
+   82838:	add	sp, sp, #0x40
+   8283c:	ret
+_$ZFLandScapeControlView_initWithFrame$_method:
+   82840:	sub	sp, sp, #0x1a0
+   82844:	stp	x28, x27, [sp, #0x180]
+   82848:	stp	x29, x30, [sp, #0x190]
+   8284c:	add	x29, sp, #0x190
+   82850:	str	x0, [sp]
+   82854:	mov	x0, x1
+   82858:	ldr	x1, [sp]
+   8285c:	str	x0, [sp, #0x8]
+   82860:	stur	d0, [x29, #-0x30]
+   82864:	stur	d1, [x29, #-0x28]
+   82868:	stur	d2, [x29, #-0x20]
+   8286c:	stur	d3, [x29, #-0x18]
+   82870:	sub	x0, x29, #0x38
+   82874:	stur	x0, [x29, #-0x78]
+   82878:	mov	x8, #0x0
+   8287c:	stur	x8, [x29, #-0x70]
+   82880:	stur	xzr, [x29, #-0x38]
+   82884:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   82888:	ldr	x1, [sp, #0x8]
+   8288c:	stur	x1, [x29, #-0x40]
+   82890:	adrp	x8, 622 ; 0x2f0000
+   82894:	ldr	x8, [x8, #0x978]
+   82898:	ldur	x0, [x29, #-0x38]
+   8289c:	adrp	x9, 605 ; 0x2df000
+   828a0:	ldr	x1, [x9, #0x128] ; Objc selector ref: initWithFrame:
+   828a4:	ldur	d0, [x29, #-0x30]
+   828a8:	ldur	d1, [x29, #-0x28]
+   828ac:	ldur	d2, [x29, #-0x20]
+   828b0:	ldur	d3, [x29, #-0x18]
+   828b4:	blr	x8
+   828b8:	mov	x29, x29
+   828bc:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   828c0:	sub	x8, x29, #0x48
+   828c4:	stur	x8, [x29, #-0x80]
+   828c8:	stur	x0, [x29, #-0x48]
+   828cc:	adrp	x8, 610 ; 0x2e4000
+   828d0:	str	x8, [sp, #0x58]
+   828d4:	ldr	x0, [x8, #0xa38]
+   828d8:	bl	0x1f7168 ; symbol stub for: _objc_alloc
+   828dc:	ldur	x1, [x29, #-0xb0]
+   828e0:	bl	_objc_msgSend$init
+   828e4:	ldur	x1, [x29, #-0xb0]
+   828e8:	sub	x8, x29, #0x50
+   828ec:	stur	x8, [x29, #-0x88]
+   828f0:	stur	x0, [x29, #-0x50]
+   828f4:	adrp	x8, 610 ; 0x2e4000
+   828f8:	str	x8, [sp, #0x60]
+   828fc:	ldr	x0, [x8, #0x920]
+   82900:	fmov	d0, #12.00000000
+   82904:	str	d0, [sp, #0x68]
+   82908:	bl	"_objc_msgSend$systemFontOfSize:"
+   8290c:	mov	x29, x29
+   82910:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   82914:	ldur	x1, [x29, #-0xb0]
+   82918:	str	x0, [sp, #0x18]
+   8291c:	ldur	x0, [x29, #-0x50]
+   82920:	bl	_objc_msgSend$titleLabel
+   82924:	mov	x29, x29
+   82928:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   8292c:	ldr	x2, [sp, #0x18]
+   82930:	ldur	x1, [x29, #-0xb0]
+   82934:	str	x0, [sp, #0x10]
+   82938:	bl	"_objc_msgSend$setFont:"
+   8293c:	ldr	x0, [sp, #0x10]
+   82940:	adrp	x8, 502 ; 0x278000
+   82944:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   82948:	blr	x8
+   8294c:	ldr	x0, [sp, #0x18]
+   82950:	adrp	x8, 502 ; 0x278000
+   82954:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   82958:	blr	x8
+   8295c:	ldur	x1, [x29, #-0xb0]
+   82960:	ldur	x0, [x29, #-0x50]
+   82964:	adrp	x2, 512 ; 0x282000
+   82968:	add	x2, x2, #0x938 ; Objc cfstring ref: @"
+N}�"
+   8296c:	mov	x3, #0x0
+   82970:	str	x3, [sp, #0x80]
+   82974:	bl	"_objc_msgSend$setTitle:forState:"
+   82978:	ldur	x1, [x29, #-0xb0]
+   8297c:	ldur	x8, [x29, #-0x50]
+   82980:	str	x8, [sp, #0x20]
+   82984:	adrp	x8, 610 ; 0x2e4000
+   82988:	str	x8, [sp, #0xa8]
+   8298c:	ldr	x0, [x8, #0x898]
+   82990:	bl	_objc_msgSend$blackColor
+   82994:	mov	x29, x29
+   82998:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   8299c:	ldr	x3, [sp, #0x80]
+   829a0:	ldur	x1, [x29, #-0xb0]
+   829a4:	mov	x2, x0
+   829a8:	ldr	x0, [sp, #0x20]
+   829ac:	str	x2, [sp, #0x28]
+   829b0:	bl	"_objc_msgSend$setTitleColor:forState:"
+   829b4:	ldr	x0, [sp, #0x28]
+   829b8:	adrp	x8, 502 ; 0x278000
+   829bc:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   829c0:	blr	x8
+   829c4:	ldur	x1, [x29, #-0xb0]
+   829c8:	ldur	x0, [x29, #-0x50]
+   829cc:	bl	_objc_msgSend$layer
+   829d0:	mov	x29, x29
+   829d4:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   829d8:	ldur	x1, [x29, #-0xb0]
+   829dc:	str	x0, [sp, #0x30]
+   829e0:	fmov	d0, #4.00000000
+   829e4:	str	d0, [sp, #0x98]
+   829e8:	bl	"_objc_msgSend$setCornerRadius:"
+   829ec:	ldr	x0, [sp, #0x30]
+   829f0:	adrp	x8, 502 ; 0x278000
+   829f4:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   829f8:	blr	x8
+   829fc:	ldr	x8, [sp, #0xa8]
+   82a00:	ldur	x1, [x29, #-0xb0]
+   82a04:	ldr	x0, [x8, #0x898]
+   82a08:	bl	_objc_msgSend$whiteColor
+   82a0c:	mov	x29, x29
+   82a10:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   82a14:	ldur	x1, [x29, #-0xb0]
+   82a18:	mov	x2, x0
+   82a1c:	str	x2, [sp, #0x38]
+   82a20:	ldur	x0, [x29, #-0x50]
+   82a24:	bl	"_objc_msgSend$setBackgroundColor:"
+   82a28:	ldr	x0, [sp, #0x38]
+   82a2c:	adrp	x8, 502 ; 0x278000
+   82a30:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   82a34:	blr	x8
+   82a38:	ldur	x1, [x29, #-0xb0]
+   82a3c:	ldur	x2, [x29, #-0x50]
+   82a40:	ldur	x0, [x29, #-0x38]
+   82a44:	bl	"_objc_msgSend$setDlButton:"
+   82a48:	ldur	x1, [x29, #-0xb0]
+   82a4c:	ldur	x0, [x29, #-0x38]
+   82a50:	adrp	x2, 512 ; 0x282000
+   82a54:	add	x2, x2, #0x958 ; Objc cfstring ref: @"backBtn"
+   82a58:	bl	"_objc_msgSend$valueForKey:"
+   82a5c:	mov	x29, x29
+   82a60:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   82a64:	ldur	x1, [x29, #-0xb0]
+   82a68:	sub	x8, x29, #0x58
+   82a6c:	stur	x8, [x29, #-0x90]
+   82a70:	stur	x0, [x29, #-0x58]
+   82a74:	ldur	x0, [x29, #-0x58]
+   82a78:	bl	_objc_msgSend$superview
+   82a7c:	mov	x29, x29
+   82a80:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   82a84:	ldur	x1, [x29, #-0xb0]
+   82a88:	str	x0, [sp, #0x48]
+   82a8c:	ldur	x0, [x29, #-0x38]
+   82a90:	bl	_objc_msgSend$dlButton
+   82a94:	mov	x29, x29
+   82a98:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   82a9c:	ldur	x1, [x29, #-0xb0]
+   82aa0:	mov	x2, x0
+   82aa4:	ldr	x0, [sp, #0x48]
+   82aa8:	str	x2, [sp, #0x40]
+   82aac:	bl	"_objc_msgSend$addSubview:"
+   82ab0:	ldr	x0, [sp, #0x40]
+   82ab4:	adrp	x8, 502 ; 0x278000
+   82ab8:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   82abc:	blr	x8
+   82ac0:	ldr	x0, [sp, #0x48]
+   82ac4:	adrp	x8, 502 ; 0x278000
+   82ac8:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   82acc:	blr	x8
+   82ad0:	ldur	x1, [x29, #-0xb0]
+   82ad4:	ldur	x0, [x29, #-0x38]
+   82ad8:	bl	_objc_msgSend$dlButton
+   82adc:	mov	x29, x29
+   82ae0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   82ae4:	ldur	x1, [x29, #-0xb0]
+   82ae8:	str	x0, [sp, #0x50]
+   82aec:	ldur	x2, [x29, #-0x38]
+   82af0:	adrp	x8, 601 ; 0x2db000
+   82af4:	ldr	x3, [x8, #0x648] ; Objc selector ref: clickDownloadBtn
+   82af8:	mov	x4, #0x40
+   82afc:	stur	x4, [x29, #-0xa8]
+   82b00:	bl	"_objc_msgSend$addTarget:action:forControlEvents:"
+   82b04:	ldr	x0, [sp, #0x50]
+
+===== _$ZFLandScapeControlView_initWithFrame$_closure: =====
+   82dcc:	ldur	x0, [x29, #-0x78]
+   82dd0:	ldur	x1, [x29, #-0x70]
+   82dd4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   82dd8:	ldur	x0, [x29, #-0x68]
+   82ddc:	ldp	x29, x30, [sp, #0x190]
+   82de0:	ldp	x28, x27, [sp, #0x180]
+   82de4:	add	sp, sp, #0x1a0
+   82de8:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_initWithFrame$_closure:
+   82dec:	sub	sp, sp, #0x70
+   82df0:	stp	x29, x30, [sp, #0x60]
+   82df4:	add	x29, sp, #0x60
+   82df8:	str	x0, [sp]
+   82dfc:	mov	x0, x1
+   82e00:	ldr	x1, [sp]
+   82e04:	str	x0, [sp, #0x8]
+   82e08:	stur	d0, [x29, #-0x20]
+   82e0c:	stur	d1, [x29, #-0x18]
+   82e10:	stur	d2, [x29, #-0x10]
+   82e14:	stur	d3, [x29, #-0x8]
+   82e18:	sub	x0, x29, #0x28
+   82e1c:	str	x0, [sp, #0x18]
+   82e20:	mov	x8, #0x0
+   82e24:	str	x8, [sp, #0x10]
+   82e28:	stur	xzr, [x29, #-0x28]
+   82e2c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   82e30:	ldr	x1, [sp, #0x8]
+   82e34:	str	x1, [sp, #0x30]
+   82e38:	adrp	x8, 621 ; 0x2ef000
+   82e3c:	add	x8, x8, #0xdf8
+   82e40:	ldr	x0, [x8, #0x10]
+   82e44:	ldr	x1, [sp, #0x30]
+   82e48:	bl	0x1f6c64 ; symbol stub for: _class_getMethodImplementation
+   82e4c:	str	x0, [sp, #0x28]
+   82e50:	ldr	x8, [sp, #0x28]
+   82e54:	ldur	x0, [x29, #-0x28]
+   82e58:	ldr	x1, [sp, #0x30]
+   82e5c:	ldur	d0, [x29, #-0x20]
+   82e60:	ldur	d1, [x29, #-0x18]
+   82e64:	ldur	d2, [x29, #-0x10]
+   82e68:	ldur	d3, [x29, #-0x8]
+   82e6c:	blr	x8
+   82e70:	mov	x29, x29
+   82e74:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   82e78:	ldr	x1, [sp, #0x10]
+   82e7c:	mov	x2, x0
+   82e80:	ldr	x0, [sp, #0x18]
+   82e84:	str	x2, [sp, #0x20]
+   82e88:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   82e8c:	ldr	x0, [sp, #0x20]
+   82e90:	ldp	x29, x30, [sp, #0x60]
+   82e94:	add	sp, sp, #0x70
+   82e98:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_layoutSubviews_method:
+   82e9c:	sub	sp, sp, #0x180
+   82ea0:	stp	x28, x27, [sp, #0x160]
+   82ea4:	stp	x29, x30, [sp, #0x170]
+   82ea8:	add	x29, sp, #0x170
+   82eac:	sub	x8, x29, #0x48
+   82eb0:	str	x8, [sp, #0x18]
+   82eb4:	str	x0, [sp]
+   82eb8:	mov	x0, x1
+   82ebc:	ldr	x1, [sp]
+   82ec0:	str	x0, [sp, #0x8]
+   82ec4:	sub	x0, x29, #0x18
+   82ec8:	str	x0, [sp, #0x70]
+   82ecc:	mov	x8, #0x0
+   82ed0:	str	x8, [sp, #0x78]
+   82ed4:	stur	xzr, [x29, #-0x18]
+   82ed8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   82edc:	ldr	x1, [sp, #0x8]
+   82ee0:	stur	x1, [x29, #-0x20]
+   82ee4:	adrp	x8, 622 ; 0x2f0000
+   82ee8:	ldr	x8, [x8, #0x980]
+   82eec:	ldur	x0, [x29, #-0x18]
+   82ef0:	adrp	x9, 605 ; 0x2df000
+   82ef4:	ldr	x1, [x9, #0xa28] ; Objc selector ref: layoutSubviews
+   82ef8:	blr	x8
+   82efc:	ldr	x1, [sp, #0x50]
+   82f00:	ldur	x0, [x29, #-0x18]
+   82f04:	adrp	x2, 512 ; 0x282000
+   82f08:	add	x2, x2, #0x958 ; Objc cfstring ref: @"backBtn"
+   82f0c:	bl	"_objc_msgSend$valueForKey:"
+   82f10:	mov	x29, x29
+   82f14:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   82f18:	ldr	x1, [sp, #0x50]
+   82f1c:	sub	x8, x29, #0x28
+   82f20:	str	x8, [sp, #0x68]
+   82f24:	stur	x0, [x29, #-0x28]
+   82f28:	ldur	x0, [x29, #-0x18]
+   82f2c:	bl	_objc_msgSend$frame
+   82f30:	ldr	x1, [sp, #0x50]
+   82f34:	stur	d0, [x29, #-0x68]
+   82f38:	stur	d1, [x29, #-0x60]
+   82f3c:	stur	d2, [x29, #-0x58]
+   82f40:	stur	d3, [x29, #-0x50]
+   82f44:	ldur	d0, [x29, #-0x58]
+   82f48:	fmov	d1, #16.00000000
+   82f4c:	str	d1, [sp, #0x28]
+   82f50:	fsub	d0, d0, d1
+   82f54:	mov	x8, #0x4046000000000000
+   82f58:	fmov	d1, x8
+   82f5c:	str	d1, [sp, #0x38]
+   82f60:	fsub	d0, d0, d1
+   82f64:	str	d0, [sp, #0x10]
+   82f68:	ldur	x0, [x29, #-0x28]
+   82f6c:	bl	_objc_msgSend$center
+   82f70:	ldr	d2, [sp, #0x38]
+   82f74:	fmov	d3, d0
+   82f78:	ldr	d0, [sp, #0x10]
+   82f7c:	stur	d3, [x29, #-0x78]
+   82f80:	stur	d1, [x29, #-0x70]
+   82f84:	ldur	d1, [x29, #-0x70]
+   82f88:	fmov	d3, #10.00000000
+   82f8c:	str	d3, [sp, #0x30]
+   82f90:	fsub	d1, d1, d3
+   82f94:	fmov	d3, #20.00000000
+   82f98:	str	d3, [sp, #0x40]
+   82f9c:	bl	_CGRectMake
+   82fa0:	ldr	x1, [sp, #0x50]
+   82fa4:	stur	d0, [x29, #-0x48]
+   82fa8:	stur	d1, [x29, #-0x40]
+   82fac:	stur	d2, [x29, #-0x38]
+   82fb0:	stur	d3, [x29, #-0x30]
+   82fb4:	ldur	x0, [x29, #-0x18]
+   82fb8:	bl	_objc_msgSend$dlButton
+   82fbc:	mov	x29, x29
+   82fc0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   82fc4:	ldr	x8, [sp, #0x18]
+   82fc8:	ldr	x1, [sp, #0x50]
+   82fcc:	str	x0, [sp, #0x20]
+   82fd0:	ldr	q0, [x8]
+   82fd4:	stur	q0, [x29, #-0xa0]
+   82fd8:	ldr	q0, [x8, #0x10]
+   82fdc:	stur	q0, [x29, #-0x90]
+   82fe0:	ldur	d0, [x29, #-0xa0]
+   82fe4:	ldur	d1, [x29, #-0x98]
+   82fe8:	ldur	d2, [x29, #-0x90]
+   82fec:	ldur	d3, [x29, #-0x88]
+   82ff0:	bl	"_objc_msgSend$setFrame:"
+   82ff4:	ldr	x0, [sp, #0x20]
+   82ff8:	adrp	x8, 502 ; 0x278000
+   82ffc:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   83000:	blr	x8
+   83004:	ldr	x1, [sp, #0x50]
+   83008:	ldur	x0, [x29, #-0x18]
+   8300c:	bl	_objc_msgSend$dlButton
+   83010:	mov	x29, x29
+   83014:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83018:	ldr	x1, [sp, #0x50]
+   8301c:	str	x0, [sp, #0x60]
+   83020:	bl	_objc_msgSend$nim_left
+   83024:	ldr	d2, [sp, #0x28]
+   83028:	ldr	d1, [sp, #0x38]
+   8302c:	ldr	x1, [sp, #0x50]
+   83030:	fsub	d0, d0, d2
+   83034:	fsub	d0, d0, d1
+   83038:	str	d0, [sp, #0x48]
+   8303c:	ldur	x0, [x29, #-0x28]
+   83040:	bl	_objc_msgSend$center
+   83044:	ldr	d4, [sp, #0x30]
+   83048:	ldr	d2, [sp, #0x38]
+   8304c:	ldr	d3, [sp, #0x40]
+   83050:	fmov	d5, d0
+   83054:	ldr	d0, [sp, #0x48]
+   83058:	str	d5, [sp, #0xa0]
+   8305c:	str	d1, [sp, #0xa8]
+   83060:	ldr	d1, [sp, #0xa8]
+   83064:	fsub	d1, d1, d4
+   83068:	bl	_CGRectMake
+   8306c:	ldr	x1, [sp, #0x50]
+   83070:	str	d0, [sp, #0xb0]
+   83074:	str	d1, [sp, #0xb8]
+   83078:	str	d2, [sp, #0xc0]
+   8307c:	str	d3, [sp, #0xc8]
+   83080:	ldur	x0, [x29, #-0x18]
+   83084:	bl	_objc_msgSend$rateButton
+   83088:	mov	x29, x29
+   8308c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83090:	ldr	x1, [sp, #0x50]
+   83094:	str	x0, [sp, #0x58]
+   83098:	ldr	q0, [sp, #0xb0]
+   8309c:	str	q0, [sp, #0x80]
+   830a0:	ldr	q0, [sp, #0xc0]
+   830a4:	str	q0, [sp, #0x90]
+   830a8:	ldr	d0, [sp, #0x80]
+   830ac:	ldr	d1, [sp, #0x88]
+   830b0:	ldr	d2, [sp, #0x90]
+
+===== _$ZFLandScapeControlView_layoutSubviews_method: =====
+   82e7c:	mov	x2, x0
+   82e80:	ldr	x0, [sp, #0x18]
+   82e84:	str	x2, [sp, #0x20]
+   82e88:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   82e8c:	ldr	x0, [sp, #0x20]
+   82e90:	ldp	x29, x30, [sp, #0x60]
+   82e94:	add	sp, sp, #0x70
+   82e98:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_layoutSubviews_method:
+   82e9c:	sub	sp, sp, #0x180
+   82ea0:	stp	x28, x27, [sp, #0x160]
+   82ea4:	stp	x29, x30, [sp, #0x170]
+   82ea8:	add	x29, sp, #0x170
+   82eac:	sub	x8, x29, #0x48
+   82eb0:	str	x8, [sp, #0x18]
+   82eb4:	str	x0, [sp]
+   82eb8:	mov	x0, x1
+   82ebc:	ldr	x1, [sp]
+   82ec0:	str	x0, [sp, #0x8]
+   82ec4:	sub	x0, x29, #0x18
+   82ec8:	str	x0, [sp, #0x70]
+   82ecc:	mov	x8, #0x0
+   82ed0:	str	x8, [sp, #0x78]
+   82ed4:	stur	xzr, [x29, #-0x18]
+   82ed8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   82edc:	ldr	x1, [sp, #0x8]
+   82ee0:	stur	x1, [x29, #-0x20]
+   82ee4:	adrp	x8, 622 ; 0x2f0000
+   82ee8:	ldr	x8, [x8, #0x980]
+   82eec:	ldur	x0, [x29, #-0x18]
+   82ef0:	adrp	x9, 605 ; 0x2df000
+   82ef4:	ldr	x1, [x9, #0xa28] ; Objc selector ref: layoutSubviews
+   82ef8:	blr	x8
+   82efc:	ldr	x1, [sp, #0x50]
+   82f00:	ldur	x0, [x29, #-0x18]
+   82f04:	adrp	x2, 512 ; 0x282000
+   82f08:	add	x2, x2, #0x958 ; Objc cfstring ref: @"backBtn"
+   82f0c:	bl	"_objc_msgSend$valueForKey:"
+   82f10:	mov	x29, x29
+   82f14:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   82f18:	ldr	x1, [sp, #0x50]
+   82f1c:	sub	x8, x29, #0x28
+   82f20:	str	x8, [sp, #0x68]
+   82f24:	stur	x0, [x29, #-0x28]
+   82f28:	ldur	x0, [x29, #-0x18]
+   82f2c:	bl	_objc_msgSend$frame
+   82f30:	ldr	x1, [sp, #0x50]
+   82f34:	stur	d0, [x29, #-0x68]
+   82f38:	stur	d1, [x29, #-0x60]
+   82f3c:	stur	d2, [x29, #-0x58]
+   82f40:	stur	d3, [x29, #-0x50]
+   82f44:	ldur	d0, [x29, #-0x58]
+   82f48:	fmov	d1, #16.00000000
+   82f4c:	str	d1, [sp, #0x28]
+   82f50:	fsub	d0, d0, d1
+   82f54:	mov	x8, #0x4046000000000000
+   82f58:	fmov	d1, x8
+   82f5c:	str	d1, [sp, #0x38]
+   82f60:	fsub	d0, d0, d1
+   82f64:	str	d0, [sp, #0x10]
+   82f68:	ldur	x0, [x29, #-0x28]
+   82f6c:	bl	_objc_msgSend$center
+   82f70:	ldr	d2, [sp, #0x38]
+   82f74:	fmov	d3, d0
+   82f78:	ldr	d0, [sp, #0x10]
+   82f7c:	stur	d3, [x29, #-0x78]
+   82f80:	stur	d1, [x29, #-0x70]
+   82f84:	ldur	d1, [x29, #-0x70]
+   82f88:	fmov	d3, #10.00000000
+   82f8c:	str	d3, [sp, #0x30]
+   82f90:	fsub	d1, d1, d3
+   82f94:	fmov	d3, #20.00000000
+   82f98:	str	d3, [sp, #0x40]
+   82f9c:	bl	_CGRectMake
+   82fa0:	ldr	x1, [sp, #0x50]
+   82fa4:	stur	d0, [x29, #-0x48]
+   82fa8:	stur	d1, [x29, #-0x40]
+   82fac:	stur	d2, [x29, #-0x38]
+   82fb0:	stur	d3, [x29, #-0x30]
+   82fb4:	ldur	x0, [x29, #-0x18]
+   82fb8:	bl	_objc_msgSend$dlButton
+   82fbc:	mov	x29, x29
+   82fc0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   82fc4:	ldr	x8, [sp, #0x18]
+   82fc8:	ldr	x1, [sp, #0x50]
+   82fcc:	str	x0, [sp, #0x20]
+   82fd0:	ldr	q0, [x8]
+   82fd4:	stur	q0, [x29, #-0xa0]
+   82fd8:	ldr	q0, [x8, #0x10]
+   82fdc:	stur	q0, [x29, #-0x90]
+   82fe0:	ldur	d0, [x29, #-0xa0]
+   82fe4:	ldur	d1, [x29, #-0x98]
+   82fe8:	ldur	d2, [x29, #-0x90]
+   82fec:	ldur	d3, [x29, #-0x88]
+   82ff0:	bl	"_objc_msgSend$setFrame:"
+   82ff4:	ldr	x0, [sp, #0x20]
+   82ff8:	adrp	x8, 502 ; 0x278000
+   82ffc:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   83000:	blr	x8
+   83004:	ldr	x1, [sp, #0x50]
+   83008:	ldur	x0, [x29, #-0x18]
+   8300c:	bl	_objc_msgSend$dlButton
+   83010:	mov	x29, x29
+   83014:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83018:	ldr	x1, [sp, #0x50]
+   8301c:	str	x0, [sp, #0x60]
+   83020:	bl	_objc_msgSend$nim_left
+   83024:	ldr	d2, [sp, #0x28]
+   83028:	ldr	d1, [sp, #0x38]
+   8302c:	ldr	x1, [sp, #0x50]
+   83030:	fsub	d0, d0, d2
+   83034:	fsub	d0, d0, d1
+   83038:	str	d0, [sp, #0x48]
+   8303c:	ldur	x0, [x29, #-0x28]
+   83040:	bl	_objc_msgSend$center
+   83044:	ldr	d4, [sp, #0x30]
+   83048:	ldr	d2, [sp, #0x38]
+   8304c:	ldr	d3, [sp, #0x40]
+   83050:	fmov	d5, d0
+   83054:	ldr	d0, [sp, #0x48]
+   83058:	str	d5, [sp, #0xa0]
+   8305c:	str	d1, [sp, #0xa8]
+   83060:	ldr	d1, [sp, #0xa8]
+   83064:	fsub	d1, d1, d4
+   83068:	bl	_CGRectMake
+   8306c:	ldr	x1, [sp, #0x50]
+   83070:	str	d0, [sp, #0xb0]
+   83074:	str	d1, [sp, #0xb8]
+   83078:	str	d2, [sp, #0xc0]
+   8307c:	str	d3, [sp, #0xc8]
+   83080:	ldur	x0, [x29, #-0x18]
+   83084:	bl	_objc_msgSend$rateButton
+   83088:	mov	x29, x29
+   8308c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83090:	ldr	x1, [sp, #0x50]
+   83094:	str	x0, [sp, #0x58]
+   83098:	ldr	q0, [sp, #0xb0]
+   8309c:	str	q0, [sp, #0x80]
+   830a0:	ldr	q0, [sp, #0xc0]
+   830a4:	str	q0, [sp, #0x90]
+   830a8:	ldr	d0, [sp, #0x80]
+   830ac:	ldr	d1, [sp, #0x88]
+   830b0:	ldr	d2, [sp, #0x90]
+   830b4:	ldr	d3, [sp, #0x98]
+   830b8:	bl	"_objc_msgSend$setFrame:"
+   830bc:	ldr	x0, [sp, #0x58]
+   830c0:	adrp	x8, 501 ; 0x278000
+   830c4:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   830c8:	blr	x8
+   830cc:	ldr	x0, [sp, #0x60]
+   830d0:	adrp	x8, 501 ; 0x278000
+   830d4:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   830d8:	blr	x8
+   830dc:	ldr	x0, [sp, #0x68]
+   830e0:	ldr	x1, [sp, #0x78]
+   830e4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   830e8:	ldr	x0, [sp, #0x70]
+   830ec:	ldr	x1, [sp, #0x78]
+   830f0:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   830f4:	ldp	x29, x30, [sp, #0x170]
+   830f8:	ldp	x28, x27, [sp, #0x160]
+   830fc:	add	sp, sp, #0x180
+   83100:	ret
+_$ZFLandScapeControlView_layoutSubviews_closure:
+   83104:	sub	sp, sp, #0x50
+   83108:	stp	x29, x30, [sp, #0x40]
+   8310c:	add	x29, sp, #0x40
+   83110:	str	x0, [sp, #0x8]
+   83114:	mov	x0, x1
+   83118:	ldr	x1, [sp, #0x8]
+   8311c:	str	x0, [sp, #0x10]
+   83120:	sub	x0, x29, #0x8
+   83124:	str	x0, [sp, #0x18]
+   83128:	mov	x8, #0x0
+   8312c:	str	x8, [sp, #0x20]
+   83130:	stur	xzr, [x29, #-0x8]
+   83134:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83138:	ldr	x1, [sp, #0x10]
+   8313c:	stur	x1, [x29, #-0x10]
+   83140:	adrp	x8, 620 ; 0x2ef000
+   83144:	add	x8, x8, #0xdf8
+   83148:	ldr	x0, [x8, #0x10]
+   8314c:	ldur	x1, [x29, #-0x10]
+   83150:	bl	0x1f6c64 ; symbol stub for: _class_getMethodImplementation
+   83154:	stur	x0, [x29, #-0x18]
+   83158:	ldur	x8, [x29, #-0x18]
+   8315c:	ldur	x0, [x29, #-0x8]
+   83160:	ldur	x1, [x29, #-0x10]
+
+===== _$ZFLandScapeControlView_layoutSubviews_closure: =====
+   830e4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   830e8:	ldr	x0, [sp, #0x70]
+   830ec:	ldr	x1, [sp, #0x78]
+   830f0:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   830f4:	ldp	x29, x30, [sp, #0x170]
+   830f8:	ldp	x28, x27, [sp, #0x160]
+   830fc:	add	sp, sp, #0x180
+   83100:	ret
+_$ZFLandScapeControlView_layoutSubviews_closure:
+   83104:	sub	sp, sp, #0x50
+   83108:	stp	x29, x30, [sp, #0x40]
+   8310c:	add	x29, sp, #0x40
+   83110:	str	x0, [sp, #0x8]
+   83114:	mov	x0, x1
+   83118:	ldr	x1, [sp, #0x8]
+   8311c:	str	x0, [sp, #0x10]
+   83120:	sub	x0, x29, #0x8
+   83124:	str	x0, [sp, #0x18]
+   83128:	mov	x8, #0x0
+   8312c:	str	x8, [sp, #0x20]
+   83130:	stur	xzr, [x29, #-0x8]
+   83134:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83138:	ldr	x1, [sp, #0x10]
+   8313c:	stur	x1, [x29, #-0x10]
+   83140:	adrp	x8, 620 ; 0x2ef000
+   83144:	add	x8, x8, #0xdf8
+   83148:	ldr	x0, [x8, #0x10]
+   8314c:	ldur	x1, [x29, #-0x10]
+   83150:	bl	0x1f6c64 ; symbol stub for: _class_getMethodImplementation
+   83154:	stur	x0, [x29, #-0x18]
+   83158:	ldur	x8, [x29, #-0x18]
+   8315c:	ldur	x0, [x29, #-0x8]
+   83160:	ldur	x1, [x29, #-0x10]
+   83164:	blr	x8
+   83168:	ldr	x0, [sp, #0x18]
+   8316c:	ldr	x1, [sp, #0x20]
+   83170:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83174:	ldp	x29, x30, [sp, #0x40]
+   83178:	add	sp, sp, #0x50
+   8317c:	ret
+_$ZFLandScapeControlView_dlButton_method:
+   83180:	sub	sp, sp, #0x50
+   83184:	stp	x29, x30, [sp, #0x40]
+   83188:	add	x29, sp, #0x40
+   8318c:	str	x0, [sp, #0x8]
+   83190:	mov	x0, x1
+   83194:	ldr	x1, [sp, #0x8]
+   83198:	str	x0, [sp, #0x10]
+   8319c:	sub	x0, x29, #0x8
+   831a0:	str	x0, [sp, #0x20]
+   831a4:	mov	x8, #0x0
+   831a8:	str	x8, [sp, #0x18]
+   831ac:	stur	xzr, [x29, #-0x8]
+   831b0:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   831b4:	ldr	x1, [sp, #0x10]
+   831b8:	stur	x1, [x29, #-0x10]
+   831bc:	ldur	x0, [x29, #-0x8]
+   831c0:	adrp	x1, 473 ; 0x25c000
+   831c4:	add	x1, x1, #0x3db
+   831c8:	bl	0x1f7204 ; symbol stub for: _objc_getAssociatedObject
+   831cc:	mov	x29, x29
+   831d0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   831d4:	ldr	x1, [sp, #0x18]
+   831d8:	mov	x2, x0
+   831dc:	ldr	x0, [sp, #0x20]
+   831e0:	stur	x2, [x29, #-0x18]
+   831e4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   831e8:	ldur	x0, [x29, #-0x18]
+   831ec:	ldp	x29, x30, [sp, #0x40]
+   831f0:	add	sp, sp, #0x50
+   831f4:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setDlButton$_method:
+   831f8:	sub	sp, sp, #0x60
+   831fc:	stp	x29, x30, [sp, #0x50]
+   83200:	add	x29, sp, #0x50
+   83204:	str	x0, [sp, #0x8]
+   83208:	mov	x0, x1
+   8320c:	ldr	x1, [sp, #0x8]
+   83210:	str	x0, [sp, #0x10]
+   83214:	str	x2, [sp, #0x18]
+   83218:	sub	x0, x29, #0x8
+   8321c:	str	x0, [sp, #0x28]
+   83220:	mov	x8, #0x0
+   83224:	stur	x8, [x29, #-0x20]
+   83228:	stur	xzr, [x29, #-0x8]
+   8322c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83230:	ldr	x8, [sp, #0x10]
+   83234:	ldr	x1, [sp, #0x18]
+   83238:	stur	x8, [x29, #-0x10]
+   8323c:	sub	x0, x29, #0x18
+   83240:	str	x0, [sp, #0x20]
+   83244:	stur	xzr, [x29, #-0x18]
+   83248:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8324c:	ldur	x0, [x29, #-0x8]
+   83250:	ldur	x2, [x29, #-0x18]
+   83254:	adrp	x1, 473 ; 0x25c000
+   83258:	add	x1, x1, #0x3db
+   8325c:	mov	x3, #0x1
+   83260:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   83264:	ldr	x0, [sp, #0x20]
+   83268:	ldur	x1, [x29, #-0x20]
+   8326c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83270:	ldr	x0, [sp, #0x28]
+   83274:	ldur	x1, [x29, #-0x20]
+   83278:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8327c:	ldp	x29, x30, [sp, #0x50]
+   83280:	add	sp, sp, #0x60
+   83284:	ret
+_$ZFLandScapeControlView_videoUrl_method:
+   83288:	sub	sp, sp, #0x50
+   8328c:	stp	x29, x30, [sp, #0x40]
+   83290:	add	x29, sp, #0x40
+   83294:	str	x0, [sp, #0x8]
+   83298:	mov	x0, x1
+   8329c:	ldr	x1, [sp, #0x8]
+   832a0:	str	x0, [sp, #0x10]
+   832a4:	sub	x0, x29, #0x8
+   832a8:	str	x0, [sp, #0x20]
+   832ac:	mov	x8, #0x0
+   832b0:	str	x8, [sp, #0x18]
+   832b4:	stur	xzr, [x29, #-0x8]
+   832b8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   832bc:	ldr	x1, [sp, #0x10]
+   832c0:	stur	x1, [x29, #-0x10]
+   832c4:	ldur	x0, [x29, #-0x8]
+   832c8:	adrp	x1, 473 ; 0x25c000
+   832cc:	add	x1, x1, #0x3dc
+   832d0:	bl	0x1f7204 ; symbol stub for: _objc_getAssociatedObject
+   832d4:	mov	x29, x29
+   832d8:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   832dc:	ldr	x1, [sp, #0x18]
+   832e0:	mov	x2, x0
+   832e4:	ldr	x0, [sp, #0x20]
+   832e8:	stur	x2, [x29, #-0x18]
+   832ec:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   832f0:	ldur	x0, [x29, #-0x18]
+   832f4:	ldp	x29, x30, [sp, #0x40]
+   832f8:	add	sp, sp, #0x50
+   832fc:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setVideoUrl$_method:
+   83300:	sub	sp, sp, #0x60
+   83304:	stp	x29, x30, [sp, #0x50]
+   83308:	add	x29, sp, #0x50
+   8330c:	str	x0, [sp, #0x8]
+   83310:	mov	x0, x1
+   83314:	ldr	x1, [sp, #0x8]
+   83318:	str	x0, [sp, #0x10]
+   8331c:	str	x2, [sp, #0x18]
+   83320:	sub	x0, x29, #0x8
+   83324:	str	x0, [sp, #0x28]
+   83328:	mov	x8, #0x0
+   8332c:	stur	x8, [x29, #-0x20]
+   83330:	stur	xzr, [x29, #-0x8]
+   83334:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83338:	ldr	x8, [sp, #0x10]
+   8333c:	ldr	x1, [sp, #0x18]
+   83340:	stur	x8, [x29, #-0x10]
+   83344:	sub	x0, x29, #0x18
+   83348:	str	x0, [sp, #0x20]
+   8334c:	stur	xzr, [x29, #-0x18]
+   83350:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83354:	ldur	x0, [x29, #-0x8]
+   83358:	ldur	x2, [x29, #-0x18]
+   8335c:	adrp	x1, 473 ; 0x25c000
+   83360:	add	x1, x1, #0x3dc
+   83364:	mov	x3, #0x3
+   83368:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   8336c:	ldr	x0, [sp, #0x20]
+   83370:	ldur	x1, [x29, #-0x20]
+   83374:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83378:	ldr	x0, [sp, #0x28]
+   8337c:	ldur	x1, [x29, #-0x20]
+   83380:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83384:	ldp	x29, x30, [sp, #0x50]
+   83388:	add	sp, sp, #0x60
+   8338c:	ret
+_$ZFLandScapeControlView_rateButton_method:
+   83390:	sub	sp, sp, #0x50
+   83394:	stp	x29, x30, [sp, #0x40]
+   83398:	add	x29, sp, #0x40
+   8339c:	str	x0, [sp, #0x8]
+   833a0:	mov	x0, x1
+   833a4:	ldr	x1, [sp, #0x8]
+   833a8:	str	x0, [sp, #0x10]
+   833ac:	sub	x0, x29, #0x8
+   833b0:	str	x0, [sp, #0x20]
+   833b4:	mov	x8, #0x0
+   833b8:	str	x8, [sp, #0x18]
+
+===== _$ZFLandScapeControlView_dlButton_method: =====
+   83160:	ldur	x1, [x29, #-0x10]
+   83164:	blr	x8
+   83168:	ldr	x0, [sp, #0x18]
+   8316c:	ldr	x1, [sp, #0x20]
+   83170:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83174:	ldp	x29, x30, [sp, #0x40]
+   83178:	add	sp, sp, #0x50
+   8317c:	ret
+_$ZFLandScapeControlView_dlButton_method:
+   83180:	sub	sp, sp, #0x50
+   83184:	stp	x29, x30, [sp, #0x40]
+   83188:	add	x29, sp, #0x40
+   8318c:	str	x0, [sp, #0x8]
+   83190:	mov	x0, x1
+   83194:	ldr	x1, [sp, #0x8]
+   83198:	str	x0, [sp, #0x10]
+   8319c:	sub	x0, x29, #0x8
+   831a0:	str	x0, [sp, #0x20]
+   831a4:	mov	x8, #0x0
+   831a8:	str	x8, [sp, #0x18]
+   831ac:	stur	xzr, [x29, #-0x8]
+   831b0:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   831b4:	ldr	x1, [sp, #0x10]
+   831b8:	stur	x1, [x29, #-0x10]
+   831bc:	ldur	x0, [x29, #-0x8]
+   831c0:	adrp	x1, 473 ; 0x25c000
+   831c4:	add	x1, x1, #0x3db
+   831c8:	bl	0x1f7204 ; symbol stub for: _objc_getAssociatedObject
+   831cc:	mov	x29, x29
+   831d0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   831d4:	ldr	x1, [sp, #0x18]
+   831d8:	mov	x2, x0
+   831dc:	ldr	x0, [sp, #0x20]
+   831e0:	stur	x2, [x29, #-0x18]
+   831e4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   831e8:	ldur	x0, [x29, #-0x18]
+   831ec:	ldp	x29, x30, [sp, #0x40]
+   831f0:	add	sp, sp, #0x50
+   831f4:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setDlButton$_method:
+   831f8:	sub	sp, sp, #0x60
+   831fc:	stp	x29, x30, [sp, #0x50]
+   83200:	add	x29, sp, #0x50
+   83204:	str	x0, [sp, #0x8]
+   83208:	mov	x0, x1
+   8320c:	ldr	x1, [sp, #0x8]
+   83210:	str	x0, [sp, #0x10]
+   83214:	str	x2, [sp, #0x18]
+   83218:	sub	x0, x29, #0x8
+   8321c:	str	x0, [sp, #0x28]
+   83220:	mov	x8, #0x0
+   83224:	stur	x8, [x29, #-0x20]
+   83228:	stur	xzr, [x29, #-0x8]
+   8322c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83230:	ldr	x8, [sp, #0x10]
+   83234:	ldr	x1, [sp, #0x18]
+   83238:	stur	x8, [x29, #-0x10]
+   8323c:	sub	x0, x29, #0x18
+   83240:	str	x0, [sp, #0x20]
+   83244:	stur	xzr, [x29, #-0x18]
+   83248:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8324c:	ldur	x0, [x29, #-0x8]
+   83250:	ldur	x2, [x29, #-0x18]
+   83254:	adrp	x1, 473 ; 0x25c000
+   83258:	add	x1, x1, #0x3db
+   8325c:	mov	x3, #0x1
+   83260:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   83264:	ldr	x0, [sp, #0x20]
+   83268:	ldur	x1, [x29, #-0x20]
+   8326c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83270:	ldr	x0, [sp, #0x28]
+   83274:	ldur	x1, [x29, #-0x20]
+   83278:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8327c:	ldp	x29, x30, [sp, #0x50]
+   83280:	add	sp, sp, #0x60
+   83284:	ret
+_$ZFLandScapeControlView_videoUrl_method:
+   83288:	sub	sp, sp, #0x50
+   8328c:	stp	x29, x30, [sp, #0x40]
+   83290:	add	x29, sp, #0x40
+   83294:	str	x0, [sp, #0x8]
+   83298:	mov	x0, x1
+   8329c:	ldr	x1, [sp, #0x8]
+   832a0:	str	x0, [sp, #0x10]
+   832a4:	sub	x0, x29, #0x8
+   832a8:	str	x0, [sp, #0x20]
+   832ac:	mov	x8, #0x0
+   832b0:	str	x8, [sp, #0x18]
+   832b4:	stur	xzr, [x29, #-0x8]
+   832b8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   832bc:	ldr	x1, [sp, #0x10]
+   832c0:	stur	x1, [x29, #-0x10]
+   832c4:	ldur	x0, [x29, #-0x8]
+   832c8:	adrp	x1, 473 ; 0x25c000
+   832cc:	add	x1, x1, #0x3dc
+   832d0:	bl	0x1f7204 ; symbol stub for: _objc_getAssociatedObject
+   832d4:	mov	x29, x29
+   832d8:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   832dc:	ldr	x1, [sp, #0x18]
+   832e0:	mov	x2, x0
+   832e4:	ldr	x0, [sp, #0x20]
+   832e8:	stur	x2, [x29, #-0x18]
+   832ec:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   832f0:	ldur	x0, [x29, #-0x18]
+   832f4:	ldp	x29, x30, [sp, #0x40]
+   832f8:	add	sp, sp, #0x50
+   832fc:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setVideoUrl$_method:
+   83300:	sub	sp, sp, #0x60
+   83304:	stp	x29, x30, [sp, #0x50]
+   83308:	add	x29, sp, #0x50
+   8330c:	str	x0, [sp, #0x8]
+   83310:	mov	x0, x1
+   83314:	ldr	x1, [sp, #0x8]
+   83318:	str	x0, [sp, #0x10]
+   8331c:	str	x2, [sp, #0x18]
+   83320:	sub	x0, x29, #0x8
+   83324:	str	x0, [sp, #0x28]
+   83328:	mov	x8, #0x0
+   8332c:	stur	x8, [x29, #-0x20]
+   83330:	stur	xzr, [x29, #-0x8]
+   83334:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83338:	ldr	x8, [sp, #0x10]
+   8333c:	ldr	x1, [sp, #0x18]
+   83340:	stur	x8, [x29, #-0x10]
+   83344:	sub	x0, x29, #0x18
+   83348:	str	x0, [sp, #0x20]
+   8334c:	stur	xzr, [x29, #-0x18]
+   83350:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83354:	ldur	x0, [x29, #-0x8]
+   83358:	ldur	x2, [x29, #-0x18]
+   8335c:	adrp	x1, 473 ; 0x25c000
+   83360:	add	x1, x1, #0x3dc
+   83364:	mov	x3, #0x3
+   83368:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   8336c:	ldr	x0, [sp, #0x20]
+   83370:	ldur	x1, [x29, #-0x20]
+   83374:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83378:	ldr	x0, [sp, #0x28]
+   8337c:	ldur	x1, [x29, #-0x20]
+   83380:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83384:	ldp	x29, x30, [sp, #0x50]
+   83388:	add	sp, sp, #0x60
+   8338c:	ret
+_$ZFLandScapeControlView_rateButton_method:
+   83390:	sub	sp, sp, #0x50
+   83394:	stp	x29, x30, [sp, #0x40]
+   83398:	add	x29, sp, #0x40
+   8339c:	str	x0, [sp, #0x8]
+   833a0:	mov	x0, x1
+   833a4:	ldr	x1, [sp, #0x8]
+   833a8:	str	x0, [sp, #0x10]
+   833ac:	sub	x0, x29, #0x8
+   833b0:	str	x0, [sp, #0x20]
+   833b4:	mov	x8, #0x0
+   833b8:	str	x8, [sp, #0x18]
+   833bc:	stur	xzr, [x29, #-0x8]
+   833c0:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   833c4:	ldr	x1, [sp, #0x10]
+   833c8:	stur	x1, [x29, #-0x10]
+   833cc:	ldur	x0, [x29, #-0x8]
+   833d0:	adrp	x1, 473 ; 0x25c000
+   833d4:	add	x1, x1, #0x3dd
+   833d8:	bl	0x1f7204 ; symbol stub for: _objc_getAssociatedObject
+   833dc:	mov	x29, x29
+   833e0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   833e4:	ldr	x1, [sp, #0x18]
+   833e8:	mov	x2, x0
+   833ec:	ldr	x0, [sp, #0x20]
+   833f0:	stur	x2, [x29, #-0x18]
+   833f4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   833f8:	ldur	x0, [x29, #-0x18]
+   833fc:	ldp	x29, x30, [sp, #0x40]
+   83400:	add	sp, sp, #0x50
+   83404:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setRateButton$_method:
+   83408:	sub	sp, sp, #0x60
+   8340c:	stp	x29, x30, [sp, #0x50]
+   83410:	add	x29, sp, #0x50
+   83414:	str	x0, [sp, #0x8]
+   83418:	mov	x0, x1
+   8341c:	ldr	x1, [sp, #0x8]
+   83420:	str	x0, [sp, #0x10]
+   83424:	str	x2, [sp, #0x18]
+   83428:	sub	x0, x29, #0x8
+   8342c:	str	x0, [sp, #0x28]
+   83430:	mov	x8, #0x0
+   83434:	stur	x8, [x29, #-0x20]
+
+===== _$ZFLandScapeControlView_setDlButton$_method: =====
+   831d8:	mov	x2, x0
+   831dc:	ldr	x0, [sp, #0x20]
+   831e0:	stur	x2, [x29, #-0x18]
+   831e4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   831e8:	ldur	x0, [x29, #-0x18]
+   831ec:	ldp	x29, x30, [sp, #0x40]
+   831f0:	add	sp, sp, #0x50
+   831f4:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setDlButton$_method:
+   831f8:	sub	sp, sp, #0x60
+   831fc:	stp	x29, x30, [sp, #0x50]
+   83200:	add	x29, sp, #0x50
+   83204:	str	x0, [sp, #0x8]
+   83208:	mov	x0, x1
+   8320c:	ldr	x1, [sp, #0x8]
+   83210:	str	x0, [sp, #0x10]
+   83214:	str	x2, [sp, #0x18]
+   83218:	sub	x0, x29, #0x8
+   8321c:	str	x0, [sp, #0x28]
+   83220:	mov	x8, #0x0
+   83224:	stur	x8, [x29, #-0x20]
+   83228:	stur	xzr, [x29, #-0x8]
+   8322c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83230:	ldr	x8, [sp, #0x10]
+   83234:	ldr	x1, [sp, #0x18]
+   83238:	stur	x8, [x29, #-0x10]
+   8323c:	sub	x0, x29, #0x18
+   83240:	str	x0, [sp, #0x20]
+   83244:	stur	xzr, [x29, #-0x18]
+   83248:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8324c:	ldur	x0, [x29, #-0x8]
+   83250:	ldur	x2, [x29, #-0x18]
+   83254:	adrp	x1, 473 ; 0x25c000
+   83258:	add	x1, x1, #0x3db
+   8325c:	mov	x3, #0x1
+   83260:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   83264:	ldr	x0, [sp, #0x20]
+   83268:	ldur	x1, [x29, #-0x20]
+   8326c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83270:	ldr	x0, [sp, #0x28]
+   83274:	ldur	x1, [x29, #-0x20]
+   83278:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8327c:	ldp	x29, x30, [sp, #0x50]
+   83280:	add	sp, sp, #0x60
+   83284:	ret
+_$ZFLandScapeControlView_videoUrl_method:
+   83288:	sub	sp, sp, #0x50
+   8328c:	stp	x29, x30, [sp, #0x40]
+   83290:	add	x29, sp, #0x40
+   83294:	str	x0, [sp, #0x8]
+   83298:	mov	x0, x1
+   8329c:	ldr	x1, [sp, #0x8]
+   832a0:	str	x0, [sp, #0x10]
+   832a4:	sub	x0, x29, #0x8
+   832a8:	str	x0, [sp, #0x20]
+   832ac:	mov	x8, #0x0
+   832b0:	str	x8, [sp, #0x18]
+   832b4:	stur	xzr, [x29, #-0x8]
+   832b8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   832bc:	ldr	x1, [sp, #0x10]
+   832c0:	stur	x1, [x29, #-0x10]
+   832c4:	ldur	x0, [x29, #-0x8]
+   832c8:	adrp	x1, 473 ; 0x25c000
+   832cc:	add	x1, x1, #0x3dc
+   832d0:	bl	0x1f7204 ; symbol stub for: _objc_getAssociatedObject
+   832d4:	mov	x29, x29
+   832d8:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   832dc:	ldr	x1, [sp, #0x18]
+   832e0:	mov	x2, x0
+   832e4:	ldr	x0, [sp, #0x20]
+   832e8:	stur	x2, [x29, #-0x18]
+   832ec:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   832f0:	ldur	x0, [x29, #-0x18]
+   832f4:	ldp	x29, x30, [sp, #0x40]
+   832f8:	add	sp, sp, #0x50
+   832fc:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setVideoUrl$_method:
+   83300:	sub	sp, sp, #0x60
+   83304:	stp	x29, x30, [sp, #0x50]
+   83308:	add	x29, sp, #0x50
+   8330c:	str	x0, [sp, #0x8]
+   83310:	mov	x0, x1
+   83314:	ldr	x1, [sp, #0x8]
+   83318:	str	x0, [sp, #0x10]
+   8331c:	str	x2, [sp, #0x18]
+   83320:	sub	x0, x29, #0x8
+   83324:	str	x0, [sp, #0x28]
+   83328:	mov	x8, #0x0
+   8332c:	stur	x8, [x29, #-0x20]
+   83330:	stur	xzr, [x29, #-0x8]
+   83334:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83338:	ldr	x8, [sp, #0x10]
+   8333c:	ldr	x1, [sp, #0x18]
+   83340:	stur	x8, [x29, #-0x10]
+   83344:	sub	x0, x29, #0x18
+   83348:	str	x0, [sp, #0x20]
+   8334c:	stur	xzr, [x29, #-0x18]
+   83350:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83354:	ldur	x0, [x29, #-0x8]
+   83358:	ldur	x2, [x29, #-0x18]
+   8335c:	adrp	x1, 473 ; 0x25c000
+   83360:	add	x1, x1, #0x3dc
+   83364:	mov	x3, #0x3
+   83368:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   8336c:	ldr	x0, [sp, #0x20]
+   83370:	ldur	x1, [x29, #-0x20]
+   83374:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83378:	ldr	x0, [sp, #0x28]
+   8337c:	ldur	x1, [x29, #-0x20]
+   83380:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83384:	ldp	x29, x30, [sp, #0x50]
+   83388:	add	sp, sp, #0x60
+   8338c:	ret
+_$ZFLandScapeControlView_rateButton_method:
+   83390:	sub	sp, sp, #0x50
+   83394:	stp	x29, x30, [sp, #0x40]
+   83398:	add	x29, sp, #0x40
+   8339c:	str	x0, [sp, #0x8]
+   833a0:	mov	x0, x1
+   833a4:	ldr	x1, [sp, #0x8]
+   833a8:	str	x0, [sp, #0x10]
+   833ac:	sub	x0, x29, #0x8
+   833b0:	str	x0, [sp, #0x20]
+   833b4:	mov	x8, #0x0
+   833b8:	str	x8, [sp, #0x18]
+   833bc:	stur	xzr, [x29, #-0x8]
+   833c0:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   833c4:	ldr	x1, [sp, #0x10]
+   833c8:	stur	x1, [x29, #-0x10]
+   833cc:	ldur	x0, [x29, #-0x8]
+   833d0:	adrp	x1, 473 ; 0x25c000
+   833d4:	add	x1, x1, #0x3dd
+   833d8:	bl	0x1f7204 ; symbol stub for: _objc_getAssociatedObject
+   833dc:	mov	x29, x29
+   833e0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   833e4:	ldr	x1, [sp, #0x18]
+   833e8:	mov	x2, x0
+   833ec:	ldr	x0, [sp, #0x20]
+   833f0:	stur	x2, [x29, #-0x18]
+   833f4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   833f8:	ldur	x0, [x29, #-0x18]
+   833fc:	ldp	x29, x30, [sp, #0x40]
+   83400:	add	sp, sp, #0x50
+   83404:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setRateButton$_method:
+   83408:	sub	sp, sp, #0x60
+   8340c:	stp	x29, x30, [sp, #0x50]
+   83410:	add	x29, sp, #0x50
+   83414:	str	x0, [sp, #0x8]
+   83418:	mov	x0, x1
+   8341c:	ldr	x1, [sp, #0x8]
+   83420:	str	x0, [sp, #0x10]
+   83424:	str	x2, [sp, #0x18]
+   83428:	sub	x0, x29, #0x8
+   8342c:	str	x0, [sp, #0x28]
+   83430:	mov	x8, #0x0
+   83434:	stur	x8, [x29, #-0x20]
+   83438:	stur	xzr, [x29, #-0x8]
+   8343c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83440:	ldr	x8, [sp, #0x10]
+   83444:	ldr	x1, [sp, #0x18]
+   83448:	stur	x8, [x29, #-0x10]
+   8344c:	sub	x0, x29, #0x18
+   83450:	str	x0, [sp, #0x20]
+   83454:	stur	xzr, [x29, #-0x18]
+   83458:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8345c:	ldur	x0, [x29, #-0x8]
+   83460:	ldur	x2, [x29, #-0x18]
+   83464:	adrp	x1, 473 ; 0x25c000
+   83468:	add	x1, x1, #0x3dd
+   8346c:	mov	x3, #0x1
+   83470:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   83474:	ldr	x0, [sp, #0x20]
+   83478:	ldur	x1, [x29, #-0x20]
+   8347c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83480:	ldr	x0, [sp, #0x28]
+   83484:	ldur	x1, [x29, #-0x20]
+   83488:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8348c:	ldp	x29, x30, [sp, #0x50]
+   83490:	add	sp, sp, #0x60
+   83494:	ret
+_$LE_WatchVideoViewController_viewDidLoad_method:
+   83498:	sub	sp, sp, #0x60
+   8349c:	stp	x29, x30, [sp, #0x50]
+   834a0:	add	x29, sp, #0x50
+   834a4:	str	x0, [sp, #0x8]
+   834a8:	mov	x0, x1
+   834ac:	ldr	x1, [sp, #0x8]
+
+===== _$ZFLandScapeControlView_videoUrl_method: =====
+   83268:	ldur	x1, [x29, #-0x20]
+   8326c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83270:	ldr	x0, [sp, #0x28]
+   83274:	ldur	x1, [x29, #-0x20]
+   83278:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8327c:	ldp	x29, x30, [sp, #0x50]
+   83280:	add	sp, sp, #0x60
+   83284:	ret
+_$ZFLandScapeControlView_videoUrl_method:
+   83288:	sub	sp, sp, #0x50
+   8328c:	stp	x29, x30, [sp, #0x40]
+   83290:	add	x29, sp, #0x40
+   83294:	str	x0, [sp, #0x8]
+   83298:	mov	x0, x1
+   8329c:	ldr	x1, [sp, #0x8]
+   832a0:	str	x0, [sp, #0x10]
+   832a4:	sub	x0, x29, #0x8
+   832a8:	str	x0, [sp, #0x20]
+   832ac:	mov	x8, #0x0
+   832b0:	str	x8, [sp, #0x18]
+   832b4:	stur	xzr, [x29, #-0x8]
+   832b8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   832bc:	ldr	x1, [sp, #0x10]
+   832c0:	stur	x1, [x29, #-0x10]
+   832c4:	ldur	x0, [x29, #-0x8]
+   832c8:	adrp	x1, 473 ; 0x25c000
+   832cc:	add	x1, x1, #0x3dc
+   832d0:	bl	0x1f7204 ; symbol stub for: _objc_getAssociatedObject
+   832d4:	mov	x29, x29
+   832d8:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   832dc:	ldr	x1, [sp, #0x18]
+   832e0:	mov	x2, x0
+   832e4:	ldr	x0, [sp, #0x20]
+   832e8:	stur	x2, [x29, #-0x18]
+   832ec:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   832f0:	ldur	x0, [x29, #-0x18]
+   832f4:	ldp	x29, x30, [sp, #0x40]
+   832f8:	add	sp, sp, #0x50
+   832fc:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setVideoUrl$_method:
+   83300:	sub	sp, sp, #0x60
+   83304:	stp	x29, x30, [sp, #0x50]
+   83308:	add	x29, sp, #0x50
+   8330c:	str	x0, [sp, #0x8]
+   83310:	mov	x0, x1
+   83314:	ldr	x1, [sp, #0x8]
+   83318:	str	x0, [sp, #0x10]
+   8331c:	str	x2, [sp, #0x18]
+   83320:	sub	x0, x29, #0x8
+   83324:	str	x0, [sp, #0x28]
+   83328:	mov	x8, #0x0
+   8332c:	stur	x8, [x29, #-0x20]
+   83330:	stur	xzr, [x29, #-0x8]
+   83334:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83338:	ldr	x8, [sp, #0x10]
+   8333c:	ldr	x1, [sp, #0x18]
+   83340:	stur	x8, [x29, #-0x10]
+   83344:	sub	x0, x29, #0x18
+   83348:	str	x0, [sp, #0x20]
+   8334c:	stur	xzr, [x29, #-0x18]
+   83350:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83354:	ldur	x0, [x29, #-0x8]
+   83358:	ldur	x2, [x29, #-0x18]
+   8335c:	adrp	x1, 473 ; 0x25c000
+   83360:	add	x1, x1, #0x3dc
+   83364:	mov	x3, #0x3
+   83368:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   8336c:	ldr	x0, [sp, #0x20]
+   83370:	ldur	x1, [x29, #-0x20]
+   83374:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83378:	ldr	x0, [sp, #0x28]
+   8337c:	ldur	x1, [x29, #-0x20]
+   83380:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83384:	ldp	x29, x30, [sp, #0x50]
+   83388:	add	sp, sp, #0x60
+   8338c:	ret
+_$ZFLandScapeControlView_rateButton_method:
+   83390:	sub	sp, sp, #0x50
+   83394:	stp	x29, x30, [sp, #0x40]
+   83398:	add	x29, sp, #0x40
+   8339c:	str	x0, [sp, #0x8]
+   833a0:	mov	x0, x1
+   833a4:	ldr	x1, [sp, #0x8]
+   833a8:	str	x0, [sp, #0x10]
+   833ac:	sub	x0, x29, #0x8
+   833b0:	str	x0, [sp, #0x20]
+   833b4:	mov	x8, #0x0
+   833b8:	str	x8, [sp, #0x18]
+   833bc:	stur	xzr, [x29, #-0x8]
+   833c0:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   833c4:	ldr	x1, [sp, #0x10]
+   833c8:	stur	x1, [x29, #-0x10]
+   833cc:	ldur	x0, [x29, #-0x8]
+   833d0:	adrp	x1, 473 ; 0x25c000
+   833d4:	add	x1, x1, #0x3dd
+   833d8:	bl	0x1f7204 ; symbol stub for: _objc_getAssociatedObject
+   833dc:	mov	x29, x29
+   833e0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   833e4:	ldr	x1, [sp, #0x18]
+   833e8:	mov	x2, x0
+   833ec:	ldr	x0, [sp, #0x20]
+   833f0:	stur	x2, [x29, #-0x18]
+   833f4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   833f8:	ldur	x0, [x29, #-0x18]
+   833fc:	ldp	x29, x30, [sp, #0x40]
+   83400:	add	sp, sp, #0x50
+   83404:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setRateButton$_method:
+   83408:	sub	sp, sp, #0x60
+   8340c:	stp	x29, x30, [sp, #0x50]
+   83410:	add	x29, sp, #0x50
+   83414:	str	x0, [sp, #0x8]
+   83418:	mov	x0, x1
+   8341c:	ldr	x1, [sp, #0x8]
+   83420:	str	x0, [sp, #0x10]
+   83424:	str	x2, [sp, #0x18]
+   83428:	sub	x0, x29, #0x8
+   8342c:	str	x0, [sp, #0x28]
+   83430:	mov	x8, #0x0
+   83434:	stur	x8, [x29, #-0x20]
+   83438:	stur	xzr, [x29, #-0x8]
+   8343c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83440:	ldr	x8, [sp, #0x10]
+   83444:	ldr	x1, [sp, #0x18]
+   83448:	stur	x8, [x29, #-0x10]
+   8344c:	sub	x0, x29, #0x18
+   83450:	str	x0, [sp, #0x20]
+   83454:	stur	xzr, [x29, #-0x18]
+   83458:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8345c:	ldur	x0, [x29, #-0x8]
+   83460:	ldur	x2, [x29, #-0x18]
+   83464:	adrp	x1, 473 ; 0x25c000
+   83468:	add	x1, x1, #0x3dd
+   8346c:	mov	x3, #0x1
+   83470:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   83474:	ldr	x0, [sp, #0x20]
+   83478:	ldur	x1, [x29, #-0x20]
+   8347c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83480:	ldr	x0, [sp, #0x28]
+   83484:	ldur	x1, [x29, #-0x20]
+   83488:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8348c:	ldp	x29, x30, [sp, #0x50]
+   83490:	add	sp, sp, #0x60
+   83494:	ret
+_$LE_WatchVideoViewController_viewDidLoad_method:
+   83498:	sub	sp, sp, #0x60
+   8349c:	stp	x29, x30, [sp, #0x50]
+   834a0:	add	x29, sp, #0x50
+   834a4:	str	x0, [sp, #0x8]
+   834a8:	mov	x0, x1
+   834ac:	ldr	x1, [sp, #0x8]
+   834b0:	str	x0, [sp, #0x10]
+   834b4:	sub	x0, x29, #0x8
+   834b8:	stur	x0, [x29, #-0x20]
+   834bc:	mov	x8, #0x0
+   834c0:	stur	x8, [x29, #-0x18]
+   834c4:	stur	xzr, [x29, #-0x8]
+   834c8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   834cc:	ldr	x1, [sp, #0x10]
+   834d0:	stur	x1, [x29, #-0x10]
+   834d4:	adrp	x8, 621 ; 0x2f0000
+   834d8:	ldr	x8, [x8, #0x988]
+   834dc:	ldur	x0, [x29, #-0x8]
+   834e0:	adrp	x9, 600 ; 0x2db000
+   834e4:	ldr	x1, [x9, #0x528] ; Objc selector ref: viewDidLoad
+   834e8:	blr	x8
+   834ec:	ldr	x1, [sp, #0x18]
+   834f0:	ldur	x0, [x29, #-0x8]
+   834f4:	adrp	x2, 511 ; 0x282000
+   834f8:	add	x2, x2, #0x978 ; Objc cfstring ref: @"controlView.landScapeControlView"
+   834fc:	bl	"_objc_msgSend$valueForKeyPath:"
+   83500:	mov	x29, x29
+   83504:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83508:	ldr	x1, [sp, #0x18]
+   8350c:	str	x0, [sp, #0x28]
+   83510:	ldur	x0, [x29, #-0x8]
+   83514:	bl	_objc_msgSend$videoPath
+   83518:	mov	x29, x29
+   8351c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83520:	ldr	x1, [sp, #0x18]
+   83524:	mov	x2, x0
+   83528:	ldr	x0, [sp, #0x28]
+   8352c:	str	x2, [sp, #0x20]
+   83530:	adrp	x3, 511 ; 0x282000
+   83534:	add	x3, x3, #0x998 ; Objc cfstring ref: @"videoUrl"
+   83538:	bl	"_objc_msgSend$setValue:forKey:"
+   8353c:	ldr	x0, [sp, #0x20]
+   83540:	adrp	x8, 501 ; 0x278000
+
+===== _$ZFLandScapeControlView_setVideoUrl$_method: =====
+   832e0:	mov	x2, x0
+   832e4:	ldr	x0, [sp, #0x20]
+   832e8:	stur	x2, [x29, #-0x18]
+   832ec:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   832f0:	ldur	x0, [x29, #-0x18]
+   832f4:	ldp	x29, x30, [sp, #0x40]
+   832f8:	add	sp, sp, #0x50
+   832fc:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setVideoUrl$_method:
+   83300:	sub	sp, sp, #0x60
+   83304:	stp	x29, x30, [sp, #0x50]
+   83308:	add	x29, sp, #0x50
+   8330c:	str	x0, [sp, #0x8]
+   83310:	mov	x0, x1
+   83314:	ldr	x1, [sp, #0x8]
+   83318:	str	x0, [sp, #0x10]
+   8331c:	str	x2, [sp, #0x18]
+   83320:	sub	x0, x29, #0x8
+   83324:	str	x0, [sp, #0x28]
+   83328:	mov	x8, #0x0
+   8332c:	stur	x8, [x29, #-0x20]
+   83330:	stur	xzr, [x29, #-0x8]
+   83334:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83338:	ldr	x8, [sp, #0x10]
+   8333c:	ldr	x1, [sp, #0x18]
+   83340:	stur	x8, [x29, #-0x10]
+   83344:	sub	x0, x29, #0x18
+   83348:	str	x0, [sp, #0x20]
+   8334c:	stur	xzr, [x29, #-0x18]
+   83350:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83354:	ldur	x0, [x29, #-0x8]
+   83358:	ldur	x2, [x29, #-0x18]
+   8335c:	adrp	x1, 473 ; 0x25c000
+   83360:	add	x1, x1, #0x3dc
+   83364:	mov	x3, #0x3
+   83368:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   8336c:	ldr	x0, [sp, #0x20]
+   83370:	ldur	x1, [x29, #-0x20]
+   83374:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83378:	ldr	x0, [sp, #0x28]
+   8337c:	ldur	x1, [x29, #-0x20]
+   83380:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83384:	ldp	x29, x30, [sp, #0x50]
+   83388:	add	sp, sp, #0x60
+   8338c:	ret
+_$ZFLandScapeControlView_rateButton_method:
+   83390:	sub	sp, sp, #0x50
+   83394:	stp	x29, x30, [sp, #0x40]
+   83398:	add	x29, sp, #0x40
+   8339c:	str	x0, [sp, #0x8]
+   833a0:	mov	x0, x1
+   833a4:	ldr	x1, [sp, #0x8]
+   833a8:	str	x0, [sp, #0x10]
+   833ac:	sub	x0, x29, #0x8
+   833b0:	str	x0, [sp, #0x20]
+   833b4:	mov	x8, #0x0
+   833b8:	str	x8, [sp, #0x18]
+   833bc:	stur	xzr, [x29, #-0x8]
+   833c0:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   833c4:	ldr	x1, [sp, #0x10]
+   833c8:	stur	x1, [x29, #-0x10]
+   833cc:	ldur	x0, [x29, #-0x8]
+   833d0:	adrp	x1, 473 ; 0x25c000
+   833d4:	add	x1, x1, #0x3dd
+   833d8:	bl	0x1f7204 ; symbol stub for: _objc_getAssociatedObject
+   833dc:	mov	x29, x29
+   833e0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   833e4:	ldr	x1, [sp, #0x18]
+   833e8:	mov	x2, x0
+   833ec:	ldr	x0, [sp, #0x20]
+   833f0:	stur	x2, [x29, #-0x18]
+   833f4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   833f8:	ldur	x0, [x29, #-0x18]
+   833fc:	ldp	x29, x30, [sp, #0x40]
+   83400:	add	sp, sp, #0x50
+   83404:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setRateButton$_method:
+   83408:	sub	sp, sp, #0x60
+   8340c:	stp	x29, x30, [sp, #0x50]
+   83410:	add	x29, sp, #0x50
+   83414:	str	x0, [sp, #0x8]
+   83418:	mov	x0, x1
+   8341c:	ldr	x1, [sp, #0x8]
+   83420:	str	x0, [sp, #0x10]
+   83424:	str	x2, [sp, #0x18]
+   83428:	sub	x0, x29, #0x8
+   8342c:	str	x0, [sp, #0x28]
+   83430:	mov	x8, #0x0
+   83434:	stur	x8, [x29, #-0x20]
+   83438:	stur	xzr, [x29, #-0x8]
+   8343c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83440:	ldr	x8, [sp, #0x10]
+   83444:	ldr	x1, [sp, #0x18]
+   83448:	stur	x8, [x29, #-0x10]
+   8344c:	sub	x0, x29, #0x18
+   83450:	str	x0, [sp, #0x20]
+   83454:	stur	xzr, [x29, #-0x18]
+   83458:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8345c:	ldur	x0, [x29, #-0x8]
+   83460:	ldur	x2, [x29, #-0x18]
+   83464:	adrp	x1, 473 ; 0x25c000
+   83468:	add	x1, x1, #0x3dd
+   8346c:	mov	x3, #0x1
+   83470:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   83474:	ldr	x0, [sp, #0x20]
+   83478:	ldur	x1, [x29, #-0x20]
+   8347c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83480:	ldr	x0, [sp, #0x28]
+   83484:	ldur	x1, [x29, #-0x20]
+   83488:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8348c:	ldp	x29, x30, [sp, #0x50]
+   83490:	add	sp, sp, #0x60
+   83494:	ret
+_$LE_WatchVideoViewController_viewDidLoad_method:
+   83498:	sub	sp, sp, #0x60
+   8349c:	stp	x29, x30, [sp, #0x50]
+   834a0:	add	x29, sp, #0x50
+   834a4:	str	x0, [sp, #0x8]
+   834a8:	mov	x0, x1
+   834ac:	ldr	x1, [sp, #0x8]
+   834b0:	str	x0, [sp, #0x10]
+   834b4:	sub	x0, x29, #0x8
+   834b8:	stur	x0, [x29, #-0x20]
+   834bc:	mov	x8, #0x0
+   834c0:	stur	x8, [x29, #-0x18]
+   834c4:	stur	xzr, [x29, #-0x8]
+   834c8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   834cc:	ldr	x1, [sp, #0x10]
+   834d0:	stur	x1, [x29, #-0x10]
+   834d4:	adrp	x8, 621 ; 0x2f0000
+   834d8:	ldr	x8, [x8, #0x988]
+   834dc:	ldur	x0, [x29, #-0x8]
+   834e0:	adrp	x9, 600 ; 0x2db000
+   834e4:	ldr	x1, [x9, #0x528] ; Objc selector ref: viewDidLoad
+   834e8:	blr	x8
+   834ec:	ldr	x1, [sp, #0x18]
+   834f0:	ldur	x0, [x29, #-0x8]
+   834f4:	adrp	x2, 511 ; 0x282000
+   834f8:	add	x2, x2, #0x978 ; Objc cfstring ref: @"controlView.landScapeControlView"
+   834fc:	bl	"_objc_msgSend$valueForKeyPath:"
+   83500:	mov	x29, x29
+   83504:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83508:	ldr	x1, [sp, #0x18]
+   8350c:	str	x0, [sp, #0x28]
+   83510:	ldur	x0, [x29, #-0x8]
+   83514:	bl	_objc_msgSend$videoPath
+   83518:	mov	x29, x29
+   8351c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83520:	ldr	x1, [sp, #0x18]
+   83524:	mov	x2, x0
+   83528:	ldr	x0, [sp, #0x28]
+   8352c:	str	x2, [sp, #0x20]
+   83530:	adrp	x3, 511 ; 0x282000
+   83534:	add	x3, x3, #0x998 ; Objc cfstring ref: @"videoUrl"
+   83538:	bl	"_objc_msgSend$setValue:forKey:"
+   8353c:	ldr	x0, [sp, #0x20]
+   83540:	adrp	x8, 501 ; 0x278000
+   83544:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   83548:	blr	x8
+   8354c:	ldr	x0, [sp, #0x28]
+   83550:	adrp	x8, 501 ; 0x278000
+   83554:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   83558:	blr	x8
+   8355c:	ldur	x0, [x29, #-0x20]
+   83560:	ldur	x1, [x29, #-0x18]
+   83564:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83568:	ldp	x29, x30, [sp, #0x50]
+   8356c:	add	sp, sp, #0x60
+   83570:	ret
+_$LE_WatchVideoViewController_viewDidLoad_closure:
+   83574:	sub	sp, sp, #0x50
+   83578:	stp	x29, x30, [sp, #0x40]
+   8357c:	add	x29, sp, #0x40
+   83580:	str	x0, [sp, #0x8]
+   83584:	mov	x0, x1
+   83588:	ldr	x1, [sp, #0x8]
+   8358c:	str	x0, [sp, #0x10]
+   83590:	sub	x0, x29, #0x8
+   83594:	str	x0, [sp, #0x18]
+   83598:	mov	x8, #0x0
+   8359c:	str	x8, [sp, #0x20]
+   835a0:	stur	xzr, [x29, #-0x8]
+   835a4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   835a8:	ldr	x1, [sp, #0x10]
+   835ac:	stur	x1, [x29, #-0x10]
+   835b0:	adrp	x8, 621 ; 0x2f0000
+   835b4:	add	x8, x8, #0x188
+   835b8:	ldr	x0, [x8, #0x10]
+
+===== _$ZFLandScapeControlView_rateButton_method: =====
+   83370:	ldur	x1, [x29, #-0x20]
+   83374:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83378:	ldr	x0, [sp, #0x28]
+   8337c:	ldur	x1, [x29, #-0x20]
+   83380:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83384:	ldp	x29, x30, [sp, #0x50]
+   83388:	add	sp, sp, #0x60
+   8338c:	ret
+_$ZFLandScapeControlView_rateButton_method:
+   83390:	sub	sp, sp, #0x50
+   83394:	stp	x29, x30, [sp, #0x40]
+   83398:	add	x29, sp, #0x40
+   8339c:	str	x0, [sp, #0x8]
+   833a0:	mov	x0, x1
+   833a4:	ldr	x1, [sp, #0x8]
+   833a8:	str	x0, [sp, #0x10]
+   833ac:	sub	x0, x29, #0x8
+   833b0:	str	x0, [sp, #0x20]
+   833b4:	mov	x8, #0x0
+   833b8:	str	x8, [sp, #0x18]
+   833bc:	stur	xzr, [x29, #-0x8]
+   833c0:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   833c4:	ldr	x1, [sp, #0x10]
+   833c8:	stur	x1, [x29, #-0x10]
+   833cc:	ldur	x0, [x29, #-0x8]
+   833d0:	adrp	x1, 473 ; 0x25c000
+   833d4:	add	x1, x1, #0x3dd
+   833d8:	bl	0x1f7204 ; symbol stub for: _objc_getAssociatedObject
+   833dc:	mov	x29, x29
+   833e0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   833e4:	ldr	x1, [sp, #0x18]
+   833e8:	mov	x2, x0
+   833ec:	ldr	x0, [sp, #0x20]
+   833f0:	stur	x2, [x29, #-0x18]
+   833f4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   833f8:	ldur	x0, [x29, #-0x18]
+   833fc:	ldp	x29, x30, [sp, #0x40]
+   83400:	add	sp, sp, #0x50
+   83404:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setRateButton$_method:
+   83408:	sub	sp, sp, #0x60
+   8340c:	stp	x29, x30, [sp, #0x50]
+   83410:	add	x29, sp, #0x50
+   83414:	str	x0, [sp, #0x8]
+   83418:	mov	x0, x1
+   8341c:	ldr	x1, [sp, #0x8]
+   83420:	str	x0, [sp, #0x10]
+   83424:	str	x2, [sp, #0x18]
+   83428:	sub	x0, x29, #0x8
+   8342c:	str	x0, [sp, #0x28]
+   83430:	mov	x8, #0x0
+   83434:	stur	x8, [x29, #-0x20]
+   83438:	stur	xzr, [x29, #-0x8]
+   8343c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83440:	ldr	x8, [sp, #0x10]
+   83444:	ldr	x1, [sp, #0x18]
+   83448:	stur	x8, [x29, #-0x10]
+   8344c:	sub	x0, x29, #0x18
+   83450:	str	x0, [sp, #0x20]
+   83454:	stur	xzr, [x29, #-0x18]
+   83458:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8345c:	ldur	x0, [x29, #-0x8]
+   83460:	ldur	x2, [x29, #-0x18]
+   83464:	adrp	x1, 473 ; 0x25c000
+   83468:	add	x1, x1, #0x3dd
+   8346c:	mov	x3, #0x1
+   83470:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   83474:	ldr	x0, [sp, #0x20]
+   83478:	ldur	x1, [x29, #-0x20]
+   8347c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83480:	ldr	x0, [sp, #0x28]
+   83484:	ldur	x1, [x29, #-0x20]
+   83488:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8348c:	ldp	x29, x30, [sp, #0x50]
+   83490:	add	sp, sp, #0x60
+   83494:	ret
+_$LE_WatchVideoViewController_viewDidLoad_method:
+   83498:	sub	sp, sp, #0x60
+   8349c:	stp	x29, x30, [sp, #0x50]
+   834a0:	add	x29, sp, #0x50
+   834a4:	str	x0, [sp, #0x8]
+   834a8:	mov	x0, x1
+   834ac:	ldr	x1, [sp, #0x8]
+   834b0:	str	x0, [sp, #0x10]
+   834b4:	sub	x0, x29, #0x8
+   834b8:	stur	x0, [x29, #-0x20]
+   834bc:	mov	x8, #0x0
+   834c0:	stur	x8, [x29, #-0x18]
+   834c4:	stur	xzr, [x29, #-0x8]
+   834c8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   834cc:	ldr	x1, [sp, #0x10]
+   834d0:	stur	x1, [x29, #-0x10]
+   834d4:	adrp	x8, 621 ; 0x2f0000
+   834d8:	ldr	x8, [x8, #0x988]
+   834dc:	ldur	x0, [x29, #-0x8]
+   834e0:	adrp	x9, 600 ; 0x2db000
+   834e4:	ldr	x1, [x9, #0x528] ; Objc selector ref: viewDidLoad
+   834e8:	blr	x8
+   834ec:	ldr	x1, [sp, #0x18]
+   834f0:	ldur	x0, [x29, #-0x8]
+   834f4:	adrp	x2, 511 ; 0x282000
+   834f8:	add	x2, x2, #0x978 ; Objc cfstring ref: @"controlView.landScapeControlView"
+   834fc:	bl	"_objc_msgSend$valueForKeyPath:"
+   83500:	mov	x29, x29
+   83504:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83508:	ldr	x1, [sp, #0x18]
+   8350c:	str	x0, [sp, #0x28]
+   83510:	ldur	x0, [x29, #-0x8]
+   83514:	bl	_objc_msgSend$videoPath
+   83518:	mov	x29, x29
+   8351c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83520:	ldr	x1, [sp, #0x18]
+   83524:	mov	x2, x0
+   83528:	ldr	x0, [sp, #0x28]
+   8352c:	str	x2, [sp, #0x20]
+   83530:	adrp	x3, 511 ; 0x282000
+   83534:	add	x3, x3, #0x998 ; Objc cfstring ref: @"videoUrl"
+   83538:	bl	"_objc_msgSend$setValue:forKey:"
+   8353c:	ldr	x0, [sp, #0x20]
+   83540:	adrp	x8, 501 ; 0x278000
+   83544:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   83548:	blr	x8
+   8354c:	ldr	x0, [sp, #0x28]
+   83550:	adrp	x8, 501 ; 0x278000
+   83554:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   83558:	blr	x8
+   8355c:	ldur	x0, [x29, #-0x20]
+   83560:	ldur	x1, [x29, #-0x18]
+   83564:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83568:	ldp	x29, x30, [sp, #0x50]
+   8356c:	add	sp, sp, #0x60
+   83570:	ret
+_$LE_WatchVideoViewController_viewDidLoad_closure:
+   83574:	sub	sp, sp, #0x50
+   83578:	stp	x29, x30, [sp, #0x40]
+   8357c:	add	x29, sp, #0x40
+   83580:	str	x0, [sp, #0x8]
+   83584:	mov	x0, x1
+   83588:	ldr	x1, [sp, #0x8]
+   8358c:	str	x0, [sp, #0x10]
+   83590:	sub	x0, x29, #0x8
+   83594:	str	x0, [sp, #0x18]
+   83598:	mov	x8, #0x0
+   8359c:	str	x8, [sp, #0x20]
+   835a0:	stur	xzr, [x29, #-0x8]
+   835a4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   835a8:	ldr	x1, [sp, #0x10]
+   835ac:	stur	x1, [x29, #-0x10]
+   835b0:	adrp	x8, 621 ; 0x2f0000
+   835b4:	add	x8, x8, #0x188
+   835b8:	ldr	x0, [x8, #0x10]
+   835bc:	ldur	x1, [x29, #-0x10]
+   835c0:	bl	0x1f6c64 ; symbol stub for: _class_getMethodImplementation
+   835c4:	stur	x0, [x29, #-0x18]
+   835c8:	ldur	x8, [x29, #-0x18]
+   835cc:	ldur	x0, [x29, #-0x8]
+   835d0:	ldur	x1, [x29, #-0x10]
+   835d4:	blr	x8
+   835d8:	ldr	x0, [sp, #0x18]
+   835dc:	ldr	x1, [sp, #0x20]
+   835e0:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   835e4:	ldp	x29, x30, [sp, #0x40]
+   835e8:	add	sp, sp, #0x50
+   835ec:	ret
+_$LE_SimiPersonalTableHeaderView_setP$_method:
+   835f0:	sub	sp, sp, #0x1a0
+   835f4:	stp	x28, x27, [sp, #0x180]
+   835f8:	stp	x29, x30, [sp, #0x190]
+   835fc:	add	x29, sp, #0x190
+   83600:	str	x0, [sp, #0xb0]
+   83604:	mov	x0, x1
+   83608:	ldr	x1, [sp, #0xb0]
+   8360c:	str	x0, [sp, #0xb8]
+   83610:	str	x2, [sp, #0xc0]
+   83614:	adrp	x8, 501 ; 0x278000
+   83618:	ldr	x8, [x8, #0x1e8] ; literal pool symbol address: ___stack_chk_guard
+   8361c:	ldr	x8, [x8]
+   83620:	stur	x8, [x29, #-0x18]
+   83624:	sub	x0, x29, #0x40
+   83628:	stur	xzr, [x29, #-0x40]
+   8362c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83630:	ldr	x8, [sp, #0xb8]
+   83634:	ldr	x1, [sp, #0xc0]
+   83638:	stur	x8, [x29, #-0x48]
+   8363c:	sub	x0, x29, #0x50
+   83640:	stur	xzr, [x29, #-0x50]
+   83644:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83648:	ldur	x1, [x29, #-0xb8]
+
+===== _$ZFLandScapeControlView_setRateButton$_method: =====
+   833e8:	mov	x2, x0
+   833ec:	ldr	x0, [sp, #0x20]
+   833f0:	stur	x2, [x29, #-0x18]
+   833f4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   833f8:	ldur	x0, [x29, #-0x18]
+   833fc:	ldp	x29, x30, [sp, #0x40]
+   83400:	add	sp, sp, #0x50
+   83404:	b	0x1f71a4 ; symbol stub for: _objc_autoreleaseReturnValue
+_$ZFLandScapeControlView_setRateButton$_method:
+   83408:	sub	sp, sp, #0x60
+   8340c:	stp	x29, x30, [sp, #0x50]
+   83410:	add	x29, sp, #0x50
+   83414:	str	x0, [sp, #0x8]
+   83418:	mov	x0, x1
+   8341c:	ldr	x1, [sp, #0x8]
+   83420:	str	x0, [sp, #0x10]
+   83424:	str	x2, [sp, #0x18]
+   83428:	sub	x0, x29, #0x8
+   8342c:	str	x0, [sp, #0x28]
+   83430:	mov	x8, #0x0
+   83434:	stur	x8, [x29, #-0x20]
+   83438:	stur	xzr, [x29, #-0x8]
+   8343c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83440:	ldr	x8, [sp, #0x10]
+   83444:	ldr	x1, [sp, #0x18]
+   83448:	stur	x8, [x29, #-0x10]
+   8344c:	sub	x0, x29, #0x18
+   83450:	str	x0, [sp, #0x20]
+   83454:	stur	xzr, [x29, #-0x18]
+   83458:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8345c:	ldur	x0, [x29, #-0x8]
+   83460:	ldur	x2, [x29, #-0x18]
+   83464:	adrp	x1, 473 ; 0x25c000
+   83468:	add	x1, x1, #0x3dd
+   8346c:	mov	x3, #0x1
+   83470:	bl	0x1f72d0 ; symbol stub for: _objc_setAssociatedObject
+   83474:	ldr	x0, [sp, #0x20]
+   83478:	ldur	x1, [x29, #-0x20]
+   8347c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83480:	ldr	x0, [sp, #0x28]
+   83484:	ldur	x1, [x29, #-0x20]
+   83488:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   8348c:	ldp	x29, x30, [sp, #0x50]
+   83490:	add	sp, sp, #0x60
+   83494:	ret
+_$LE_WatchVideoViewController_viewDidLoad_method:
+   83498:	sub	sp, sp, #0x60
+   8349c:	stp	x29, x30, [sp, #0x50]
+   834a0:	add	x29, sp, #0x50
+   834a4:	str	x0, [sp, #0x8]
+   834a8:	mov	x0, x1
+   834ac:	ldr	x1, [sp, #0x8]
+   834b0:	str	x0, [sp, #0x10]
+   834b4:	sub	x0, x29, #0x8
+   834b8:	stur	x0, [x29, #-0x20]
+   834bc:	mov	x8, #0x0
+   834c0:	stur	x8, [x29, #-0x18]
+   834c4:	stur	xzr, [x29, #-0x8]
+   834c8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   834cc:	ldr	x1, [sp, #0x10]
+   834d0:	stur	x1, [x29, #-0x10]
+   834d4:	adrp	x8, 621 ; 0x2f0000
+   834d8:	ldr	x8, [x8, #0x988]
+   834dc:	ldur	x0, [x29, #-0x8]
+   834e0:	adrp	x9, 600 ; 0x2db000
+   834e4:	ldr	x1, [x9, #0x528] ; Objc selector ref: viewDidLoad
+   834e8:	blr	x8
+   834ec:	ldr	x1, [sp, #0x18]
+   834f0:	ldur	x0, [x29, #-0x8]
+   834f4:	adrp	x2, 511 ; 0x282000
+   834f8:	add	x2, x2, #0x978 ; Objc cfstring ref: @"controlView.landScapeControlView"
+   834fc:	bl	"_objc_msgSend$valueForKeyPath:"
+   83500:	mov	x29, x29
+   83504:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83508:	ldr	x1, [sp, #0x18]
+   8350c:	str	x0, [sp, #0x28]
+   83510:	ldur	x0, [x29, #-0x8]
+   83514:	bl	_objc_msgSend$videoPath
+   83518:	mov	x29, x29
+   8351c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83520:	ldr	x1, [sp, #0x18]
+   83524:	mov	x2, x0
+   83528:	ldr	x0, [sp, #0x28]
+   8352c:	str	x2, [sp, #0x20]
+   83530:	adrp	x3, 511 ; 0x282000
+   83534:	add	x3, x3, #0x998 ; Objc cfstring ref: @"videoUrl"
+   83538:	bl	"_objc_msgSend$setValue:forKey:"
+   8353c:	ldr	x0, [sp, #0x20]
+   83540:	adrp	x8, 501 ; 0x278000
+   83544:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   83548:	blr	x8
+   8354c:	ldr	x0, [sp, #0x28]
+   83550:	adrp	x8, 501 ; 0x278000
+   83554:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   83558:	blr	x8
+   8355c:	ldur	x0, [x29, #-0x20]
+   83560:	ldur	x1, [x29, #-0x18]
+   83564:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83568:	ldp	x29, x30, [sp, #0x50]
+   8356c:	add	sp, sp, #0x60
+   83570:	ret
+_$LE_WatchVideoViewController_viewDidLoad_closure:
+   83574:	sub	sp, sp, #0x50
+   83578:	stp	x29, x30, [sp, #0x40]
+   8357c:	add	x29, sp, #0x40
+   83580:	str	x0, [sp, #0x8]
+   83584:	mov	x0, x1
+   83588:	ldr	x1, [sp, #0x8]
+   8358c:	str	x0, [sp, #0x10]
+   83590:	sub	x0, x29, #0x8
+   83594:	str	x0, [sp, #0x18]
+   83598:	mov	x8, #0x0
+   8359c:	str	x8, [sp, #0x20]
+   835a0:	stur	xzr, [x29, #-0x8]
+   835a4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   835a8:	ldr	x1, [sp, #0x10]
+   835ac:	stur	x1, [x29, #-0x10]
+   835b0:	adrp	x8, 621 ; 0x2f0000
+   835b4:	add	x8, x8, #0x188
+   835b8:	ldr	x0, [x8, #0x10]
+   835bc:	ldur	x1, [x29, #-0x10]
+   835c0:	bl	0x1f6c64 ; symbol stub for: _class_getMethodImplementation
+   835c4:	stur	x0, [x29, #-0x18]
+   835c8:	ldur	x8, [x29, #-0x18]
+   835cc:	ldur	x0, [x29, #-0x8]
+   835d0:	ldur	x1, [x29, #-0x10]
+   835d4:	blr	x8
+   835d8:	ldr	x0, [sp, #0x18]
+   835dc:	ldr	x1, [sp, #0x20]
+   835e0:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   835e4:	ldp	x29, x30, [sp, #0x40]
+   835e8:	add	sp, sp, #0x50
+   835ec:	ret
+_$LE_SimiPersonalTableHeaderView_setP$_method:
+   835f0:	sub	sp, sp, #0x1a0
+   835f4:	stp	x28, x27, [sp, #0x180]
+   835f8:	stp	x29, x30, [sp, #0x190]
+   835fc:	add	x29, sp, #0x190
+   83600:	str	x0, [sp, #0xb0]
+   83604:	mov	x0, x1
+   83608:	ldr	x1, [sp, #0xb0]
+   8360c:	str	x0, [sp, #0xb8]
+   83610:	str	x2, [sp, #0xc0]
+   83614:	adrp	x8, 501 ; 0x278000
+   83618:	ldr	x8, [x8, #0x1e8] ; literal pool symbol address: ___stack_chk_guard
+   8361c:	ldr	x8, [x8]
+   83620:	stur	x8, [x29, #-0x18]
+   83624:	sub	x0, x29, #0x40
+   83628:	stur	xzr, [x29, #-0x40]
+   8362c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83630:	ldr	x8, [sp, #0xb8]
+   83634:	ldr	x1, [sp, #0xc0]
+   83638:	stur	x8, [x29, #-0x48]
+   8363c:	sub	x0, x29, #0x50
+   83640:	stur	xzr, [x29, #-0x50]
+   83644:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+   83648:	ldur	x1, [x29, #-0xb8]
+   8364c:	ldur	x0, [x29, #-0x50]
+   83650:	adrp	x2, 511 ; 0x282000
+   83654:	add	x2, x2, #0x9b8 ; Objc cfstring ref: @"auth_switch"
+   83658:	bl	"_objc_msgSend$valueForKey:"
+   8365c:	mov	x29, x29
+   83660:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   83664:	ldur	x1, [x29, #-0xb8]
+   83668:	str	x0, [sp, #0xc8]
+   8366c:	bl	_objc_msgSend$integerValue
+   83670:	mov	x8, x0
+   83674:	ldr	x0, [sp, #0xc8]
+   83678:	stur	x8, [x29, #-0xc0]
+   8367c:	adrp	x8, 501 ; 0x278000
+   83680:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+   83684:	blr	x8
+   83688:	ldur	x0, [x29, #-0xc0]
+   8368c:	ldur	x1, [x29, #-0xb8]
+   83690:	stur	x0, [x29, #-0x58]
+   83694:	ldur	x0, [x29, #-0x50]
+   83698:	adrp	x2, 508 ; 0x27f000
+   8369c:	add	x2, x2, #0x3f8 ; Objc cfstring ref: @"user_id"
+   836a0:	bl	"_objc_msgSend$valueForKey:"
+   836a4:	mov	x29, x29
+   836a8:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+   836ac:	ldur	x1, [x29, #-0xb8]
+   836b0:	stur	x0, [x29, #-0x60]
+   836b4:	adrp	x8, 609 ; 0x2e4000
+   836b8:	ldr	x0, [x8, #0x988] ; Objc class ref: JLYHook
+   836bc:	bl	_objc_msgSend$currentUserId
+   836c0:	mov	x29, x29
+   836c4:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+
+===== -[M3U8Downloader saveVideoFileToPhotosAlbum:]: =====
+  10e488:	ldr	x0, [x8, #0x30]
+  10e48c:	mov	w8, #0x0
+  10e490:	and	w2, w8, #0x1
+  10e494:	bl	"_objc_msgSend$setIsDownloading:"
+  10e498:	b	0x10e49c
+  10e49c:	ldp	x29, x30, [sp, #0x40]
+  10e4a0:	add	sp, sp, #0x50
+  10e4a4:	ret
+-[M3U8Downloader saveVideoFileToPhotosAlbum:]:
+  10e4a8:	sub	sp, sp, #0x90
+  10e4ac:	stp	x29, x30, [sp, #0x80]
+  10e4b0:	add	x29, sp, #0x80
+  10e4b4:	mov	x8, x1
+  10e4b8:	mov	x1, x2
+  10e4bc:	stur	x0, [x29, #-0x8]
+  10e4c0:	stur	x8, [x29, #-0x10]
+  10e4c4:	sub	x0, x29, #0x18
+  10e4c8:	str	x0, [sp, #0x28]
+  10e4cc:	mov	x8, #0x0
+  10e4d0:	str	x8, [sp, #0x30]
+  10e4d4:	stur	xzr, [x29, #-0x18]
+  10e4d8:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e4dc:	adrp	x8, 470 ; 0x2e4000
+  10e4e0:	ldr	x8, [x8, #0xad0] ; Objc class ref: _OBJC_CLASS_$_PHPhotoLibrary
+  10e4e4:	str	x8, [sp, #0x10]
+  10e4e8:	add	x8, sp, #0x38
+  10e4ec:	str	x8, [sp, #0x8]
+  10e4f0:	adrp	x8, 362 ; 0x278000
+  10e4f4:	ldr	x8, [x8, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+  10e4f8:	str	x8, [sp, #0x38]
+  10e4fc:	mov	w8, #-0x3e000000
+  10e500:	str	w8, [sp, #0x40]
+  10e504:	str	wzr, [sp, #0x44]
+  10e508:	adrp	x8, 0 ; 0x10e000
+  10e50c:	add	x8, x8, #0x5a0
+  10e510:	str	x8, [sp, #0x48]
+  10e514:	adrp	x8, 363 ; 0x279000
+  10e518:	add	x8, x8, #0xb80
+  10e51c:	str	x8, [sp, #0x50]
+  10e520:	ldur	x0, [x29, #-0x18]
+  10e524:	adrp	x8, 362 ; 0x278000
+  10e528:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e52c:	blr	x8
+  10e530:	ldr	x8, [sp, #0x8]
+  10e534:	add	x8, x8, #0x20
+  10e538:	str	x8, [sp, #0x20]
+  10e53c:	str	x0, [sp, #0x58]
+  10e540:	ldur	x0, [x29, #-0x8]
+  10e544:	adrp	x8, 362 ; 0x278000
+  10e548:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e54c:	blr	x8
+  10e550:	ldr	x1, [sp]
+  10e554:	ldr	x2, [sp, #0x8]
+  10e558:	mov	x8, x0
+  10e55c:	ldr	x0, [sp, #0x10]
+  10e560:	add	x9, x2, #0x28
+  10e564:	str	x9, [sp, #0x18]
+  10e568:	str	x8, [sp, #0x60]
+  10e56c:	bl	"_objc_msgSend$requestAuthorization:"
+  10e570:	ldr	x0, [sp, #0x18]
+  10e574:	ldr	x1, [sp, #0x30]
+  10e578:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e57c:	ldr	x0, [sp, #0x20]
+  10e580:	ldr	x1, [sp, #0x30]
+  10e584:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e588:	ldr	x0, [sp, #0x28]
+  10e58c:	ldr	x1, [sp, #0x30]
+  10e590:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e594:	ldp	x29, x30, [sp, #0x80]
+  10e598:	add	sp, sp, #0x90
+  10e59c:	ret
+___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke:
+  10e5a0:	sub	sp, sp, #0xa0
+  10e5a4:	stp	x29, x30, [sp, #0x90]
+  10e5a8:	add	x29, sp, #0x90
+  10e5ac:	str	x0, [sp, #0x10]
+  10e5b0:	mov	x8, x0
+  10e5b4:	stur	x8, [x29, #-0x8]
+  10e5b8:	stur	x1, [x29, #-0x10]
+  10e5bc:	stur	x0, [x29, #-0x18]
+  10e5c0:	adrp	x0, 362 ; 0x278000
+  10e5c4:	ldr	x0, [x0, #0x208] ; literal pool symbol address: __dispatch_main_q
+  10e5c8:	str	x0, [sp, #0x8]
+  10e5cc:	bl	0x1f72ac ; symbol stub for: _objc_retainAutoreleaseReturnValue
+  10e5d0:	ldr	x0, [sp, #0x8]
+  10e5d4:	mov	x29, x29
+  10e5d8:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10e5dc:	mov	x1, x0
+  10e5e0:	ldr	x0, [sp, #0x10]
+  10e5e4:	str	x1, [sp, #0x20]
+  10e5e8:	add	x8, sp, #0x40
+  10e5ec:	str	x8, [sp, #0x18]
+  10e5f0:	adrp	x8, 362 ; 0x278000
+  10e5f4:	ldr	x8, [x8, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+  10e5f8:	str	x8, [sp, #0x40]
+  10e5fc:	mov	w8, #-0x3e000000
+  10e600:	str	w8, [sp, #0x48]
+  10e604:	str	wzr, [sp, #0x4c]
+  10e608:	adrp	x8, 0 ; 0x10e000
+  10e60c:	add	x8, x8, #0x6b4
+  10e610:	str	x8, [sp, #0x50]
+  10e614:	adrp	x8, 365 ; 0x27b000
+  10e618:	add	x8, x8, #0xb48
+  10e61c:	str	x8, [sp, #0x58]
+  10e620:	ldur	x8, [x29, #-0x10]
+  10e624:	str	x8, [sp, #0x70]
+  10e628:	ldr	x0, [x0, #0x20]
+  10e62c:	adrp	x8, 362 ; 0x278000
+  10e630:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e634:	blr	x8
+  10e638:	ldr	x9, [sp, #0x18]
+  10e63c:	mov	x8, x0
+  10e640:	ldr	x0, [sp, #0x10]
+  10e644:	add	x9, x9, #0x20
+  10e648:	str	x9, [sp, #0x30]
+  10e64c:	str	x8, [sp, #0x60]
+  10e650:	ldr	x0, [x0, #0x28]
+  10e654:	adrp	x8, 362 ; 0x278000
+  10e658:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e65c:	blr	x8
+  10e660:	ldr	x1, [sp, #0x18]
+  10e664:	mov	x8, x0
+  10e668:	ldr	x0, [sp, #0x20]
+  10e66c:	add	x9, x1, #0x28
+  10e670:	str	x9, [sp, #0x28]
+  10e674:	str	x8, [sp, #0x68]
+  10e678:	bl	0x1f6d0c ; symbol stub for: _dispatch_async
+  10e67c:	ldr	x0, [sp, #0x20]
+  10e680:	adrp	x8, 362 ; 0x278000
+  10e684:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10e688:	blr	x8
+  10e68c:	ldr	x0, [sp, #0x28]
+  10e690:	mov	x1, #0x0
+  10e694:	str	x1, [sp, #0x38]
+  10e698:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e69c:	ldr	x0, [sp, #0x30]
+  10e6a0:	ldr	x1, [sp, #0x38]
+  10e6a4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e6a8:	ldp	x29, x30, [sp, #0x90]
+  10e6ac:	add	sp, sp, #0xa0
+  10e6b0:	ret
+___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2:
+  10e6b4:	sub	sp, sp, #0x130
+  10e6b8:	stp	x28, x27, [sp, #0x110]
+  10e6bc:	stp	x29, x30, [sp, #0x120]
+  10e6c0:	add	x29, sp, #0x120
+  10e6c4:	str	x0, [sp, #0x80]
+  10e6c8:	adrp	x8, 362 ; 0x278000
+  10e6cc:	ldr	x8, [x8, #0x1e8] ; literal pool symbol address: ___stack_chk_guard
+  10e6d0:	ldr	x8, [x8]
+  10e6d4:	stur	x8, [x29, #-0x18]
+  10e6d8:	mov	x8, x0
+  10e6dc:	stur	x8, [x29, #-0x30]
+  10e6e0:	mov	x8, x0
+  10e6e4:	stur	x8, [x29, #-0x38]
+  10e6e8:	ldr	x8, [x0, #0x30]
+  10e6ec:	subs	x8, x8, #0x3
+  10e6f0:	b.ne	0x10e840
+  10e6f4:	b	0x10e6f8
+  10e6f8:	ldr	x1, [sp, #0x40]
+  10e6fc:	adrp	x8, 470 ; 0x2e4000
+  10e700:	ldr	x0, [x8, #0xad0] ; Objc class ref: _OBJC_CLASS_$_PHPhotoLibrary
+  10e704:	bl	_objc_msgSend$sharedPhotoLibrary
+  10e708:	mov	x29, x29
+  10e70c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10e710:	ldr	x8, [sp, #0x80]
+  10e714:	str	x0, [sp, #0x58]
+  10e718:	sub	x9, x29, #0x60
+  10e71c:	str	x9, [sp, #0x48]
+  10e720:	adrp	x10, 362 ; 0x278000
+  10e724:	ldr	x10, [x10, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+  10e728:	str	x10, [sp, #0x30]
+  10e72c:	stur	x10, [x29, #-0x60]
+  10e730:	mov	w10, #-0x3e000000
+  10e734:	str	w10, [sp, #0x3c]
+  10e738:	stur	w10, [x29, #-0x58]
+  10e73c:	stur	wzr, [x29, #-0x54]
+  10e740:	adrp	x10, 0 ; 0x10e000
+  10e744:	add	x10, x10, #0x9e4
+  10e748:	stur	x10, [x29, #-0x50]
+  10e74c:	adrp	x10, 363 ; 0x279000
+  10e750:	add	x10, x10, #0x468
+  10e754:	stur	x10, [x29, #-0x48]
+  10e758:	add	x9, x9, #0x20
+  10e75c:	str	x9, [sp, #0x70]
+  10e760:	ldr	x0, [x8, #0x20]
+  10e764:	adrp	x8, 362 ; 0x278000
+  10e768:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+
+===== ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke: =====
+  10e580:	ldr	x1, [sp, #0x30]
+  10e584:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e588:	ldr	x0, [sp, #0x28]
+  10e58c:	ldr	x1, [sp, #0x30]
+  10e590:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e594:	ldp	x29, x30, [sp, #0x80]
+  10e598:	add	sp, sp, #0x90
+  10e59c:	ret
+___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke:
+  10e5a0:	sub	sp, sp, #0xa0
+  10e5a4:	stp	x29, x30, [sp, #0x90]
+  10e5a8:	add	x29, sp, #0x90
+  10e5ac:	str	x0, [sp, #0x10]
+  10e5b0:	mov	x8, x0
+  10e5b4:	stur	x8, [x29, #-0x8]
+  10e5b8:	stur	x1, [x29, #-0x10]
+  10e5bc:	stur	x0, [x29, #-0x18]
+  10e5c0:	adrp	x0, 362 ; 0x278000
+  10e5c4:	ldr	x0, [x0, #0x208] ; literal pool symbol address: __dispatch_main_q
+  10e5c8:	str	x0, [sp, #0x8]
+  10e5cc:	bl	0x1f72ac ; symbol stub for: _objc_retainAutoreleaseReturnValue
+  10e5d0:	ldr	x0, [sp, #0x8]
+  10e5d4:	mov	x29, x29
+  10e5d8:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10e5dc:	mov	x1, x0
+  10e5e0:	ldr	x0, [sp, #0x10]
+  10e5e4:	str	x1, [sp, #0x20]
+  10e5e8:	add	x8, sp, #0x40
+  10e5ec:	str	x8, [sp, #0x18]
+  10e5f0:	adrp	x8, 362 ; 0x278000
+  10e5f4:	ldr	x8, [x8, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+  10e5f8:	str	x8, [sp, #0x40]
+  10e5fc:	mov	w8, #-0x3e000000
+  10e600:	str	w8, [sp, #0x48]
+  10e604:	str	wzr, [sp, #0x4c]
+  10e608:	adrp	x8, 0 ; 0x10e000
+  10e60c:	add	x8, x8, #0x6b4
+  10e610:	str	x8, [sp, #0x50]
+  10e614:	adrp	x8, 365 ; 0x27b000
+  10e618:	add	x8, x8, #0xb48
+  10e61c:	str	x8, [sp, #0x58]
+  10e620:	ldur	x8, [x29, #-0x10]
+  10e624:	str	x8, [sp, #0x70]
+  10e628:	ldr	x0, [x0, #0x20]
+  10e62c:	adrp	x8, 362 ; 0x278000
+  10e630:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e634:	blr	x8
+  10e638:	ldr	x9, [sp, #0x18]
+  10e63c:	mov	x8, x0
+  10e640:	ldr	x0, [sp, #0x10]
+  10e644:	add	x9, x9, #0x20
+  10e648:	str	x9, [sp, #0x30]
+  10e64c:	str	x8, [sp, #0x60]
+  10e650:	ldr	x0, [x0, #0x28]
+  10e654:	adrp	x8, 362 ; 0x278000
+  10e658:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e65c:	blr	x8
+  10e660:	ldr	x1, [sp, #0x18]
+  10e664:	mov	x8, x0
+  10e668:	ldr	x0, [sp, #0x20]
+  10e66c:	add	x9, x1, #0x28
+  10e670:	str	x9, [sp, #0x28]
+  10e674:	str	x8, [sp, #0x68]
+  10e678:	bl	0x1f6d0c ; symbol stub for: _dispatch_async
+  10e67c:	ldr	x0, [sp, #0x20]
+  10e680:	adrp	x8, 362 ; 0x278000
+  10e684:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10e688:	blr	x8
+  10e68c:	ldr	x0, [sp, #0x28]
+  10e690:	mov	x1, #0x0
+  10e694:	str	x1, [sp, #0x38]
+  10e698:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e69c:	ldr	x0, [sp, #0x30]
+  10e6a0:	ldr	x1, [sp, #0x38]
+  10e6a4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e6a8:	ldp	x29, x30, [sp, #0x90]
+  10e6ac:	add	sp, sp, #0xa0
+  10e6b0:	ret
+___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2:
+  10e6b4:	sub	sp, sp, #0x130
+  10e6b8:	stp	x28, x27, [sp, #0x110]
+  10e6bc:	stp	x29, x30, [sp, #0x120]
+  10e6c0:	add	x29, sp, #0x120
+  10e6c4:	str	x0, [sp, #0x80]
+  10e6c8:	adrp	x8, 362 ; 0x278000
+  10e6cc:	ldr	x8, [x8, #0x1e8] ; literal pool symbol address: ___stack_chk_guard
+  10e6d0:	ldr	x8, [x8]
+  10e6d4:	stur	x8, [x29, #-0x18]
+  10e6d8:	mov	x8, x0
+  10e6dc:	stur	x8, [x29, #-0x30]
+  10e6e0:	mov	x8, x0
+  10e6e4:	stur	x8, [x29, #-0x38]
+  10e6e8:	ldr	x8, [x0, #0x30]
+  10e6ec:	subs	x8, x8, #0x3
+  10e6f0:	b.ne	0x10e840
+  10e6f4:	b	0x10e6f8
+  10e6f8:	ldr	x1, [sp, #0x40]
+  10e6fc:	adrp	x8, 470 ; 0x2e4000
+  10e700:	ldr	x0, [x8, #0xad0] ; Objc class ref: _OBJC_CLASS_$_PHPhotoLibrary
+  10e704:	bl	_objc_msgSend$sharedPhotoLibrary
+  10e708:	mov	x29, x29
+  10e70c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10e710:	ldr	x8, [sp, #0x80]
+  10e714:	str	x0, [sp, #0x58]
+  10e718:	sub	x9, x29, #0x60
+  10e71c:	str	x9, [sp, #0x48]
+  10e720:	adrp	x10, 362 ; 0x278000
+  10e724:	ldr	x10, [x10, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+  10e728:	str	x10, [sp, #0x30]
+  10e72c:	stur	x10, [x29, #-0x60]
+  10e730:	mov	w10, #-0x3e000000
+  10e734:	str	w10, [sp, #0x3c]
+  10e738:	stur	w10, [x29, #-0x58]
+  10e73c:	stur	wzr, [x29, #-0x54]
+  10e740:	adrp	x10, 0 ; 0x10e000
+  10e744:	add	x10, x10, #0x9e4
+  10e748:	stur	x10, [x29, #-0x50]
+  10e74c:	adrp	x10, 363 ; 0x279000
+  10e750:	add	x10, x10, #0x468
+  10e754:	stur	x10, [x29, #-0x48]
+  10e758:	add	x9, x9, #0x20
+  10e75c:	str	x9, [sp, #0x70]
+  10e760:	ldr	x0, [x8, #0x20]
+  10e764:	adrp	x8, 362 ; 0x278000
+  10e768:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e76c:	blr	x8
+  10e770:	ldr	x11, [sp, #0x30]
+  10e774:	ldr	w10, [sp, #0x3c]
+  10e778:	ldr	x8, [sp, #0x80]
+  10e77c:	stur	x0, [x29, #-0x40]
+  10e780:	add	x9, sp, #0x90
+  10e784:	str	x9, [sp, #0x50]
+  10e788:	str	x11, [sp, #0x90]
+  10e78c:	str	w10, [sp, #0x98]
+  10e790:	str	wzr, [sp, #0x9c]
+  10e794:	adrp	x10, 0 ; 0x10e000
+  10e798:	add	x10, x10, #0xa24
+  10e79c:	str	x10, [sp, #0xa0]
+  10e7a0:	adrp	x10, 365 ; 0x27b000
+  10e7a4:	add	x10, x10, #0xb18
+  10e7a8:	str	x10, [sp, #0xa8]
+  10e7ac:	add	x9, x9, #0x20
+  10e7b0:	str	x9, [sp, #0x68]
+  10e7b4:	ldr	x0, [x8, #0x28]
+  10e7b8:	adrp	x8, 362 ; 0x278000
+  10e7bc:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e7c0:	blr	x8
+  10e7c4:	ldr	x8, [sp, #0x80]
+  10e7c8:	ldr	x9, [sp, #0x50]
+  10e7cc:	str	x0, [sp, #0xb0]
+  10e7d0:	add	x9, x9, #0x28
+  10e7d4:	str	x9, [sp, #0x60]
+  10e7d8:	ldr	x0, [x8, #0x20]
+  10e7dc:	adrp	x8, 362 ; 0x278000
+  10e7e0:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e7e4:	blr	x8
+  10e7e8:	ldr	x1, [sp, #0x40]
+  10e7ec:	ldr	x2, [sp, #0x48]
+  10e7f0:	ldr	x3, [sp, #0x50]
+  10e7f4:	mov	x8, x0
+  10e7f8:	ldr	x0, [sp, #0x58]
+  10e7fc:	str	x8, [sp, #0xb8]
+  10e800:	bl	"_objc_msgSend$performChanges:completionHandler:"
+  10e804:	ldr	x0, [sp, #0x58]
+  10e808:	adrp	x8, 362 ; 0x278000
+  10e80c:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10e810:	blr	x8
+  10e814:	ldr	x0, [sp, #0x60]
+  10e818:	mov	x1, #0x0
+  10e81c:	str	x1, [sp, #0x78]
+  10e820:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e824:	ldr	x0, [sp, #0x68]
+  10e828:	ldr	x1, [sp, #0x78]
+  10e82c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e830:	ldr	x0, [sp, #0x70]
+  10e834:	ldr	x1, [sp, #0x78]
+  10e838:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e83c:	b	0x10e9b4
+  10e840:	ldr	x1, [sp, #0x40]
+  10e844:	adrp	x8, 470 ; 0x2e4000
+  10e848:	ldr	x8, [x8, #0x9c8] ; Objc class ref: _OBJC_CLASS_$_NSError
+  10e84c:	str	x8, [sp, #0x18]
+  10e850:	adrp	x8, 362 ; 0x278000
+  10e854:	ldr	x8, [x8, #0x178] ; literal pool symbol address: _NSLocalizedDescriptionKey
+  10e858:	ldr	x8, [x8]
+  10e85c:	sub	x3, x29, #0x28
+  10e860:	stur	x8, [x29, #-0x28]
+  10e864:	sub	x2, x29, #0x20
+
+===== ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2: =====
+  10e694:	str	x1, [sp, #0x38]
+  10e698:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e69c:	ldr	x0, [sp, #0x30]
+  10e6a0:	ldr	x1, [sp, #0x38]
+  10e6a4:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e6a8:	ldp	x29, x30, [sp, #0x90]
+  10e6ac:	add	sp, sp, #0xa0
+  10e6b0:	ret
+___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2:
+  10e6b4:	sub	sp, sp, #0x130
+  10e6b8:	stp	x28, x27, [sp, #0x110]
+  10e6bc:	stp	x29, x30, [sp, #0x120]
+  10e6c0:	add	x29, sp, #0x120
+  10e6c4:	str	x0, [sp, #0x80]
+  10e6c8:	adrp	x8, 362 ; 0x278000
+  10e6cc:	ldr	x8, [x8, #0x1e8] ; literal pool symbol address: ___stack_chk_guard
+  10e6d0:	ldr	x8, [x8]
+  10e6d4:	stur	x8, [x29, #-0x18]
+  10e6d8:	mov	x8, x0
+  10e6dc:	stur	x8, [x29, #-0x30]
+  10e6e0:	mov	x8, x0
+  10e6e4:	stur	x8, [x29, #-0x38]
+  10e6e8:	ldr	x8, [x0, #0x30]
+  10e6ec:	subs	x8, x8, #0x3
+  10e6f0:	b.ne	0x10e840
+  10e6f4:	b	0x10e6f8
+  10e6f8:	ldr	x1, [sp, #0x40]
+  10e6fc:	adrp	x8, 470 ; 0x2e4000
+  10e700:	ldr	x0, [x8, #0xad0] ; Objc class ref: _OBJC_CLASS_$_PHPhotoLibrary
+  10e704:	bl	_objc_msgSend$sharedPhotoLibrary
+  10e708:	mov	x29, x29
+  10e70c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10e710:	ldr	x8, [sp, #0x80]
+  10e714:	str	x0, [sp, #0x58]
+  10e718:	sub	x9, x29, #0x60
+  10e71c:	str	x9, [sp, #0x48]
+  10e720:	adrp	x10, 362 ; 0x278000
+  10e724:	ldr	x10, [x10, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+  10e728:	str	x10, [sp, #0x30]
+  10e72c:	stur	x10, [x29, #-0x60]
+  10e730:	mov	w10, #-0x3e000000
+  10e734:	str	w10, [sp, #0x3c]
+  10e738:	stur	w10, [x29, #-0x58]
+  10e73c:	stur	wzr, [x29, #-0x54]
+  10e740:	adrp	x10, 0 ; 0x10e000
+  10e744:	add	x10, x10, #0x9e4
+  10e748:	stur	x10, [x29, #-0x50]
+  10e74c:	adrp	x10, 363 ; 0x279000
+  10e750:	add	x10, x10, #0x468
+  10e754:	stur	x10, [x29, #-0x48]
+  10e758:	add	x9, x9, #0x20
+  10e75c:	str	x9, [sp, #0x70]
+  10e760:	ldr	x0, [x8, #0x20]
+  10e764:	adrp	x8, 362 ; 0x278000
+  10e768:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e76c:	blr	x8
+  10e770:	ldr	x11, [sp, #0x30]
+  10e774:	ldr	w10, [sp, #0x3c]
+  10e778:	ldr	x8, [sp, #0x80]
+  10e77c:	stur	x0, [x29, #-0x40]
+  10e780:	add	x9, sp, #0x90
+  10e784:	str	x9, [sp, #0x50]
+  10e788:	str	x11, [sp, #0x90]
+  10e78c:	str	w10, [sp, #0x98]
+  10e790:	str	wzr, [sp, #0x9c]
+  10e794:	adrp	x10, 0 ; 0x10e000
+  10e798:	add	x10, x10, #0xa24
+  10e79c:	str	x10, [sp, #0xa0]
+  10e7a0:	adrp	x10, 365 ; 0x27b000
+  10e7a4:	add	x10, x10, #0xb18
+  10e7a8:	str	x10, [sp, #0xa8]
+  10e7ac:	add	x9, x9, #0x20
+  10e7b0:	str	x9, [sp, #0x68]
+  10e7b4:	ldr	x0, [x8, #0x28]
+  10e7b8:	adrp	x8, 362 ; 0x278000
+  10e7bc:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e7c0:	blr	x8
+  10e7c4:	ldr	x8, [sp, #0x80]
+  10e7c8:	ldr	x9, [sp, #0x50]
+  10e7cc:	str	x0, [sp, #0xb0]
+  10e7d0:	add	x9, x9, #0x28
+  10e7d4:	str	x9, [sp, #0x60]
+  10e7d8:	ldr	x0, [x8, #0x20]
+  10e7dc:	adrp	x8, 362 ; 0x278000
+  10e7e0:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10e7e4:	blr	x8
+  10e7e8:	ldr	x1, [sp, #0x40]
+  10e7ec:	ldr	x2, [sp, #0x48]
+  10e7f0:	ldr	x3, [sp, #0x50]
+  10e7f4:	mov	x8, x0
+  10e7f8:	ldr	x0, [sp, #0x58]
+  10e7fc:	str	x8, [sp, #0xb8]
+  10e800:	bl	"_objc_msgSend$performChanges:completionHandler:"
+  10e804:	ldr	x0, [sp, #0x58]
+  10e808:	adrp	x8, 362 ; 0x278000
+  10e80c:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10e810:	blr	x8
+  10e814:	ldr	x0, [sp, #0x60]
+  10e818:	mov	x1, #0x0
+  10e81c:	str	x1, [sp, #0x78]
+  10e820:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e824:	ldr	x0, [sp, #0x68]
+  10e828:	ldr	x1, [sp, #0x78]
+  10e82c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e830:	ldr	x0, [sp, #0x70]
+  10e834:	ldr	x1, [sp, #0x78]
+  10e838:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10e83c:	b	0x10e9b4
+  10e840:	ldr	x1, [sp, #0x40]
+  10e844:	adrp	x8, 470 ; 0x2e4000
+  10e848:	ldr	x8, [x8, #0x9c8] ; Objc class ref: _OBJC_CLASS_$_NSError
+  10e84c:	str	x8, [sp, #0x18]
+  10e850:	adrp	x8, 362 ; 0x278000
+  10e854:	ldr	x8, [x8, #0x178] ; literal pool symbol address: _NSLocalizedDescriptionKey
+  10e858:	ldr	x8, [x8]
+  10e85c:	sub	x3, x29, #0x28
+  10e860:	stur	x8, [x29, #-0x28]
+  10e864:	sub	x2, x29, #0x20
+  10e868:	adrp	x8, 380 ; 0x28a000
+  10e86c:	add	x8, x8, #0xf8 ; Objc cfstring ref: @"(u7b*g�cCg����v�Q"
+  10e870:	stur	x8, [x29, #-0x20]
+  10e874:	adrp	x8, 470 ; 0x2e4000
+  10e878:	ldr	x0, [x8, #0x908] ; Objc class ref: _OBJC_CLASS_$_NSDictionary
+  10e87c:	mov	x4, #0x1
+  10e880:	bl	"_objc_msgSend$dictionaryWithObjects:forKeys:count:"
+  10e884:	mov	x29, x29
+  10e888:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10e88c:	ldr	x1, [sp, #0x40]
+  10e890:	mov	x4, x0
+  10e894:	ldr	x0, [sp, #0x18]
+  10e898:	str	x4, [sp, #0x20]
+  10e89c:	adrp	x2, 379 ; 0x289000
+  10e8a0:	add	x2, x2, #0xfb8 ; Objc cfstring ref: @"M3U8Downloader"
+  10e8a4:	mov	x3, #0x7d2
+  10e8a8:	bl	"_objc_msgSend$errorWithDomain:code:userInfo:"
+  10e8ac:	mov	x29, x29
+  10e8b0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10e8b4:	mov	x8, x0
+  10e8b8:	ldr	x0, [sp, #0x20]
+  10e8bc:	str	x8, [sp, #0x88]
+  10e8c0:	adrp	x8, 362 ; 0x278000
+  10e8c4:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10e8c8:	blr	x8
+  10e8cc:	ldr	x8, [sp, #0x80]
+  10e8d0:	ldr	x1, [sp, #0x40]
+  10e8d4:	ldr	x0, [x8, #0x28]
+  10e8d8:	bl	_objc_msgSend$completionBlock
+  10e8dc:	mov	x29, x29
+  10e8e0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10e8e4:	str	x0, [sp, #0x28]
+  10e8e8:	adrp	x8, 362 ; 0x278000
+  10e8ec:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10e8f0:	blr	x8
+  10e8f4:	ldr	x0, [sp, #0x28]
+  10e8f8:	cbz	x0, 0x10e948
+  10e8fc:	b	0x10e900
+  10e900:	ldr	x1, [sp, #0x40]
+  10e904:	ldr	x8, [sp, #0x80]
+  10e908:	ldr	x0, [x8, #0x28]
+  10e90c:	bl	_objc_msgSend$completionBlock
+  10e910:	mov	x29, x29
+  10e914:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10e918:	str	x0, [sp, #0x10]
+  10e91c:	ldr	x3, [sp, #0x88]
+  10e920:	ldr	x8, [x0, #0x10]
+  10e924:	mov	w9, #0x0
+  10e928:	and	w1, w9, #0x1
+  10e92c:	mov	x2, #0x0
+  10e930:	blr	x8
+  10e934:	ldr	x0, [sp, #0x10]
+  10e938:	adrp	x8, 362 ; 0x278000
+  10e93c:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10e940:	blr	x8
+  10e944:	b	0x10e948
+  10e948:	ldr	x1, [sp, #0x40]
+  10e94c:	adrp	x8, 470 ; 0x2e4000
+  10e950:	ldr	x0, [x8, #0x858] ; Objc class ref: _OBJC_CLASS_$_NSFileManager
+  10e954:	bl	_objc_msgSend$defaultManager
+  10e958:	mov	x29, x29
+  10e95c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10e960:	ldr	x8, [sp, #0x80]
+  10e964:	ldr	x1, [sp, #0x40]
+  10e968:	str	x0, [sp]
+  10e96c:	ldr	x2, [x8, #0x20]
+  10e970:	mov	x3, #0x0
+  10e974:	str	x3, [sp, #0x8]
+  10e978:	bl	"_objc_msgSend$removeItemAtURL:error:"
+  10e97c:	ldr	x0, [sp]
+
+===== ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_3: =====
+  10e9c4:	subs	x8, x8, x9
+  10e9c8:	b.eq	0x10e9d4
+  10e9cc:	b	0x10e9d0
+  10e9d0:	bl	0x1f6b20 ; symbol stub for: ___stack_chk_fail
+  10e9d4:	ldp	x29, x30, [sp, #0x120]
+  10e9d8:	ldp	x28, x27, [sp, #0x110]
+  10e9dc:	add	sp, sp, #0x130
+  10e9e0:	ret
+___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_3:
+  10e9e4:	sub	sp, sp, #0x20
+  10e9e8:	stp	x29, x30, [sp, #0x10]
+  10e9ec:	add	x29, sp, #0x10
+  10e9f0:	mov	x8, x0
+  10e9f4:	mov	x0, x8
+  10e9f8:	str	x0, [sp, #0x8]
+  10e9fc:	mov	x0, x8
+  10ea00:	str	x0, [sp]
+  10ea04:	adrp	x9, 470 ; 0x2e4000
+  10ea08:	ldr	x0, [x9, #0xd40] ; Objc class ref: _OBJC_CLASS_$_PHAssetChangeRequest
+  10ea0c:	ldr	x2, [x8, #0x20]
+  10ea10:	bl	"_objc_msgSend$creationRequestForAssetFromVideoAtFileURL:"
+  10ea14:	mov	x29, x29
+  10ea18:	ldp	x29, x30, [sp, #0x10]
+  10ea1c:	add	sp, sp, #0x20
+  10ea20:	b	0x1f7348 ; symbol stub for: _objc_unsafeClaimAutoreleasedReturnValue
+___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke.35:
+  10ea24:	sub	sp, sp, #0xc0
+  10ea28:	stp	x29, x30, [sp, #0xb0]
+  10ea2c:	add	x29, sp, #0xb0
+  10ea30:	str	x0, [sp, #0x10]
+  10ea34:	mov	x8, x1
+  10ea38:	mov	x1, x2
+  10ea3c:	stur	x0, [x29, #-0x8]
+  10ea40:	sturb	w8, [x29, #-0x9]
+  10ea44:	sub	x0, x29, #0x18
+  10ea48:	str	x0, [sp, #0x40]
+  10ea4c:	mov	x8, #0x0
+  10ea50:	str	x8, [sp, #0x48]
+  10ea54:	stur	xzr, [x29, #-0x18]
+  10ea58:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10ea5c:	ldr	x0, [sp, #0x10]
+  10ea60:	stur	x0, [x29, #-0x20]
+  10ea64:	adrp	x0, 362 ; 0x278000
+  10ea68:	ldr	x0, [x0, #0x208] ; literal pool symbol address: __dispatch_main_q
+  10ea6c:	str	x0, [sp, #0x8]
+  10ea70:	bl	0x1f72ac ; symbol stub for: _objc_retainAutoreleaseReturnValue
+  10ea74:	ldr	x0, [sp, #0x8]
+  10ea78:	mov	x29, x29
+  10ea7c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ea80:	mov	x1, x0
+  10ea84:	ldr	x0, [sp, #0x10]
+  10ea88:	str	x1, [sp, #0x20]
+  10ea8c:	add	x8, sp, #0x50
+  10ea90:	str	x8, [sp, #0x18]
+  10ea94:	adrp	x8, 362 ; 0x278000
+  10ea98:	ldr	x8, [x8, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+  10ea9c:	str	x8, [sp, #0x50]
+  10eaa0:	mov	w8, #-0x3e000000
+  10eaa4:	str	w8, [sp, #0x58]
+  10eaa8:	str	wzr, [sp, #0x5c]
+  10eaac:	adrp	x8, 0 ; 0x10e000
+  10eab0:	add	x8, x8, #0xb90
+  10eab4:	str	x8, [sp, #0x60]
+  10eab8:	adrp	x8, 365 ; 0x27b000
+  10eabc:	add	x8, x8, #0xae8
+  10eac0:	str	x8, [sp, #0x68]
+  10eac4:	ldurb	w8, [x29, #-0x9]
+  10eac8:	and	w8, w8, #0x1
+  10eacc:	strb	w8, [sp, #0x88]
+  10ead0:	ldr	x0, [x0, #0x20]
+  10ead4:	adrp	x8, 362 ; 0x278000
+  10ead8:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10eadc:	blr	x8
+  10eae0:	ldr	x8, [sp, #0x18]
+  10eae4:	add	x8, x8, #0x20
+  10eae8:	str	x8, [sp, #0x38]
+  10eaec:	str	x0, [sp, #0x70]
+  10eaf0:	ldur	x0, [x29, #-0x18]
+  10eaf4:	adrp	x8, 362 ; 0x278000
+  10eaf8:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10eafc:	blr	x8
+  10eb00:	ldr	x9, [sp, #0x18]
+  10eb04:	mov	x8, x0
+  10eb08:	ldr	x0, [sp, #0x10]
+  10eb0c:	add	x9, x9, #0x28
+  10eb10:	str	x9, [sp, #0x30]
+  10eb14:	str	x8, [sp, #0x78]
+  10eb18:	ldr	x0, [x0, #0x28]
+  10eb1c:	adrp	x8, 362 ; 0x278000
+  10eb20:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10eb24:	blr	x8
+  10eb28:	ldr	x1, [sp, #0x18]
+  10eb2c:	mov	x8, x0
+  10eb30:	ldr	x0, [sp, #0x20]
+  10eb34:	add	x9, x1, #0x30
+  10eb38:	str	x9, [sp, #0x28]
+  10eb3c:	str	x8, [sp, #0x80]
+  10eb40:	bl	0x1f6d0c ; symbol stub for: _dispatch_async
+  10eb44:	ldr	x0, [sp, #0x20]
+  10eb48:	adrp	x8, 362 ; 0x278000
+  10eb4c:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10eb50:	blr	x8
+  10eb54:	ldr	x0, [sp, #0x28]
+  10eb58:	ldr	x1, [sp, #0x48]
+  10eb5c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10eb60:	ldr	x0, [sp, #0x30]
+  10eb64:	ldr	x1, [sp, #0x48]
+  10eb68:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10eb6c:	ldr	x0, [sp, #0x38]
+  10eb70:	ldr	x1, [sp, #0x48]
+  10eb74:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10eb78:	ldr	x0, [sp, #0x40]
+  10eb7c:	ldr	x1, [sp, #0x48]
+  10eb80:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10eb84:	ldp	x29, x30, [sp, #0xb0]
+  10eb88:	add	sp, sp, #0xc0
+  10eb8c:	ret
+___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2.36:
+  10eb90:	sub	sp, sp, #0x60
+  10eb94:	stp	x29, x30, [sp, #0x50]
+  10eb98:	add	x29, sp, #0x50
+  10eb9c:	stur	x0, [x29, #-0x18]
+  10eba0:	mov	x8, x0
+  10eba4:	stur	x8, [x29, #-0x8]
+  10eba8:	mov	x8, x0
+  10ebac:	stur	x8, [x29, #-0x10]
+  10ebb0:	ldrb	w8, [x0, #0x38]
+  10ebb4:	tbz	w8, #0x0, 0x10ec40
+  10ebb8:	b	0x10ebbc
+  10ebbc:	ldr	x1, [sp, #0x28]
+  10ebc0:	ldur	x8, [x29, #-0x18]
+  10ebc4:	ldr	x0, [x8, #0x20]
+  10ebc8:	bl	_objc_msgSend$completionBlock
+  10ebcc:	mov	x29, x29
+  10ebd0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ebd4:	stur	x0, [x29, #-0x20]
+  10ebd8:	adrp	x8, 362 ; 0x278000
+  10ebdc:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ebe0:	blr	x8
+  10ebe4:	ldur	x0, [x29, #-0x20]
+  10ebe8:	cbz	x0, 0x10ec3c
+  10ebec:	b	0x10ebf0
+  10ebf0:	ldr	x1, [sp, #0x28]
+  10ebf4:	ldur	x8, [x29, #-0x18]
+  10ebf8:	ldr	x0, [x8, #0x20]
+  10ebfc:	bl	_objc_msgSend$completionBlock
+  10ec00:	mov	x29, x29
+  10ec04:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ec08:	str	x0, [sp, #0x20]
+  10ec0c:	ldr	x8, [x0, #0x10]
+  10ec10:	mov	w9, #0x1
+  10ec14:	and	w1, w9, #0x1
+  10ec18:	adrp	x2, 380 ; 0x28a000
+  10ec1c:	add	x2, x2, #0xd8 ; Objc cfstring ref: @"�]b�R�OX[0R�v�Q"
+  10ec20:	mov	x3, #0x0
+  10ec24:	blr	x8
+  10ec28:	ldr	x0, [sp, #0x20]
+  10ec2c:	adrp	x8, 362 ; 0x278000
+  10ec30:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ec34:	blr	x8
+  10ec38:	b	0x10ec3c
+  10ec3c:	b	0x10ecc4
+  10ec40:	ldr	x1, [sp, #0x28]
+  10ec44:	ldur	x8, [x29, #-0x18]
+  10ec48:	ldr	x0, [x8, #0x20]
+  10ec4c:	bl	_objc_msgSend$completionBlock
+  10ec50:	mov	x29, x29
+  10ec54:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ec58:	str	x0, [sp, #0x18]
+  10ec5c:	adrp	x8, 362 ; 0x278000
+  10ec60:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ec64:	blr	x8
+  10ec68:	ldr	x0, [sp, #0x18]
+  10ec6c:	cbz	x0, 0x10ecc0
+  10ec70:	b	0x10ec74
+  10ec74:	ldur	x8, [x29, #-0x18]
+  10ec78:	ldr	x1, [sp, #0x28]
+  10ec7c:	ldr	x0, [x8, #0x20]
+  10ec80:	bl	_objc_msgSend$completionBlock
+  10ec84:	mov	x29, x29
+  10ec88:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ec8c:	ldur	x8, [x29, #-0x18]
+  10ec90:	str	x0, [sp, #0x10]
+  10ec94:	ldr	x3, [x8, #0x28]
+  10ec98:	ldr	x8, [x0, #0x10]
+  10ec9c:	mov	w9, #0x0
+  10eca0:	and	w1, w9, #0x1
+  10eca4:	mov	x2, #0x0
+
+===== ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke.35: =====
+  10ea04:	adrp	x9, 470 ; 0x2e4000
+  10ea08:	ldr	x0, [x9, #0xd40] ; Objc class ref: _OBJC_CLASS_$_PHAssetChangeRequest
+  10ea0c:	ldr	x2, [x8, #0x20]
+  10ea10:	bl	"_objc_msgSend$creationRequestForAssetFromVideoAtFileURL:"
+  10ea14:	mov	x29, x29
+  10ea18:	ldp	x29, x30, [sp, #0x10]
+  10ea1c:	add	sp, sp, #0x20
+  10ea20:	b	0x1f7348 ; symbol stub for: _objc_unsafeClaimAutoreleasedReturnValue
+___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke.35:
+  10ea24:	sub	sp, sp, #0xc0
+  10ea28:	stp	x29, x30, [sp, #0xb0]
+  10ea2c:	add	x29, sp, #0xb0
+  10ea30:	str	x0, [sp, #0x10]
+  10ea34:	mov	x8, x1
+  10ea38:	mov	x1, x2
+  10ea3c:	stur	x0, [x29, #-0x8]
+  10ea40:	sturb	w8, [x29, #-0x9]
+  10ea44:	sub	x0, x29, #0x18
+  10ea48:	str	x0, [sp, #0x40]
+  10ea4c:	mov	x8, #0x0
+  10ea50:	str	x8, [sp, #0x48]
+  10ea54:	stur	xzr, [x29, #-0x18]
+  10ea58:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10ea5c:	ldr	x0, [sp, #0x10]
+  10ea60:	stur	x0, [x29, #-0x20]
+  10ea64:	adrp	x0, 362 ; 0x278000
+  10ea68:	ldr	x0, [x0, #0x208] ; literal pool symbol address: __dispatch_main_q
+  10ea6c:	str	x0, [sp, #0x8]
+  10ea70:	bl	0x1f72ac ; symbol stub for: _objc_retainAutoreleaseReturnValue
+  10ea74:	ldr	x0, [sp, #0x8]
+  10ea78:	mov	x29, x29
+  10ea7c:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ea80:	mov	x1, x0
+  10ea84:	ldr	x0, [sp, #0x10]
+  10ea88:	str	x1, [sp, #0x20]
+  10ea8c:	add	x8, sp, #0x50
+  10ea90:	str	x8, [sp, #0x18]
+  10ea94:	adrp	x8, 362 ; 0x278000
+  10ea98:	ldr	x8, [x8, #0x1e0] ; literal pool symbol address: __NSConcreteStackBlock
+  10ea9c:	str	x8, [sp, #0x50]
+  10eaa0:	mov	w8, #-0x3e000000
+  10eaa4:	str	w8, [sp, #0x58]
+  10eaa8:	str	wzr, [sp, #0x5c]
+  10eaac:	adrp	x8, 0 ; 0x10e000
+  10eab0:	add	x8, x8, #0xb90
+  10eab4:	str	x8, [sp, #0x60]
+  10eab8:	adrp	x8, 365 ; 0x27b000
+  10eabc:	add	x8, x8, #0xae8
+  10eac0:	str	x8, [sp, #0x68]
+  10eac4:	ldurb	w8, [x29, #-0x9]
+  10eac8:	and	w8, w8, #0x1
+  10eacc:	strb	w8, [sp, #0x88]
+  10ead0:	ldr	x0, [x0, #0x20]
+  10ead4:	adrp	x8, 362 ; 0x278000
+  10ead8:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10eadc:	blr	x8
+  10eae0:	ldr	x8, [sp, #0x18]
+  10eae4:	add	x8, x8, #0x20
+  10eae8:	str	x8, [sp, #0x38]
+  10eaec:	str	x0, [sp, #0x70]
+  10eaf0:	ldur	x0, [x29, #-0x18]
+  10eaf4:	adrp	x8, 362 ; 0x278000
+  10eaf8:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10eafc:	blr	x8
+  10eb00:	ldr	x9, [sp, #0x18]
+  10eb04:	mov	x8, x0
+  10eb08:	ldr	x0, [sp, #0x10]
+  10eb0c:	add	x9, x9, #0x28
+  10eb10:	str	x9, [sp, #0x30]
+  10eb14:	str	x8, [sp, #0x78]
+  10eb18:	ldr	x0, [x0, #0x28]
+  10eb1c:	adrp	x8, 362 ; 0x278000
+  10eb20:	ldr	x8, [x8, #0x1d0] ; literal pool symbol address: _objc_retain
+  10eb24:	blr	x8
+  10eb28:	ldr	x1, [sp, #0x18]
+  10eb2c:	mov	x8, x0
+  10eb30:	ldr	x0, [sp, #0x20]
+  10eb34:	add	x9, x1, #0x30
+  10eb38:	str	x9, [sp, #0x28]
+  10eb3c:	str	x8, [sp, #0x80]
+  10eb40:	bl	0x1f6d0c ; symbol stub for: _dispatch_async
+  10eb44:	ldr	x0, [sp, #0x20]
+  10eb48:	adrp	x8, 362 ; 0x278000
+  10eb4c:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10eb50:	blr	x8
+  10eb54:	ldr	x0, [sp, #0x28]
+  10eb58:	ldr	x1, [sp, #0x48]
+  10eb5c:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10eb60:	ldr	x0, [sp, #0x30]
+  10eb64:	ldr	x1, [sp, #0x48]
+  10eb68:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10eb6c:	ldr	x0, [sp, #0x38]
+  10eb70:	ldr	x1, [sp, #0x48]
+  10eb74:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10eb78:	ldr	x0, [sp, #0x40]
+  10eb7c:	ldr	x1, [sp, #0x48]
+  10eb80:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10eb84:	ldp	x29, x30, [sp, #0xb0]
+  10eb88:	add	sp, sp, #0xc0
+  10eb8c:	ret
+___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2.36:
+  10eb90:	sub	sp, sp, #0x60
+  10eb94:	stp	x29, x30, [sp, #0x50]
+  10eb98:	add	x29, sp, #0x50
+  10eb9c:	stur	x0, [x29, #-0x18]
+  10eba0:	mov	x8, x0
+  10eba4:	stur	x8, [x29, #-0x8]
+  10eba8:	mov	x8, x0
+  10ebac:	stur	x8, [x29, #-0x10]
+  10ebb0:	ldrb	w8, [x0, #0x38]
+  10ebb4:	tbz	w8, #0x0, 0x10ec40
+  10ebb8:	b	0x10ebbc
+  10ebbc:	ldr	x1, [sp, #0x28]
+  10ebc0:	ldur	x8, [x29, #-0x18]
+  10ebc4:	ldr	x0, [x8, #0x20]
+  10ebc8:	bl	_objc_msgSend$completionBlock
+  10ebcc:	mov	x29, x29
+  10ebd0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ebd4:	stur	x0, [x29, #-0x20]
+  10ebd8:	adrp	x8, 362 ; 0x278000
+  10ebdc:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ebe0:	blr	x8
+  10ebe4:	ldur	x0, [x29, #-0x20]
+  10ebe8:	cbz	x0, 0x10ec3c
+  10ebec:	b	0x10ebf0
+  10ebf0:	ldr	x1, [sp, #0x28]
+  10ebf4:	ldur	x8, [x29, #-0x18]
+  10ebf8:	ldr	x0, [x8, #0x20]
+  10ebfc:	bl	_objc_msgSend$completionBlock
+  10ec00:	mov	x29, x29
+  10ec04:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ec08:	str	x0, [sp, #0x20]
+  10ec0c:	ldr	x8, [x0, #0x10]
+  10ec10:	mov	w9, #0x1
+  10ec14:	and	w1, w9, #0x1
+  10ec18:	adrp	x2, 380 ; 0x28a000
+  10ec1c:	add	x2, x2, #0xd8 ; Objc cfstring ref: @"�]b�R�OX[0R�v�Q"
+  10ec20:	mov	x3, #0x0
+  10ec24:	blr	x8
+  10ec28:	ldr	x0, [sp, #0x20]
+  10ec2c:	adrp	x8, 362 ; 0x278000
+  10ec30:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ec34:	blr	x8
+  10ec38:	b	0x10ec3c
+  10ec3c:	b	0x10ecc4
+  10ec40:	ldr	x1, [sp, #0x28]
+  10ec44:	ldur	x8, [x29, #-0x18]
+  10ec48:	ldr	x0, [x8, #0x20]
+  10ec4c:	bl	_objc_msgSend$completionBlock
+  10ec50:	mov	x29, x29
+  10ec54:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ec58:	str	x0, [sp, #0x18]
+  10ec5c:	adrp	x8, 362 ; 0x278000
+  10ec60:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ec64:	blr	x8
+  10ec68:	ldr	x0, [sp, #0x18]
+  10ec6c:	cbz	x0, 0x10ecc0
+  10ec70:	b	0x10ec74
+  10ec74:	ldur	x8, [x29, #-0x18]
+  10ec78:	ldr	x1, [sp, #0x28]
+  10ec7c:	ldr	x0, [x8, #0x20]
+  10ec80:	bl	_objc_msgSend$completionBlock
+  10ec84:	mov	x29, x29
+  10ec88:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ec8c:	ldur	x8, [x29, #-0x18]
+  10ec90:	str	x0, [sp, #0x10]
+  10ec94:	ldr	x3, [x8, #0x28]
+  10ec98:	ldr	x8, [x0, #0x10]
+  10ec9c:	mov	w9, #0x0
+  10eca0:	and	w1, w9, #0x1
+  10eca4:	mov	x2, #0x0
+  10eca8:	blr	x8
+  10ecac:	ldr	x0, [sp, #0x10]
+  10ecb0:	adrp	x8, 362 ; 0x278000
+  10ecb4:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ecb8:	blr	x8
+  10ecbc:	b	0x10ecc0
+  10ecc0:	b	0x10ecc4
+  10ecc4:	ldr	x1, [sp, #0x28]
+  10ecc8:	adrp	x8, 470 ; 0x2e4000
+  10eccc:	ldr	x0, [x8, #0x858] ; Objc class ref: _OBJC_CLASS_$_NSFileManager
+  10ecd0:	bl	_objc_msgSend$defaultManager
+  10ecd4:	mov	x29, x29
+  10ecd8:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ecdc:	ldur	x8, [x29, #-0x18]
+  10ece0:	ldr	x1, [sp, #0x28]
+  10ece4:	str	x0, [sp, #0x8]
+  10ece8:	ldr	x2, [x8, #0x30]
+
+===== ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2.36: =====
+  10eb70:	ldr	x1, [sp, #0x48]
+  10eb74:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10eb78:	ldr	x0, [sp, #0x40]
+  10eb7c:	ldr	x1, [sp, #0x48]
+  10eb80:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10eb84:	ldp	x29, x30, [sp, #0xb0]
+  10eb88:	add	sp, sp, #0xc0
+  10eb8c:	ret
+___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2.36:
+  10eb90:	sub	sp, sp, #0x60
+  10eb94:	stp	x29, x30, [sp, #0x50]
+  10eb98:	add	x29, sp, #0x50
+  10eb9c:	stur	x0, [x29, #-0x18]
+  10eba0:	mov	x8, x0
+  10eba4:	stur	x8, [x29, #-0x8]
+  10eba8:	mov	x8, x0
+  10ebac:	stur	x8, [x29, #-0x10]
+  10ebb0:	ldrb	w8, [x0, #0x38]
+  10ebb4:	tbz	w8, #0x0, 0x10ec40
+  10ebb8:	b	0x10ebbc
+  10ebbc:	ldr	x1, [sp, #0x28]
+  10ebc0:	ldur	x8, [x29, #-0x18]
+  10ebc4:	ldr	x0, [x8, #0x20]
+  10ebc8:	bl	_objc_msgSend$completionBlock
+  10ebcc:	mov	x29, x29
+  10ebd0:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ebd4:	stur	x0, [x29, #-0x20]
+  10ebd8:	adrp	x8, 362 ; 0x278000
+  10ebdc:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ebe0:	blr	x8
+  10ebe4:	ldur	x0, [x29, #-0x20]
+  10ebe8:	cbz	x0, 0x10ec3c
+  10ebec:	b	0x10ebf0
+  10ebf0:	ldr	x1, [sp, #0x28]
+  10ebf4:	ldur	x8, [x29, #-0x18]
+  10ebf8:	ldr	x0, [x8, #0x20]
+  10ebfc:	bl	_objc_msgSend$completionBlock
+  10ec00:	mov	x29, x29
+  10ec04:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ec08:	str	x0, [sp, #0x20]
+  10ec0c:	ldr	x8, [x0, #0x10]
+  10ec10:	mov	w9, #0x1
+  10ec14:	and	w1, w9, #0x1
+  10ec18:	adrp	x2, 380 ; 0x28a000
+  10ec1c:	add	x2, x2, #0xd8 ; Objc cfstring ref: @"�]b�R�OX[0R�v�Q"
+  10ec20:	mov	x3, #0x0
+  10ec24:	blr	x8
+  10ec28:	ldr	x0, [sp, #0x20]
+  10ec2c:	adrp	x8, 362 ; 0x278000
+  10ec30:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ec34:	blr	x8
+  10ec38:	b	0x10ec3c
+  10ec3c:	b	0x10ecc4
+  10ec40:	ldr	x1, [sp, #0x28]
+  10ec44:	ldur	x8, [x29, #-0x18]
+  10ec48:	ldr	x0, [x8, #0x20]
+  10ec4c:	bl	_objc_msgSend$completionBlock
+  10ec50:	mov	x29, x29
+  10ec54:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ec58:	str	x0, [sp, #0x18]
+  10ec5c:	adrp	x8, 362 ; 0x278000
+  10ec60:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ec64:	blr	x8
+  10ec68:	ldr	x0, [sp, #0x18]
+  10ec6c:	cbz	x0, 0x10ecc0
+  10ec70:	b	0x10ec74
+  10ec74:	ldur	x8, [x29, #-0x18]
+  10ec78:	ldr	x1, [sp, #0x28]
+  10ec7c:	ldr	x0, [x8, #0x20]
+  10ec80:	bl	_objc_msgSend$completionBlock
+  10ec84:	mov	x29, x29
+  10ec88:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ec8c:	ldur	x8, [x29, #-0x18]
+  10ec90:	str	x0, [sp, #0x10]
+  10ec94:	ldr	x3, [x8, #0x28]
+  10ec98:	ldr	x8, [x0, #0x10]
+  10ec9c:	mov	w9, #0x0
+  10eca0:	and	w1, w9, #0x1
+  10eca4:	mov	x2, #0x0
+  10eca8:	blr	x8
+  10ecac:	ldr	x0, [sp, #0x10]
+  10ecb0:	adrp	x8, 362 ; 0x278000
+  10ecb4:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ecb8:	blr	x8
+  10ecbc:	b	0x10ecc0
+  10ecc0:	b	0x10ecc4
+  10ecc4:	ldr	x1, [sp, #0x28]
+  10ecc8:	adrp	x8, 470 ; 0x2e4000
+  10eccc:	ldr	x0, [x8, #0x858] ; Objc class ref: _OBJC_CLASS_$_NSFileManager
+  10ecd0:	bl	_objc_msgSend$defaultManager
+  10ecd4:	mov	x29, x29
+  10ecd8:	bl	0x1f72b8 ; symbol stub for: _objc_retainAutoreleasedReturnValue
+  10ecdc:	ldur	x8, [x29, #-0x18]
+  10ece0:	ldr	x1, [sp, #0x28]
+  10ece4:	str	x0, [sp, #0x8]
+  10ece8:	ldr	x2, [x8, #0x30]
+  10ecec:	mov	x3, #0x0
+  10ecf0:	bl	"_objc_msgSend$removeItemAtURL:error:"
+  10ecf4:	ldr	x0, [sp, #0x8]
+  10ecf8:	adrp	x8, 362 ; 0x278000
+  10ecfc:	ldr	x8, [x8, #0x1c8] ; literal pool symbol address: _objc_release
+  10ed00:	blr	x8
+  10ed04:	ldur	x8, [x29, #-0x18]
+  10ed08:	ldr	x1, [sp, #0x28]
+  10ed0c:	ldr	x0, [x8, #0x20]
+  10ed10:	mov	w8, #0x0
+  10ed14:	and	w2, w8, #0x1
+  10ed18:	bl	"_objc_msgSend$setIsDownloading:"
+  10ed1c:	ldp	x29, x30, [sp, #0x50]
+  10ed20:	add	sp, sp, #0x60
+  10ed24:	ret
+-[M3U8Downloader progressBlock]:
+  10ed28:	sub	sp, sp, #0x10
+  10ed2c:	str	x0, [sp, #0x8]
+  10ed30:	str	x1, [sp]
+  10ed34:	ldr	x8, [sp, #0x8]
+  10ed38:	ldr	x0, [x8, #0x10]
+  10ed3c:	add	sp, sp, #0x10
+  10ed40:	ret
+-[M3U8Downloader setProgressBlock:]:
+  10ed44:	sub	sp, sp, #0x30
+  10ed48:	stp	x29, x30, [sp, #0x20]
+  10ed4c:	add	x29, sp, #0x20
+  10ed50:	stur	x0, [x29, #-0x8]
+  10ed54:	str	x1, [sp, #0x10]
+  10ed58:	str	x2, [sp, #0x8]
+  10ed5c:	ldr	x1, [sp, #0x10]
+  10ed60:	ldur	x0, [x29, #-0x8]
+  10ed64:	ldr	x2, [sp, #0x8]
+  10ed68:	mov	x3, #0x10
+  10ed6c:	bl	0x1f7300 ; symbol stub for: _objc_setProperty_nonatomic_copy
+  10ed70:	ldp	x29, x30, [sp, #0x20]
+  10ed74:	add	sp, sp, #0x30
+  10ed78:	ret
+-[M3U8Downloader completionBlock]:
+  10ed7c:	sub	sp, sp, #0x10
+  10ed80:	str	x0, [sp, #0x8]
+  10ed84:	str	x1, [sp]
+  10ed88:	ldr	x8, [sp, #0x8]
+  10ed8c:	ldr	x0, [x8, #0x18]
+  10ed90:	add	sp, sp, #0x10
+  10ed94:	ret
+-[M3U8Downloader setCompletionBlock:]:
+  10ed98:	sub	sp, sp, #0x30
+  10ed9c:	stp	x29, x30, [sp, #0x20]
+  10eda0:	add	x29, sp, #0x20
+  10eda4:	stur	x0, [x29, #-0x8]
+  10eda8:	str	x1, [sp, #0x10]
+  10edac:	str	x2, [sp, #0x8]
+  10edb0:	ldr	x1, [sp, #0x10]
+  10edb4:	ldur	x0, [x29, #-0x8]
+  10edb8:	ldr	x2, [sp, #0x8]
+  10edbc:	mov	x3, #0x18
+  10edc0:	bl	0x1f7300 ; symbol stub for: _objc_setProperty_nonatomic_copy
+  10edc4:	ldp	x29, x30, [sp, #0x20]
+  10edc8:	add	sp, sp, #0x30
+  10edcc:	ret
+-[M3U8Downloader m3u8URL]:
+  10edd0:	sub	sp, sp, #0x10
+  10edd4:	str	x0, [sp, #0x8]
+  10edd8:	str	x1, [sp]
+  10eddc:	ldr	x8, [sp, #0x8]
+  10ede0:	ldr	x0, [x8, #0x20]
+  10ede4:	add	sp, sp, #0x10
+  10ede8:	ret
+-[M3U8Downloader setM3u8URL:]:
+  10edec:	sub	sp, sp, #0x30
+  10edf0:	stp	x29, x30, [sp, #0x20]
+  10edf4:	add	x29, sp, #0x20
+  10edf8:	stur	x0, [x29, #-0x8]
+  10edfc:	str	x1, [sp, #0x10]
+  10ee00:	str	x2, [sp, #0x8]
+  10ee04:	ldr	x1, [sp, #0x8]
+  10ee08:	ldur	x8, [x29, #-0x8]
+  10ee0c:	add	x0, x8, #0x20
+  10ee10:	bl	0x1f730c ; symbol stub for: _objc_storeStrong
+  10ee14:	ldp	x29, x30, [sp, #0x20]
+  10ee18:	add	sp, sp, #0x30
+  10ee1c:	ret
+-[M3U8Downloader videoTitle]:
+  10ee20:	sub	sp, sp, #0x10
+  10ee24:	str	x0, [sp, #0x8]
+  10ee28:	str	x1, [sp]
+  10ee2c:	ldr	x8, [sp, #0x8]
+  10ee30:	ldr	x0, [x8, #0x28]
+  10ee34:	add	sp, sp, #0x10
+  10ee38:	ret
+-[M3U8Downloader setVideoTitle:]:
