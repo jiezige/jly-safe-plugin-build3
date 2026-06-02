@@ -1,0 +1,161 @@
+0000000000043030 l     F __TEXT,__text _$ZFLandScapeControlView_clickRateBtn$_constructor
+0000000000043234 l     F __TEXT,__text _$ZFLandScapeControlView_clickDownloadBtn_constructor
+0000000000065968 l     F __TEXT,__text _$ZFLandScapeControlView_clickRateBtn$_method
+0000000000065ce4 l     F __TEXT,__text _$ZFLandScapeControlView_clickRateBtn$_closure
+0000000000065d88 l     F __TEXT,__text ___$ZFLandScapeControlView_clickRateBtn$_method_block_invoke
+0000000000065f44 l     F __TEXT,__text ___$ZFLandScapeControlView_clickRateBtn$_method_block_invoke.355
+0000000000065f5c l     F __TEXT,__text _$ZFLandScapeControlView_clickDownloadBtn_method
+0000000000066188 l     F __TEXT,__text _$ZFLandScapeControlView_clickDownloadBtn_closure
+0000000000066204 l     F __TEXT,__text ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke
+00000000000663e4 l     F __TEXT,__text ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2
+0000000000066458 l     F __TEXT,__text ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke.370
+0000000000066558 l     F __TEXT,__text ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2.371
+0000000000082840 l     F __TEXT,__text _$ZFLandScapeControlView_initWithFrame$_method
+0000000000082dec l     F __TEXT,__text _$ZFLandScapeControlView_initWithFrame$_closure
+0000000000082e9c l     F __TEXT,__text _$ZFLandScapeControlView_layoutSubviews_method
+0000000000083104 l     F __TEXT,__text _$ZFLandScapeControlView_layoutSubviews_closure
+0000000000083180 l     F __TEXT,__text _$ZFLandScapeControlView_dlButton_method
+00000000000831f8 l     F __TEXT,__text _$ZFLandScapeControlView_setDlButton$_method
+0000000000083288 l     F __TEXT,__text _$ZFLandScapeControlView_videoUrl_method
+0000000000083300 l     F __TEXT,__text _$ZFLandScapeControlView_setVideoUrl$_method
+0000000000083390 l     F __TEXT,__text _$ZFLandScapeControlView_rateButton_method
+0000000000083408 l     F __TEXT,__text _$ZFLandScapeControlView_setRateButton$_method
+000000000010c7b8 l     F __TEXT,__text -[M3U8Downloader initWithM3U8URL:]
+000000000010ca18 l     F __TEXT,__text -[M3U8Downloader startDownloadAndSaveToAlbum:withProgress:completion:]
+000000000010cec4 l     F __TEXT,__text -[M3U8Downloader cancelDownload]
+000000000010cfc8 l     F __TEXT,__text -[M3U8Downloader URLSession:assetDownloadTask:didFinishDownloadingToURL:]
+000000000010d440 l     F __TEXT,__text -[M3U8Downloader URLSession:assetDownloadTask:didLoadTimeRange:totalTimeRangesLoaded:timeRangeExpectedToLoad:]
+000000000010d7bc l     F __TEXT,__text -[M3U8Downloader URLSession:task:didCompleteWithError:]
+000000000010d8f4 l     F __TEXT,__text -[M3U8Downloader exportAssetToMP4AndSaveToAlbum:]
+000000000010dabc l     F __TEXT,__text ___49-[M3U8Downloader exportAssetToMP4AndSaveToAlbum:]_block_invoke
+000000000010dbf8 l     F __TEXT,__text ___49-[M3U8Downloader exportAssetToMP4AndSaveToAlbum:]_block_invoke_2
+000000000010de68 l     F __TEXT,__text -[M3U8Downloader proceedWithExport:packageURL:]
+000000000010e1d8 l     F __TEXT,__text ___47-[M3U8Downloader proceedWithExport:packageURL:]_block_invoke
+000000000010e348 l     F __TEXT,__text ___47-[M3U8Downloader proceedWithExport:packageURL:]_block_invoke_2
+000000000010e4a8 l     F __TEXT,__text -[M3U8Downloader saveVideoFileToPhotosAlbum:]
+000000000010e5a0 l     F __TEXT,__text ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke
+000000000010e6b4 l     F __TEXT,__text ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2
+000000000010e9e4 l     F __TEXT,__text ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_3
+000000000010ea24 l     F __TEXT,__text ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke.35
+000000000010eb90 l     F __TEXT,__text ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2.36
+000000000010ed28 l     F __TEXT,__text -[M3U8Downloader progressBlock]
+000000000010ed44 l     F __TEXT,__text -[M3U8Downloader setProgressBlock:]
+000000000010ed7c l     F __TEXT,__text -[M3U8Downloader completionBlock]
+000000000010ed98 l     F __TEXT,__text -[M3U8Downloader setCompletionBlock:]
+000000000010edd0 l     F __TEXT,__text -[M3U8Downloader m3u8URL]
+000000000010edec l     F __TEXT,__text -[M3U8Downloader setM3u8URL:]
+000000000010ee20 l     F __TEXT,__text -[M3U8Downloader videoTitle]
+000000000010ee3c l     F __TEXT,__text -[M3U8Downloader setVideoTitle:]
+000000000010ee70 l     F __TEXT,__text -[M3U8Downloader downloadSession]
+000000000010ee8c l     F __TEXT,__text -[M3U8Downloader setDownloadSession:]
+000000000010eec0 l     F __TEXT,__text -[M3U8Downloader downloadTask]
+000000000010eedc l     F __TEXT,__text -[M3U8Downloader setDownloadTask:]
+000000000010ef10 l     F __TEXT,__text -[M3U8Downloader isDownloading]
+000000000010ef30 l     F __TEXT,__text -[M3U8Downloader setIsDownloading:]
+000000000010ef58 l     F __TEXT,__text -[M3U8Downloader shouldSaveToAlbum]
+000000000010ef78 l     F __TEXT,__text -[M3U8Downloader setShouldSaveToAlbum:]
+000000000010efa0 l     F __TEXT,__text -[M3U8Downloader .cxx_destruct]
+00000000001ff940 l     F __TEXT,__objc_stubs .hidden _objc_msgSend$dlButton
+000000000020a720 l     F __TEXT,__objc_stubs .hidden _objc_msgSend$rateButton
+000000000020c900 l     F __TEXT,__objc_stubs .hidden _objc_msgSend$saveVideoFileToPhotosAlbum:
+00000000002191a0 l     F __TEXT,__objc_stubs .hidden _objc_msgSend$videoUrl
+000000000025c3db l     O __TEXT,__const _kZFLandScapeControlView_dlButton
+000000000025c3dc l     O __TEXT,__const _kZFLandScapeControlView_videoUrl
+000000000025c3dd l     O __TEXT,__const _kZFLandScapeControlView_rateButton
+00000000002b1a98 l     O __DATA,__objc_const __OBJC_CLASS_PROTOCOLS_$_M3U8Downloader
+00000000002b1ab0 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_M3U8Downloader
+00000000002b1af8 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_M3U8Downloader
+00000000002b1d70 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_M3U8Downloader
+00000000002b1e78 l     O __DATA,__objc_const __OBJC_$_PROP_LIST_M3U8Downloader
+00000000002b1f40 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_M3U8Downloader
+00000000002e6144 l     O __DATA,__objc_ivar .hidden _OBJC_IVAR_$_M3U8Downloader._isDownloading
+00000000002e6148 l     O __DATA,__objc_ivar .hidden _OBJC_IVAR_$_M3U8Downloader._shouldSaveToAlbum
+00000000002e614c l     O __DATA,__objc_ivar .hidden _OBJC_IVAR_$_M3U8Downloader._progressBlock
+00000000002e6150 l     O __DATA,__objc_ivar .hidden _OBJC_IVAR_$_M3U8Downloader._completionBlock
+00000000002e6154 l     O __DATA,__objc_ivar .hidden _OBJC_IVAR_$_M3U8Downloader._m3u8URL
+00000000002e6158 l     O __DATA,__objc_ivar .hidden _OBJC_IVAR_$_M3U8Downloader._videoTitle
+00000000002e615c l     O __DATA,__objc_ivar .hidden _OBJC_IVAR_$_M3U8Downloader._downloadSession
+00000000002e6160 l     O __DATA,__objc_ivar .hidden _OBJC_IVAR_$_M3U8Downloader._downloadTask
+00000000002efdf8 l     O __DATA,__bss _ZFLandScapeControlView$
+00000000002f05c8 l     O __DATA,__bss _$ZFLandScapeControlView_clickRateBtn$_super
+00000000002f05d0 l     O __DATA,__bss _$ZFLandScapeControlView_clickDownloadBtn_super
+00000000002f0978 l     O __DATA,__bss _$ZFLandScapeControlView_initWithFrame$_super
+00000000002f0980 l     O __DATA,__bss _$ZFLandScapeControlView_layoutSubviews_super
+0000000000043030      d  *UND* _$ZFLandScapeControlView_clickRateBtn$_constructor
+0000000000043234      d  *UND* _$ZFLandScapeControlView_clickDownloadBtn_constructor
+0000000000065968      d  *UND* _$ZFLandScapeControlView_clickRateBtn$_method
+0000000000065ce4      d  *UND* _$ZFLandScapeControlView_clickRateBtn$_closure
+0000000000065d88      d  *UND* ___$ZFLandScapeControlView_clickRateBtn$_method_block_invoke
+0000000000065f44      d  *UND* ___$ZFLandScapeControlView_clickRateBtn$_method_block_invoke.355
+0000000000065f5c      d  *UND* _$ZFLandScapeControlView_clickDownloadBtn_method
+0000000000066188      d  *UND* _$ZFLandScapeControlView_clickDownloadBtn_closure
+0000000000066204      d  *UND* ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke
+00000000000663e4      d  *UND* ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2
+0000000000066458      d  *UND* ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke.370
+0000000000066558      d  *UND* ___$ZFLandScapeControlView_clickDownloadBtn_method_block_invoke_2.371
+0000000000082840      d  *UND* _$ZFLandScapeControlView_initWithFrame$_method
+0000000000082dec      d  *UND* _$ZFLandScapeControlView_initWithFrame$_closure
+0000000000082e9c      d  *UND* _$ZFLandScapeControlView_layoutSubviews_method
+0000000000083104      d  *UND* _$ZFLandScapeControlView_layoutSubviews_closure
+0000000000083180      d  *UND* _$ZFLandScapeControlView_dlButton_method
+00000000000831f8      d  *UND* _$ZFLandScapeControlView_setDlButton$_method
+0000000000083288      d  *UND* _$ZFLandScapeControlView_videoUrl_method
+0000000000083300      d  *UND* _$ZFLandScapeControlView_setVideoUrl$_method
+0000000000083390      d  *UND* _$ZFLandScapeControlView_rateButton_method
+0000000000083408      d  *UND* _$ZFLandScapeControlView_setRateButton$_method
+000000000025c3db      d  *UND* _kZFLandScapeControlView_dlButton
+000000000025c3dc      d  *UND* _kZFLandScapeControlView_videoUrl
+000000000025c3dd      d  *UND* _kZFLandScapeControlView_rateButton
+00000000002efdf8      d  *UND* _ZFLandScapeControlView$
+00000000002f05c8      d  *UND* _$ZFLandScapeControlView_clickRateBtn$_super
+00000000002f05d0      d  *UND* _$ZFLandScapeControlView_clickDownloadBtn_super
+00000000002f0978      d  *UND* _$ZFLandScapeControlView_initWithFrame$_super
+00000000002f0980      d  *UND* _$ZFLandScapeControlView_layoutSubviews_super
+0000000000000000      d  *UND* /Users/aogeff/Desktop/JLYHook/testMonekyDylib/UI/M3U8Downloader/
+0000000000000000      d  *UND* M3U8Downloader.m
+0000000000000000      d  *UND* /Users/aogeff/Library/Developer/Xcode/DerivedData/testMoneky-dnvxaohoxqpkcaarutgoglxkggrj/Build/Intermediates.noindex/testMoneky.build/Debug-iphoneos/testMonekyDylib.build/Objects-normal/arm64/M3U8Downloader.o
+000000000010c7b8      d  *UND* -[M3U8Downloader initWithM3U8URL:]
+000000000010ca18      d  *UND* -[M3U8Downloader startDownloadAndSaveToAlbum:withProgress:completion:]
+000000000010cec4      d  *UND* -[M3U8Downloader cancelDownload]
+000000000010cfc8      d  *UND* -[M3U8Downloader URLSession:assetDownloadTask:didFinishDownloadingToURL:]
+000000000010d440      d  *UND* -[M3U8Downloader URLSession:assetDownloadTask:didLoadTimeRange:totalTimeRangesLoaded:timeRangeExpectedToLoad:]
+000000000010d7bc      d  *UND* -[M3U8Downloader URLSession:task:didCompleteWithError:]
+000000000010d8f4      d  *UND* -[M3U8Downloader exportAssetToMP4AndSaveToAlbum:]
+000000000010dabc      d  *UND* ___49-[M3U8Downloader exportAssetToMP4AndSaveToAlbum:]_block_invoke
+000000000010dbf8      d  *UND* ___49-[M3U8Downloader exportAssetToMP4AndSaveToAlbum:]_block_invoke_2
+000000000010de68      d  *UND* -[M3U8Downloader proceedWithExport:packageURL:]
+000000000010e1d8      d  *UND* ___47-[M3U8Downloader proceedWithExport:packageURL:]_block_invoke
+000000000010e348      d  *UND* ___47-[M3U8Downloader proceedWithExport:packageURL:]_block_invoke_2
+000000000010e4a8      d  *UND* -[M3U8Downloader saveVideoFileToPhotosAlbum:]
+000000000010e5a0      d  *UND* ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke
+000000000010e6b4      d  *UND* ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2
+000000000010e9e4      d  *UND* ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_3
+000000000010ea24      d  *UND* ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke.35
+000000000010eb90      d  *UND* ___45-[M3U8Downloader saveVideoFileToPhotosAlbum:]_block_invoke_2.36
+000000000010ed28      d  *UND* -[M3U8Downloader progressBlock]
+000000000010ed44      d  *UND* -[M3U8Downloader setProgressBlock:]
+000000000010ed7c      d  *UND* -[M3U8Downloader completionBlock]
+000000000010ed98      d  *UND* -[M3U8Downloader setCompletionBlock:]
+000000000010edd0      d  *UND* -[M3U8Downloader m3u8URL]
+000000000010edec      d  *UND* -[M3U8Downloader setM3u8URL:]
+000000000010ee20      d  *UND* -[M3U8Downloader videoTitle]
+000000000010ee3c      d  *UND* -[M3U8Downloader setVideoTitle:]
+000000000010ee70      d  *UND* -[M3U8Downloader downloadSession]
+000000000010ee8c      d  *UND* -[M3U8Downloader setDownloadSession:]
+000000000010eec0      d  *UND* -[M3U8Downloader downloadTask]
+000000000010eedc      d  *UND* -[M3U8Downloader setDownloadTask:]
+000000000010ef10      d  *UND* -[M3U8Downloader isDownloading]
+000000000010ef30      d  *UND* -[M3U8Downloader setIsDownloading:]
+000000000010ef58      d  *UND* -[M3U8Downloader shouldSaveToAlbum]
+000000000010ef78      d  *UND* -[M3U8Downloader setShouldSaveToAlbum:]
+000000000010efa0      d  *UND* -[M3U8Downloader .cxx_destruct]
+00000000002b1a98      d  *UND* __OBJC_CLASS_PROTOCOLS_$_M3U8Downloader
+00000000002b1ab0      d  *UND* __OBJC_METACLASS_RO_$_M3U8Downloader
+00000000002b1af8      d  *UND* __OBJC_$_INSTANCE_METHODS_M3U8Downloader
+00000000002b1d70      d  *UND* __OBJC_$_INSTANCE_VARIABLES_M3U8Downloader
+00000000002b1e78      d  *UND* __OBJC_$_PROP_LIST_M3U8Downloader
+00000000002b1f40      d  *UND* __OBJC_CLASS_RO_$_M3U8Downloader
+0000000000000000      d  *UND* _OBJC_CLASS_$_M3U8Downloader
+0000000000000000      d  *UND* _OBJC_METACLASS_$_M3U8Downloader
+00000000002e8038 g     O __DATA,__objc_data _OBJC_CLASS_$_M3U8Downloader
+00000000002e8060 g     O __DATA,__objc_data _OBJC_METACLASS_$_M3U8Downloader
