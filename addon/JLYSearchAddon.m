@@ -1314,15 +1314,15 @@ static void JLYInstallReferenceDownloadButtonOnVideoControl(UIView *control) {
     if (![button isKindOfClass:UIButton.class]) {
         button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.backgroundColor = UIColor.clearColor;
-        button.adjustsImageWhenHighlighted = YES;
-        button.showsTouchWhenHighlighted = YES;
+        [button setAdjustsImageWhenHighlighted:YES];
+        [button setShowsTouchWhenHighlighted:YES];
         button.contentEdgeInsets = UIEdgeInsetsZero;
         button.imageEdgeInsets = UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0);
         UIImage *saveImage = [UIImage imageNamed:@"tag_save"];
         if (saveImage) {
-            [button setImage:[saveImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+            [button setImage:saveImage forState:UIControlStateNormal];
         } else {
-            button.titleLabel.font = [UIFont systemFontOfSize:12.0 weight:UIFontWeightMedium];
+            button.titleLabel.font = [UIFont systemFontOfSize:12.0];
             [button setTitle:@"保存" forState:UIControlStateNormal];
             [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
         }
