@@ -44,6 +44,7 @@ static BOOL JLYManualActivationPromptVisible;
 static NSString * const JLYStoredLoginUIDKey = @"JLYSearchAddonStoredLoginUID";
 static const void *JLYDownloadVideoURLKey = &JLYDownloadVideoURLKey;
 static const void *JLYDownloadButtonKey = &JLYDownloadButtonKey;
+static const void *JLYRateButtonKey = &JLYRateButtonKey;
 static BOOL JLYPaidPluginHooksInstalled;
 static BOOL JLYVideoControlHooksInstalled;
 
@@ -1203,11 +1204,156 @@ static void JLYInstallDownloadButtonOnVideoControl(UIView *control) {
     ]];
 }
 
+static id JLYZFDlButton(id self, SEL _cmd) {
+    return objc_getAssociatedObject(self, JLYDownloadButtonKey);
+}
+
+static void JLYZFSetDlButton(id self, SEL _cmd, id button) {
+    objc_setAssociatedObject(self, JLYDownloadButtonKey, button, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+static id JLYZFVideoUrl(id self, SEL _cmd) {
+    return objc_getAssociatedObject(self, JLYDownloadVideoURLKey);
+}
+
+static void JLYZFSetVideoUrl(id self, SEL _cmd, id value) {
+    NSURL *url = JLYURLFromValue(value);
+    if (url) {
+        JLYLastPlayableVideoURL = url;
+    }
+    objc_setAssociatedObject(self, JLYDownloadVideoURLKey, url ?: value, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+static id JLYZFRateButton(id self, SEL _cmd) {
+    return objc_getAssociatedObject(self, JLYRateButtonKey);
+}
+
+static void JLYZFSetRateButton(id self, SEL _cmd, id button) {
+    objc_setAssociatedObject(self, JLYRateButtonKey, button, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+static UIView *JLYReferenceRateButton(UIView *control) {
+    if (![control isKindOfClass:UIView.class]) {
+        return nil;
+    }
+    @try {
+        id rateButton = [control valueForKey:@"rateButton"];
+        if ([rateButton isKindOfClass:UIView.class]) {
+            return rateButton;
+        }
+    } @catch (__unused NSException *exception) {
+    }
+    return nil;
+}
+
+static void JLYLayoutReferenceDownloadButton(UIView *control) {
+    if (![control isKindOfClass:UIView.class]) {
+        return;
+    }
+    UIButton *button = objc_getAssociatedObject(control, JLYDownloadButtonKey);
+    if (![button isKindOfClass:UIButton.class]) {
+        return;
+    }
+
+    UIView *rateButton = JLYReferenceRateButton(control);
+    UIView *host = rateButton.superview ?: control;
+    if (button.superview != host) {
+        [button removeFromSuperview];
+        [host addSubview:button];
+    }
+
+    button.translatesAutoresizingMaskIntoConstraints = YES;
+    button.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+
+    CGFloat width = rateButton.bounds.size.width > 1.0 ? rateButton.bounds.size.width : 44.0;
+    CGFloat height = rateButton.bounds.size.height > 1.0 ? rateButton.bounds.size.height : 44.0;
+    CGFloat x = 0.0;
+    CGFloat y = 0.0;
+    if (rateButton && rateButton.superview == host) {
+        x = CGRectGetMinX(rateButton.frame) - width - 6.0;
+        y = CGRectGetMinY(rateButton.frame);
+    } else {
+        x = CGRectGetWidth(host.bounds) - width - 58.0;
+        y = CGRectGetHeight(host.bounds) - height - 10.0;
+    }
+    if (x < 8.0) {
+        x = MAX(CGRectGetWidth(host.bounds) - width * 2.0 - 16.0, 8.0);
+    }
+    if (y < 0.0) {
+        y = 0.0;
+    }
+    if (CGRectGetWidth(host.bounds) > 1.0 && x + width > CGRectGetWidth(host.bounds) - 4.0) {
+        x = MAX(CGRectGetWidth(host.bounds) - width - 8.0, 8.0);
+    }
+    if (CGRectGetHeight(host.bounds) > 1.0 && y + height > CGRectGetHeight(host.bounds) - 4.0) {
+        y = MAX(CGRectGetHeight(host.bounds) - height - 8.0, 0.0);
+    }
+
+    button.frame = CGRectIntegral(CGRectMake(x, y, width, height));
+    button.hidden = NO;
+    button.alpha = rateButton ? rateButton.alpha : 1.0;
+}
+
+static void JLYInstallReferenceDownloadButtonOnVideoControl(UIView *control) {
+    if (![control isKindOfClass:UIView.class]) {
+        return;
+    }
+
+    class_replaceMethod(control.class, NSSelectorFromString(@"clickDownloadBtn"), (IMP)JLYDownloadFromVideoControl, "v@:");
+    class_addMethod(control.class, NSSelectorFromString(@"jly_downloadVideoFromControl"), (IMP)JLYDownloadFromVideoControl, "v@:");
+    @try {
+        NSURL *url = JLYURLFromValue([control valueForKey:@"videoUrl"]);
+        if (url) {
+            objc_setAssociatedObject(control, JLYDownloadVideoURLKey, url, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            JLYLastPlayableVideoURL = url;
+        }
+    } @catch (__unused NSException *exception) {
+    }
+
+    UIButton *button = objc_getAssociatedObject(control, JLYDownloadButtonKey);
+    if (![button isKindOfClass:UIButton.class]) {
+        button = [UIButton buttonWithType:UIButtonTypeCustom];
+        button.backgroundColor = UIColor.clearColor;
+        button.adjustsImageWhenHighlighted = YES;
+        button.showsTouchWhenHighlighted = YES;
+        button.contentEdgeInsets = UIEdgeInsetsZero;
+        button.imageEdgeInsets = UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0);
+        UIImage *saveImage = [UIImage imageNamed:@"tag_save"];
+        if (saveImage) {
+            [button setImage:[saveImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+        } else {
+            button.titleLabel.font = [UIFont systemFontOfSize:12.0 weight:UIFontWeightMedium];
+            [button setTitle:@"保存" forState:UIControlStateNormal];
+            [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+        }
+        button.tintColor = UIColor.whiteColor;
+        [button addTarget:control action:NSSelectorFromString(@"clickDownloadBtn") forControlEvents:UIControlEventTouchUpInside];
+        objc_setAssociatedObject(control, JLYDownloadButtonKey, button, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        @try {
+            [control setValue:button forKey:@"dlButton"];
+        } @catch (__unused NSException *exception) {
+        }
+    }
+
+    JLYLayoutReferenceDownloadButton(control);
+}
+
+static void JLYInstallVideoControlDynamicAccessors(Class cls) {
+    class_addMethod(cls, NSSelectorFromString(@"dlButton"), (IMP)JLYZFDlButton, "@@:");
+    class_addMethod(cls, NSSelectorFromString(@"setDlButton:"), (IMP)JLYZFSetDlButton, "v@:@");
+    class_addMethod(cls, NSSelectorFromString(@"videoUrl"), (IMP)JLYZFVideoUrl, "@@:");
+    class_addMethod(cls, NSSelectorFromString(@"setVideoUrl:"), (IMP)JLYZFSetVideoUrl, "v@:@");
+    class_addMethod(cls, NSSelectorFromString(@"rateButton"), (IMP)JLYZFRateButton, "@@:");
+    class_addMethod(cls, NSSelectorFromString(@"setRateButton:"), (IMP)JLYZFSetRateButton, "v@:@");
+    class_replaceMethod(cls, NSSelectorFromString(@"clickDownloadBtn"), (IMP)JLYDownloadFromVideoControl, "v@:");
+    class_addMethod(cls, NSSelectorFromString(@"jly_downloadVideoFromControl"), (IMP)JLYDownloadFromVideoControl, "v@:");
+}
+
 static id JLYZFLandScapeInitWithFrame(id self, SEL _cmd, CGRect frame) {
     id (*orig)(id, SEL, CGRect) = (id (*)(id, SEL, CGRect))OrigZFLandScapeInitWithFrame;
     id result = orig ? orig(self, _cmd, frame) : nil;
     dispatch_async(dispatch_get_main_queue(), ^{
-        JLYInstallDownloadButtonOnVideoControl(result);
+        JLYInstallReferenceDownloadButtonOnVideoControl(result);
     });
     return result;
 }
@@ -1216,7 +1362,7 @@ static id JLYZFLandScapeInitWithCoder(id self, SEL _cmd, NSCoder *coder) {
     id (*orig)(id, SEL, NSCoder *) = (id (*)(id, SEL, NSCoder *))OrigZFLandScapeInitWithCoder;
     id result = orig ? orig(self, _cmd, coder) : nil;
     dispatch_async(dispatch_get_main_queue(), ^{
-        JLYInstallDownloadButtonOnVideoControl(result);
+        JLYInstallReferenceDownloadButtonOnVideoControl(result);
     });
     return result;
 }
@@ -1226,7 +1372,7 @@ static void JLYZFLandScapeLayoutSubviews(id self, SEL _cmd) {
     if (orig) {
         orig(self, _cmd);
     }
-    JLYInstallDownloadButtonOnVideoControl(self);
+    JLYInstallReferenceDownloadButtonOnVideoControl(self);
 }
 
 static void JLYZFLandScapeSetVideoUrl(id self, SEL _cmd, id value) {
@@ -1239,7 +1385,7 @@ static void JLYZFLandScapeSetVideoUrl(id self, SEL _cmd, id value) {
     if (orig) {
         orig(self, _cmd, value);
     }
-    JLYInstallDownloadButtonOnVideoControl(self);
+    JLYInstallReferenceDownloadButtonOnVideoControl(self);
 }
 
 static NSURL *JLYVideoURLFromController(UIViewController *controller) {
@@ -1675,6 +1821,7 @@ static void JLYInstallVideoControlHooks(void) {
     if (!cls) {
         return;
     }
+    JLYInstallVideoControlDynamicAccessors(cls);
     JLYSwizzle(cls,
                NSSelectorFromString(@"initWithFrame:"),
                (IMP)JLYZFLandScapeInitWithFrame,
