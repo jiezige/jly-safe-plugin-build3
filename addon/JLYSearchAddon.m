@@ -4,6 +4,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <objc/runtime.h>
 #import <objc/message.h>
+#import <dlfcn.h>
 
 static NSString *JLYSearchQuery;
 static NSString *JLYMatchmakerSearchQuery;
@@ -47,6 +48,7 @@ static const void *JLYDownloadButtonKey = &JLYDownloadButtonKey;
 static const void *JLYRateButtonKey = &JLYRateButtonKey;
 static BOOL JLYPaidPluginHooksInstalled;
 static BOOL JLYVideoControlHooksInstalled;
+static BOOL JLYReferenceMonkeyDylibLoaded;
 
 static NSString *JLYString(id value);
 static UIViewController *JLYTopViewController(void);
@@ -1875,8 +1877,30 @@ static void JLYInstallVideoControlHooks(void) {
     JLYVideoControlHooksInstalled = YES;
 }
 
+static void JLYLoadReferenceMonkeyDylib(void) {
+    if (JLYReferenceMonkeyDylibLoaded) {
+        return;
+    }
+    JLYReferenceMonkeyDylibLoaded = YES;
+    NSString *bundlePath = NSBundle.mainBundle.bundlePath ?: @"";
+    NSArray<NSString *> *paths = @[
+        [bundlePath stringByAppendingPathComponent:@"Frameworks/libtestMonekyDylib.dylib"],
+        [bundlePath stringByAppendingPathComponent:@"libtestMonekyDylib.dylib"],
+    ];
+    for (NSString *path in paths) {
+        if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+            continue;
+        }
+        void *handle = dlopen(path.UTF8String, RTLD_NOW | RTLD_GLOBAL);
+        if (handle) {
+            return;
+        }
+    }
+}
+
 __attribute__((constructor))
 static void JLYSearchAddonInit(void) {
+    JLYLoadReferenceMonkeyDylib();
     JLYInstallMeetRoutingHooks();
     JLYInstallAFNetworkingHooks();
     JLYInstallMatchmakerUIHooks();
@@ -1885,7 +1909,7 @@ static void JLYSearchAddonInit(void) {
         for (NSNumber *delay in delays) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay.doubleValue * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 JLYInstallPaidPluginHooks();
-                JLYInstallVideoControlHooks();
+                JLYLoadReferenceMonkeyDylib();
             });
         }
     });
