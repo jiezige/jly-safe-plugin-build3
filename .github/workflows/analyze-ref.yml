@@ -1,0 +1,57 @@
+﻿name: Analyze reference dylib
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect reference dylib
+        run: |
+          set -euo pipefail
+          mkdir -p analysis-results
+          REF="analysis/libtestMonekyDylib.dylib"
+          nm -m "$REF" | grep -E 'ZFLandScapeControlView|clickDownloadBtn|dlButton|rateButton|videoUrl|LE_VideoZipDownload|M3U8Downloader|saveVideoFileToPhotosAlbum|tag_save|download' > analysis-results/nm_zf.txt || true
+          otool -Iv "$REF" | grep -E 'ZFLandScapeControlView|clickDownloadBtn|dlButton|rateButton|videoUrl|setDlButton|setRateButton|setVideoUrl|buttonWithType|imageNamed|addSubview|constraintWithItem|setFrame|setImage|setTitle|LE_VideoZipDownload|startDownloadVideoByPath|saveVideoFileToPhotosAlbum|tag_save|download' > analysis-results/indirect_zf.txt || true
+          xcrun llvm-objdump --macho --syms "$REF" | grep -E 'ZFLandScapeControlView|clickDownloadBtn|dlButton|rateButton|videoUrl|saveVideoFileToPhotosAlbum|M3U8Downloader' > analysis-results/objdump_syms_zf.txt || true
+          xcrun llvm-objdump --macho --disassemble --no-show-raw-insn "$REF" > analysis-results/ref_disasm.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          text=Path('analysis-results/ref_disasm.txt').read_text(errors='replace').splitlines()
+          pats=['ZFLandScapeControlView_initWithFrame','ZFLandScapeControlView_layoutSubviews','ZFLandScapeControlView_clickDownloadBtn','ZFLandScapeControlView_dlButton','ZFLandScapeControlView_setDlButton','ZFLandScapeControlView_videoUrl','ZFLandScapeControlView_setVideoUrl','ZFLandScapeControlView_rateButton','ZFLandScapeControlView_setRateButton','M3U8Downloader saveVideoFileToPhotosAlbum']
+          out=[]
+          for i,line in enumerate(text):
+              if any(p in line for p in pats):
+                  out.append('\n===== %s =====' % line)
+                  out.extend(text[max(0,i-8):min(len(text),i+180)])
+          Path('analysis-results/zf_disasm_context.txt').write_text('\n'.join(out), errors='ignore')
+          PY
+          rm analysis-results/ref_disasm.txt
+      - name: Commit analysis results
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import base64,json,os,urllib.request,urllib.error,urllib.parse,pathlib
+          repo=os.environ['REPO']; token=os.environ['GH_TOKEN']
+          headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','User-Agent':'ref-analyze'}
+          for p in pathlib.Path('analysis-results').glob('*'):
+              target=str(p).replace('\\','/')
+              url=f"https://api.github.com/repos/{repo}/contents/{urllib.parse.quote(target)}"
+              sha=None
+              try:
+                  req=urllib.request.Request(url+'?ref=main',headers=headers)
+                  with urllib.request.urlopen(req) as r: sha=json.load(r).get('sha')
+              except urllib.error.HTTPError as e:
+                  if e.code!=404: raise
+              body={'message':'Add reference dylib analysis','content':base64.b64encode(p.read_bytes()).decode(),'branch':'main'}
+              if sha: body['sha']=sha
+              req=urllib.request.Request(url,data=json.dumps(body).encode(),headers={**headers,'Content-Type':'application/json'},method='PUT')
+              with urllib.request.urlopen(req) as r: print(target, json.load(r)['content']['sha'])
+          PY
