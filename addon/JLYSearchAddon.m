@@ -1138,7 +1138,13 @@ static void JLYDownloadFromVideoControl(id self, SEL _cmd) {
     if (downloaderClass) {
         id downloader = nil;
         @try {
-            downloader = [[downloaderClass alloc] init];
+            SEL shareSel = NSSelectorFromString(@"shareManager");
+            if ([downloaderClass respondsToSelector:shareSel]) {
+                downloader = ((id (*)(id, SEL))objc_msgSend)(downloaderClass, shareSel);
+            }
+            if (!downloader) {
+                downloader = [[downloaderClass alloc] init];
+            }
         } @catch (__unused NSException *exception) {
         }
         if (downloader && [downloader respondsToSelector:startSel]) {
@@ -1162,6 +1168,10 @@ static void JLYDownloadFromVideoControl(id self, SEL _cmd) {
     }
 
     JLYDownloadVideoAction(self, _cmd);
+}
+
+static NSString *JLYDownloadButtonTitle(void) {
+    return [NSString stringWithFormat:@"%C%C", (unichar)0x4E0B, (unichar)0x8F7D];
 }
 
 static void JLYInstallDownloadButtonOnVideoControl(UIView *control) {
@@ -1246,6 +1256,20 @@ static UIView *JLYReferenceRateButton(UIView *control) {
     return nil;
 }
 
+static UIView *JLYReferenceBackButton(UIView *control) {
+    if (![control isKindOfClass:UIView.class]) {
+        return nil;
+    }
+    @try {
+        id backButton = [control valueForKey:@"backBtn"];
+        if ([backButton isKindOfClass:UIView.class]) {
+            return backButton;
+        }
+    } @catch (__unused NSException *exception) {
+    }
+    return nil;
+}
+
 static void JLYLayoutReferenceDownloadButton(UIView *control) {
     if (![control isKindOfClass:UIView.class]) {
         return;
@@ -1255,8 +1279,8 @@ static void JLYLayoutReferenceDownloadButton(UIView *control) {
         return;
     }
 
-    UIView *rateButton = JLYReferenceRateButton(control);
-    UIView *host = rateButton.superview ?: control;
+    UIView *backButton = JLYReferenceBackButton(control);
+    UIView *host = backButton.superview ?: control;
     if (button.superview != host) {
         [button removeFromSuperview];
         [host addSubview:button];
@@ -1265,33 +1289,36 @@ static void JLYLayoutReferenceDownloadButton(UIView *control) {
     button.translatesAutoresizingMaskIntoConstraints = YES;
     button.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
 
-    CGFloat width = rateButton.bounds.size.width > 1.0 ? rateButton.bounds.size.width : 44.0;
-    CGFloat height = rateButton.bounds.size.height > 1.0 ? rateButton.bounds.size.height : 44.0;
-    CGFloat x = 0.0;
-    CGFloat y = 0.0;
-    if (rateButton && rateButton.superview == host) {
-        x = rateButton.frame.origin.x - width - 6.0;
-        y = rateButton.frame.origin.y;
-    } else {
-        x = host.bounds.size.width - width - 58.0;
-        y = host.bounds.size.height - height - 10.0;
-    }
+    CGFloat width = 44.0;
+    CGFloat height = 20.0;
+    CGFloat rightInset = 16.0;
+    CGFloat gap = 16.0;
+    CGFloat centerY = backButton ? backButton.center.y : 22.0;
+    CGFloat x = control.frame.size.width - rightInset - width;
+    CGFloat y = centerY - height / 2.0;
     if (x < 8.0) {
-        x = MAX(host.bounds.size.width - width * 2.0 - 16.0, 8.0);
+        x = MAX(host.bounds.size.width - rightInset - width, 8.0);
     }
     if (y < 0.0) {
         y = 0.0;
     }
-    if (host.bounds.size.width > 1.0 && x + width > host.bounds.size.width - 4.0) {
-        x = MAX(host.bounds.size.width - width - 8.0, 8.0);
-    }
-    if (host.bounds.size.height > 1.0 && y + height > host.bounds.size.height - 4.0) {
-        y = MAX(host.bounds.size.height - height - 8.0, 0.0);
-    }
 
     button.frame = CGRectMake((NSInteger)(x + 0.5), (NSInteger)(y + 0.5), (NSInteger)(width + 0.5), (NSInteger)(height + 0.5));
     button.hidden = NO;
-    button.alpha = rateButton ? rateButton.alpha : 1.0;
+    button.alpha = 1.0;
+
+    UIView *rateButton = JLYReferenceRateButton(control);
+    if (rateButton) {
+        if (rateButton.superview != host) {
+            [rateButton removeFromSuperview];
+            [host addSubview:rateButton];
+        }
+        CGFloat rateX = button.frame.origin.x - gap - width;
+        if (rateX < 8.0) {
+            rateX = 8.0;
+        }
+        rateButton.frame = CGRectMake((NSInteger)(rateX + 0.5), (NSInteger)(y + 0.5), (NSInteger)(width + 0.5), (NSInteger)(height + 0.5));
+    }
 }
 
 static void JLYInstallReferenceDownloadButtonOnVideoControl(UIView *control) {
@@ -1335,6 +1362,13 @@ static void JLYInstallReferenceDownloadButtonOnVideoControl(UIView *control) {
         }
     }
 
+    [button setImage:nil forState:UIControlStateNormal];
+    button.backgroundColor = UIColor.whiteColor;
+    button.titleLabel.font = [UIFont systemFontOfSize:12.0];
+    [button setTitle:JLYDownloadButtonTitle() forState:UIControlStateNormal];
+    [button setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
+    button.layer.cornerRadius = 4.0;
+    button.layer.masksToBounds = YES;
     JLYLayoutReferenceDownloadButton(control);
 }
 
