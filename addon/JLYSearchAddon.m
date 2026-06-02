@@ -16,6 +16,8 @@ static IMP OrigAFRequestWithMethodURLStringParametersError;
 static IMP OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure;
 static IMP OrigAFPostParametersSuccessFailure;
 static IMP OrigAFPostParametersProgressSuccessFailure;
+static IMP OrigAFGetParametersSuccessFailure;
+static IMP OrigAFGetParametersProgressSuccessFailure;
 static IMP OrigViewControllerSetTitle;
 static IMP OrigNavigationItemSetTitle;
 static IMP OrigLabelSetText;
@@ -603,23 +605,25 @@ static BOOL JLYRewritePaidAppListURLString(NSString **urlString, id *parameters)
 static id JLYAFRequestWithMethodURLStringParametersError(id self, SEL _cmd, NSString *method, NSString *urlString, id parameters, NSError **error) {
     NSString *routedURL = urlString;
     id routedParameters = parameters;
+    BOOL paidAppList = JLYURLIsPaidAppList([NSURL URLWithString:JLYString(urlString)]);
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
     JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, NSString *, id, NSError **) = (id (*)(id, SEL, NSString *, NSString *, id, NSError **))OrigAFRequestWithMethodURLStringParametersError;
-    return orig ? orig(self, _cmd, method, routedURL, routedParameters, error) : nil;
+    return orig ? orig(self, _cmd, paidAppList ? @"POST" : method, routedURL, routedParameters, error) : nil;
 }
 
 static id JLYAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure(id self, SEL _cmd, NSString *method, NSString *urlString, id parameters, id uploadProgress, id downloadProgress, id success, id failure) {
     NSString *routedURL = urlString;
     id routedParameters = parameters;
+    BOOL paidAppList = JLYURLIsPaidAppList([NSURL URLWithString:JLYString(urlString)]);
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
     JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, NSString *, id, id, id, id, id) = (id (*)(id, SEL, NSString *, NSString *, id, id, id, id, id))OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure;
-    return orig ? orig(self, _cmd, method, routedURL, routedParameters, uploadProgress, downloadProgress, success, failure) : nil;
+    return orig ? orig(self, _cmd, paidAppList ? @"POST" : method, routedURL, routedParameters, uploadProgress, downloadProgress, success, failure) : nil;
 }
 
 static id JLYAFPostParametersSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id success, id failure) {
@@ -641,6 +645,38 @@ static id JLYAFPostParametersProgressSuccessFailure(id self, SEL _cmd, NSString 
     JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFPostParametersProgressSuccessFailure;
+    return orig ? orig(self, _cmd, routedURL, routedParameters, progress, success, failure) : nil;
+}
+
+static id JLYAFGetParametersSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id success, id failure) {
+    NSString *routedURL = urlString;
+    id routedParameters = parameters;
+    BOOL paidAppList = JLYURLIsPaidAppList([NSURL URLWithString:JLYString(urlString)]);
+    JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
+    JLYRewriteMatchmakerDetailURLString(&routedURL);
+    JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
+    JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
+    if (paidAppList && OrigAFPostParametersSuccessFailure) {
+        id (*postOrig)(id, SEL, NSString *, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id))OrigAFPostParametersSuccessFailure;
+        return postOrig(self, NSSelectorFromString(@"POST:parameters:success:failure:"), routedURL, routedParameters, success, failure);
+    }
+    id (*orig)(id, SEL, NSString *, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id))OrigAFGetParametersSuccessFailure;
+    return orig ? orig(self, _cmd, routedURL, routedParameters, success, failure) : nil;
+}
+
+static id JLYAFGetParametersProgressSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id progress, id success, id failure) {
+    NSString *routedURL = urlString;
+    id routedParameters = parameters;
+    BOOL paidAppList = JLYURLIsPaidAppList([NSURL URLWithString:JLYString(urlString)]);
+    JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
+    JLYRewriteMatchmakerDetailURLString(&routedURL);
+    JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
+    JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
+    if (paidAppList && OrigAFPostParametersProgressSuccessFailure) {
+        id (*postOrig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFPostParametersProgressSuccessFailure;
+        return postOrig(self, NSSelectorFromString(@"POST:parameters:progress:success:failure:"), routedURL, routedParameters, progress, success, failure);
+    }
+    id (*orig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFGetParametersProgressSuccessFailure;
     return orig ? orig(self, _cmd, routedURL, routedParameters, progress, success, failure) : nil;
 }
 
@@ -1429,6 +1465,14 @@ static void JLYInstallAFNetworkingHooks(void) {
                NSSelectorFromString(@"POST:parameters:progress:success:failure:"),
                (IMP)JLYAFPostParametersProgressSuccessFailure,
                &OrigAFPostParametersProgressSuccessFailure);
+    JLYSwizzle(manager,
+               NSSelectorFromString(@"GET:parameters:success:failure:"),
+               (IMP)JLYAFGetParametersSuccessFailure,
+               &OrigAFGetParametersSuccessFailure);
+    JLYSwizzle(manager,
+               NSSelectorFromString(@"GET:parameters:progress:success:failure:"),
+               (IMP)JLYAFGetParametersProgressSuccessFailure,
+               &OrigAFGetParametersProgressSuccessFailure);
 }
 
 static void JLYInstallMatchmakerUIHooks(void) {
