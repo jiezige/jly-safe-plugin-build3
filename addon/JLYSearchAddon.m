@@ -1277,18 +1277,10 @@ static BOOL JLYLooksLikeNativeVideoController(UIViewController *controller) {
 }
 
 static void JLYPlayVideoURLString(id self, SEL _cmd, id urlString) {
-    NSURL *url = [urlString isKindOfClass:NSURL.class] ? urlString : [NSURL URLWithString:JLYString(urlString)];
-    if (url) {
-        JLYLastPlayableVideoURL = url;
-    }
     void (*orig)(id, SEL, id) = (void (*)(id, SEL, id))OrigPlayVideoURLString;
     if (orig) {
         orig(self, _cmd, urlString);
     }
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.35 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        UIViewController *top = JLYTopViewController();
-        JLYInstallDownloadButtonOnPlayer(top, url ?: JLYLastPlayableVideoURL);
-    });
 }
 
 static id JLYAVPlayerPlayerWithURL(id self, SEL _cmd, NSURL *url) {
@@ -1504,15 +1496,6 @@ static void JLYViewControllerViewDidAppear(id self, SEL _cmd, BOOL animated) {
     if ([self isKindOfClass:UIViewController.class]) {
         UIViewController *controller = (UIViewController *)self;
         JLYInstallAllAppListSearchButton(controller);
-        if ([NSStringFromClass(controller.class) containsString:@"AVPlayerViewController"] ||
-            [controller respondsToSelector:NSSelectorFromString(@"player")] ||
-            JLYLooksLikeNativeVideoController(controller)) {
-            NSURL *url = JLYVideoURLFromController(controller);
-            if (url) {
-                JLYLastPlayableVideoURL = url;
-            }
-            JLYInstallDownloadButtonOnPlayer(controller, url);
-        }
     }
 }
 
@@ -1650,14 +1633,6 @@ static void JLYInstallMatchmakerUIHooks(void) {
                           NSSelectorFromString(@"alertControllerWithTitle:message:preferredStyle:"),
                           (IMP)JLYAlertControllerWithTitleMessageStyle,
                           &OrigAlertControllerWithTitleMessageStyle);
-    JLYSwizzleClassMethod(AVPlayer.class,
-                          NSSelectorFromString(@"playerWithURL:"),
-                          (IMP)JLYAVPlayerPlayerWithURL,
-                          &OrigAVPlayerPlayerWithURL);
-    JLYSwizzleClassMethod(AVPlayerItem.class,
-                          NSSelectorFromString(@"playerItemWithURL:"),
-                          (IMP)JLYAVPlayerItemPlayerItemWithURL,
-                          &OrigAVPlayerItemPlayerItemWithURL);
 }
 
 static void JLYInstallPaidPluginHooks(void) {
@@ -1678,6 +1653,7 @@ static void JLYInstallPaidPluginHooks(void) {
 }
 
 static void JLYInstallVideoControlHooks(void) {
+    return;
     if (JLYVideoControlHooksInstalled) {
         return;
     }
@@ -1714,7 +1690,6 @@ static void JLYSearchAddonInit(void) {
         for (NSNumber *delay in delays) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay.doubleValue * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 JLYInstallPaidPluginHooks();
-                JLYInstallVideoControlHooks();
             });
         }
     });
