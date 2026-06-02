@@ -1120,6 +1120,12 @@ static void JLYInstallDownloadButtonOnPlayer(UIViewController *controller, NSURL
 
 static void JLYDownloadFromVideoControl(id self, SEL _cmd) {
     NSURL *url = objc_getAssociatedObject(self, JLYDownloadVideoURLKey) ?: JLYLastPlayableVideoURL;
+    if (!url) {
+        @try {
+            url = JLYURLFromValue([self valueForKey:@"videoUrl"]);
+        } @catch (__unused NSException *exception) {
+        }
+    }
     UIViewController *presenter = JLYTopViewController();
     if (!JLYURLLooksLikeDirectVideo(url)) {
         JLYShowToast(presenter, @"该视频暂不支持保存到相册");
@@ -1166,7 +1172,16 @@ static void JLYInstallDownloadButtonOnVideoControl(UIView *control) {
         return;
     }
 
+    class_addMethod(control.class, NSSelectorFromString(@"clickDownloadBtn"), (IMP)JLYDownloadFromVideoControl, "v@:");
     class_addMethod(control.class, NSSelectorFromString(@"jly_downloadVideoFromControl"), (IMP)JLYDownloadFromVideoControl, "v@:");
+    @try {
+        NSURL *url = JLYURLFromValue([control valueForKey:@"videoUrl"]);
+        if (url) {
+            objc_setAssociatedObject(control, JLYDownloadVideoURLKey, url, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            JLYLastPlayableVideoURL = url;
+        }
+    } @catch (__unused NSException *exception) {
+    }
     UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
     button.translatesAutoresizingMaskIntoConstraints = NO;
     button.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.62];
@@ -1176,7 +1191,7 @@ static void JLYInstallDownloadButtonOnVideoControl(UIView *control) {
     button.titleLabel.font = [UIFont boldSystemFontOfSize:14.0];
     [button setTitle:@"下载" forState:UIControlStateNormal];
     [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
-    [button addTarget:control action:NSSelectorFromString(@"jly_downloadVideoFromControl") forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:control action:NSSelectorFromString(@"clickDownloadBtn") forControlEvents:UIControlEventTouchUpInside];
     [control addSubview:button];
     objc_setAssociatedObject(control, JLYDownloadButtonKey, button, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
@@ -1653,7 +1668,6 @@ static void JLYInstallPaidPluginHooks(void) {
 }
 
 static void JLYInstallVideoControlHooks(void) {
-    return;
     if (JLYVideoControlHooksInstalled) {
         return;
     }
@@ -1690,6 +1704,7 @@ static void JLYSearchAddonInit(void) {
         for (NSNumber *delay in delays) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay.doubleValue * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 JLYInstallPaidPluginHooks();
+                JLYInstallVideoControlHooks();
             });
         }
     });
