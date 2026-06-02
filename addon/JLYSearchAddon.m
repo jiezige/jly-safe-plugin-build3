@@ -40,6 +40,8 @@ static NSDate *JLYMeetAuthorizedCacheDate;
 static BOOL JLYMeetAuthorizedCacheValue;
 static NSURL *JLYLastPlayableVideoURL;
 static NSString *JLYLastLoginUID;
+static BOOL JLYManualActivationPromptVisible;
+static NSString * const JLYStoredLoginUIDKey = @"JLYSearchAddonStoredLoginUID";
 static const void *JLYDownloadVideoURLKey = &JLYDownloadVideoURLKey;
 static const void *JLYDownloadButtonKey = &JLYDownloadButtonKey;
 static BOOL JLYPaidPluginHooksInstalled;
@@ -47,6 +49,9 @@ static BOOL JLYVideoControlHooksInstalled;
 
 static NSString *JLYString(id value);
 static UIViewController *JLYTopViewController(void);
+static NSString *JLYDeviceIdentifier(void);
+static BOOL JLYActivateOrCheckManualUID(NSString *uid, NSString *code, NSString **message);
+static void JLYPromptManualActivationIfNeeded(void);
 static void JLYInstallPaidPluginHooks(void);
 
 static NSURL *JLYURLFromValue(id value) {
@@ -213,6 +218,8 @@ static void JLYRememberLoginUID(NSString *uid) {
     uid = [JLYString(uid) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
     if (uid.length) {
         JLYLastLoginUID = uid;
+        [NSUserDefaults.standardUserDefaults setObject:uid forKey:JLYStoredLoginUIDKey];
+        [NSUserDefaults.standardUserDefaults synchronize];
     }
 }
 
@@ -222,7 +229,15 @@ static NSString *JLYRequestLoginUID(NSURLRequest *request) {
         uid = JLYValueFromRequest(request, @"uid");
     }
     JLYRememberLoginUID(uid);
-    return uid.length ? uid : JLYString(JLYLastLoginUID);
+    if (uid.length) {
+        return uid;
+    }
+    if (JLYLastLoginUID.length) {
+        return JLYLastLoginUID;
+    }
+    uid = JLYString([NSUserDefaults.standardUserDefaults objectForKey:JLYStoredLoginUIDKey]);
+    JLYRememberLoginUID(uid);
+    return uid;
 }
 
 static void JLYRememberLoginUIDFromRequest(NSURLRequest *request) {
@@ -234,6 +249,120 @@ static void JLYRememberLoginUIDFromRequest(NSURLRequest *request) {
         uid = JLYValueFromRequest(request, @"uid");
     }
     JLYRememberLoginUID(uid);
+}
+
+static NSDictionary *JLYPostVip1JSON(NSString *path, NSDictionary *payload) {
+    NSURL *url = [NSURL URLWithString:[@"https://pee.jlyapp.cn" stringByAppendingString:path ?: @""]];
+    if (!url) {
+        return nil;
+    }
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    request.HTTPMethod = @"POST";
+    request.timeoutInterval = 8.0;
+    [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"content-type"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"accept"];
+    request.HTTPBody = [NSJSONSerialization dataWithJSONObject:payload ?: @{} options:0 error:nil];
+
+    __block NSDictionary *result = nil;
+    __block BOOL finished = NO;
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    NSURLSessionDataTask *task = [NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, __unused NSURLResponse *response, __unused NSError *error) {
+        if (data.length) {
+            id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            if ([json isKindOfClass:NSDictionary.class]) {
+                result = json;
+            }
+        }
+        finished = YES;
+        dispatch_semaphore_signal(semaphore);
+    }];
+    [task resume];
+    dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(8.0 * NSEC_PER_SEC));
+    if (dispatch_semaphore_wait(semaphore, timeout) != 0 && !finished) {
+        [task cancel];
+    }
+    return result;
+}
+
+static void JLYShowMessage(NSString *title, NSString *message) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIViewController *presenter = JLYTopViewController();
+        if (!presenter) {
+            return;
+        }
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:title ?: @"提示"
+                                                                       message:JLYDisplayString(message)
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
+        [presenter presentViewController:alert animated:YES completion:nil];
+    });
+}
+
+static void JLYPromptManualActivationIfNeeded(void) {
+    if (JLYManualActivationPromptVisible || JLYRequestLoginUID(nil).length) {
+        return;
+    }
+    JLYManualActivationPromptVisible = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIViewController *presenter = JLYTopViewController();
+        if (!presenter) {
+            JLYManualActivationPromptVisible = NO;
+            return;
+        }
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"手动激活"
+                                                                       message:@"未获取到用户ID，请填写用户ID和激活码"
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+            textField.placeholder = @"用户ID";
+            textField.text = JLYString([NSUserDefaults.standardUserDefaults objectForKey:JLYStoredLoginUIDKey]);
+            textField.keyboardType = UIKeyboardTypeASCIICapable;
+        }];
+        [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+            textField.placeholder = @"激活码（已激活可不填）";
+            textField.keyboardType = UIKeyboardTypeASCIICapable;
+        }];
+        [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(__unused UIAlertAction *action) {
+            JLYManualActivationPromptVisible = NO;
+        }]];
+        [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
+            NSString *uid = alert.textFields.count > 0 ? alert.textFields[0].text : @"";
+            NSString *code = alert.textFields.count > 1 ? alert.textFields[1].text : @"";
+            JLYManualActivationPromptVisible = NO;
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+                NSString *message = nil;
+                BOOL ok = JLYActivateOrCheckManualUID(uid, code, &message);
+                JLYShowMessage(ok ? @"成功" : @"失败", message);
+            });
+        }]];
+        [presenter presentViewController:alert animated:YES completion:nil];
+    });
+}
+
+static BOOL JLYActivateOrCheckManualUID(NSString *uid, NSString *code, NSString **message) {
+    uid = [JLYString(uid) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    code = [JLYString(code) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    if (uid.length == 0) {
+        if (message) *message = @"请填写用户ID";
+        return NO;
+    }
+
+    NSString *deviceId = JLYDeviceIdentifier();
+    NSDictionary *payload = code.length ? @{@"uid": uid, @"login_uid": uid, @"device_id": deviceId ?: @"", @"code": code} :
+                                          @{@"uid": uid, @"login_uid": uid, @"device_id": deviceId ?: @""};
+    NSDictionary *json = JLYPostVip1JSON(code.length ? @"/vip1/activate" : @"/vip1", payload);
+    BOOL ok = [json[@"authorized"] respondsToSelector:@selector(boolValue)] && [json[@"authorized"] boolValue];
+    if (ok) {
+        JLYRememberLoginUID(uid);
+        if (message) *message = code.length ? @"激活成功，请重新点击解锁" : @"用户ID已保存，请重新点击解锁";
+        return YES;
+    }
+
+    NSString *serverMessage = JLYDisplayString(JLYString(json[@"message"]));
+    if (serverMessage.length == 0) {
+        serverMessage = code.length ? @"激活失败，请检查用户ID和激活码" : @"该用户ID未激活，请填写激活码";
+    }
+    if (message) *message = serverMessage;
+    return NO;
 }
 
 static NSString *JLYDeviceIdentifier(void) {
@@ -452,6 +581,8 @@ static NSURLRequest *JLYRoutedPaidAppListPostRequest(NSURLRequest *request) {
     if (uid.length) {
         JLYSetOrAppendFormValue(form, @"uid", uid);
         JLYSetOrAppendFormValue(form, @"login_uid", uid);
+    } else {
+        JLYPromptManualActivationIfNeeded();
     }
     if (JLYFormValue(form, @"count").length == 0) {
         NSString *count = JLYValueFromRequest(request, @"count");
@@ -489,7 +620,15 @@ static NSString *JLYUIDFromParameters(NSDictionary *parameters) {
         uid = JLYString(parameters[@"uid"]);
     }
     JLYRememberLoginUID(uid);
-    return uid.length ? uid : JLYString(JLYLastLoginUID);
+    if (uid.length) {
+        return uid;
+    }
+    if (JLYLastLoginUID.length) {
+        return JLYLastLoginUID;
+    }
+    uid = JLYString([NSUserDefaults.standardUserDefaults objectForKey:JLYStoredLoginUIDKey]);
+    JLYRememberLoginUID(uid);
+    return uid;
 }
 
 static BOOL JLYRewriteMatchmakerURLString(NSString **urlString, id *parameters) {
@@ -503,6 +642,8 @@ static BOOL JLYRewriteMatchmakerURLString(NSString **urlString, id *parameters) 
     if (uid.length) {
         mutable[@"uid"] = uid;
         mutable[@"login_uid"] = uid;
+    } else {
+        JLYPromptManualActivationIfNeeded();
     }
     if (!mutable[@"count"]) {
         mutable[@"count"] = @"10";
