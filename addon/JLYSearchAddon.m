@@ -215,6 +215,102 @@ static NSString *JLYValueFromRequest(NSURLRequest *request, NSString *name) {
     return JLYFormValue(JLYRequestBodyString(request), name);
 }
 
+static BOOL JLYValueLooksTrue(id value) {
+    if (!value || value == (id)kCFNull) {
+        return NO;
+    }
+    if ([value respondsToSelector:@selector(boolValue)] && ![value isKindOfClass:NSString.class]) {
+        return [value boolValue];
+    }
+    NSString *text = [[JLYString(value) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet] lowercaseString];
+    return [text isEqualToString:@"1"] ||
+           [text isEqualToString:@"true"] ||
+           [text isEqualToString:@"yes"] ||
+           [text isEqualToString:@"vip"];
+}
+
+static BOOL JLYDictionaryContainsNativeVIP(id value, NSInteger depth) {
+    if (depth <= 0 || !value || value == (id)kCFNull) {
+        return NO;
+    }
+    if ([value isKindOfClass:NSDictionary.class]) {
+        NSDictionary *dictionary = value;
+        NSArray<NSString *> *keys = @[@"is_vip", @"isVIP", @"isVip", @"vip", @"pay_vip", @"vip_free"];
+        for (NSString *key in keys) {
+            if (JLYValueLooksTrue(dictionary[key])) {
+                return YES;
+            }
+        }
+        for (id item in dictionary.allValues) {
+            if (JLYDictionaryContainsNativeVIP(item, depth - 1)) {
+                return YES;
+            }
+        }
+    } else if ([value isKindOfClass:NSArray.class]) {
+        for (id item in (NSArray *)value) {
+            if (JLYDictionaryContainsNativeVIP(item, depth - 1)) {
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
+static BOOL JLYDictionaryContainsNativeVIPForUID(id value, NSString *uid, NSInteger depth) {
+    uid = JLYString(uid);
+    if (uid.length == 0 || depth <= 0 || !value || value == (id)kCFNull) {
+        return NO;
+    }
+    if ([value isKindOfClass:NSDictionary.class]) {
+        NSDictionary *dictionary = value;
+        NSArray<NSString *> *uidKeys = @[@"login_uid", @"uid", @"user_id", @"d_uid"];
+        BOOL uidMatches = NO;
+        for (NSString *key in uidKeys) {
+            if ([JLYString(dictionary[key]) isEqualToString:uid]) {
+                uidMatches = YES;
+                break;
+            }
+        }
+        if (uidMatches && JLYDictionaryContainsNativeVIP(dictionary, 1)) {
+            return YES;
+        }
+        for (id item in dictionary.allValues) {
+            if (JLYDictionaryContainsNativeVIPForUID(item, uid, depth - 1)) {
+                return YES;
+            }
+        }
+    } else if ([value isKindOfClass:NSArray.class]) {
+        for (id item in (NSArray *)value) {
+            if (JLYDictionaryContainsNativeVIPForUID(item, uid, depth - 1)) {
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
+static BOOL JLYRequestHasNativeVIP(NSURLRequest *request) {
+    NSArray<NSString *> *keys = @[@"is_vip", @"isVIP", @"isVip", @"vip", @"pay_vip", @"vip_free"];
+    for (NSString *key in keys) {
+        if (JLYValueLooksTrue(JLYValueFromRequest(request, key))) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+static BOOL JLYParametersHaveNativeVIP(NSDictionary *parameters) {
+    if (![parameters isKindOfClass:NSDictionary.class]) {
+        return NO;
+    }
+    return JLYDictionaryContainsNativeVIP(parameters, 2);
+}
+
+static BOOL JLYStoredNativeVIPLikelyActiveForUID(NSString *uid) {
+    NSDictionary *defaults = NSUserDefaults.standardUserDefaults.dictionaryRepresentation;
+    return JLYDictionaryContainsNativeVIPForUID(defaults, uid, 4);
+}
+
 static void JLYRememberLoginUID(NSString *uid) {
     uid = [JLYString(uid) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
     if (uid.length) {
@@ -434,6 +530,23 @@ static NSURLRequest *JLYRoutedMeetRequest(NSURLRequest *request) {
     }
     JLYRememberLoginUID(uid);
 
+    if (JLYRequestHasNativeVIP(request) || JLYStoredNativeVIPLikelyActiveForUID(uid)) {
+        return request;
+    }
+
+    if (uid.length == 0) {
+        JLYPromptManualActivationIfNeeded();
+        return request;
+    }
+
+    NSString *deviceId = JLYValueFromRequest(request, @"device_id");
+    if (deviceId.length == 0) {
+        deviceId = JLYDeviceIdentifier();
+    }
+    if (!JLYRemoteVip1Authorized(uid, deviceId)) {
+        return request;
+    }
+
     NSURL *vipURL = [NSURL URLWithString:@"https://pee.jlyapp.cn/vip1/meet-list"];
     NSMutableURLRequest *mutable = [request mutableCopy];
     mutable.URL = vipURL;
@@ -449,10 +562,6 @@ static NSURLRequest *JLYRoutedMeetRequest(NSURLRequest *request) {
         JLYSetOrAppendFormValue(form, @"login_uid", uid);
     } else {
         JLYPromptManualActivationIfNeeded();
-    }
-    NSString *deviceId = JLYValueFromRequest(request, @"device_id");
-    if (deviceId.length == 0) {
-        deviceId = JLYDeviceIdentifier();
     }
     if (deviceId.length) {
         JLYSetOrAppendFormValue(form, @"device_id", deviceId);
@@ -687,6 +796,7 @@ static BOOL JLYRewriteMeetURLString(NSString **urlString, id *parameters) {
     }
 
     NSMutableDictionary *mutable = JLYMutableParameters(*parameters);
+
     NSURLComponents *originalComponents = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
     for (NSURLQueryItem *item in originalComponents.queryItems ?: @[]) {
         if (item.name.length && !mutable[item.name]) {
@@ -695,6 +805,13 @@ static BOOL JLYRewriteMeetURLString(NSString **urlString, id *parameters) {
     }
 
     NSString *uid = JLYUIDFromParameters(mutable);
+    if (JLYParametersHaveNativeVIP(mutable) || JLYStoredNativeVIPLikelyActiveForUID(uid)) {
+        return NO;
+    }
+    if (uid.length == 0) {
+        JLYPromptManualActivationIfNeeded();
+        return NO;
+    }
     if (uid.length) {
         mutable[@"uid"] = uid;
         mutable[@"login_uid"] = uid;
@@ -707,6 +824,9 @@ static BOOL JLYRewriteMeetURLString(NSString **urlString, id *parameters) {
     }
     if (deviceId.length) {
         mutable[@"device_id"] = deviceId;
+    }
+    if (!JLYRemoteVip1Authorized(uid, deviceId)) {
+        return NO;
     }
 
     *urlString = @"https://pee.jlyapp.cn/vip1/meet-list";
@@ -803,29 +923,27 @@ static BOOL JLYRewritePaidAppListURLString(NSString **urlString, id *parameters)
 static id JLYAFRequestWithMethodURLStringParametersError(id self, SEL _cmd, NSString *method, NSString *urlString, id parameters, NSError **error) {
     NSString *routedURL = urlString;
     id routedParameters = parameters;
-    BOOL meetList = JLYURLIsMeetList([NSURL URLWithString:JLYString(urlString)]);
     BOOL paidAppList = JLYURLIsPaidAppList([NSURL URLWithString:JLYString(urlString)]);
-    JLYRewriteMeetURLString(&routedURL, &routedParameters);
+    BOOL routedMeet = JLYRewriteMeetURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
     JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, NSString *, id, NSError **) = (id (*)(id, SEL, NSString *, NSString *, id, NSError **))OrigAFRequestWithMethodURLStringParametersError;
-    return orig ? orig(self, _cmd, (meetList || paidAppList) ? @"POST" : method, routedURL, routedParameters, error) : nil;
+    return orig ? orig(self, _cmd, (routedMeet || paidAppList) ? @"POST" : method, routedURL, routedParameters, error) : nil;
 }
 
 static id JLYAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure(id self, SEL _cmd, NSString *method, NSString *urlString, id parameters, id uploadProgress, id downloadProgress, id success, id failure) {
     NSString *routedURL = urlString;
     id routedParameters = parameters;
-    BOOL meetList = JLYURLIsMeetList([NSURL URLWithString:JLYString(urlString)]);
     BOOL paidAppList = JLYURLIsPaidAppList([NSURL URLWithString:JLYString(urlString)]);
-    JLYRewriteMeetURLString(&routedURL, &routedParameters);
+    BOOL routedMeet = JLYRewriteMeetURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
     JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, NSString *, id, id, id, id, id) = (id (*)(id, SEL, NSString *, NSString *, id, id, id, id, id))OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure;
-    return orig ? orig(self, _cmd, (meetList || paidAppList) ? @"POST" : method, routedURL, routedParameters, uploadProgress, downloadProgress, success, failure) : nil;
+    return orig ? orig(self, _cmd, (routedMeet || paidAppList) ? @"POST" : method, routedURL, routedParameters, uploadProgress, downloadProgress, success, failure) : nil;
 }
 
 static id JLYAFPostParametersSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id success, id failure) {
@@ -855,14 +973,13 @@ static id JLYAFPostParametersProgressSuccessFailure(id self, SEL _cmd, NSString 
 static id JLYAFGetParametersSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id success, id failure) {
     NSString *routedURL = urlString;
     id routedParameters = parameters;
-    BOOL meetList = JLYURLIsMeetList([NSURL URLWithString:JLYString(urlString)]);
     BOOL paidAppList = JLYURLIsPaidAppList([NSURL URLWithString:JLYString(urlString)]);
-    JLYRewriteMeetURLString(&routedURL, &routedParameters);
+    BOOL routedMeet = JLYRewriteMeetURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
     JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
-    if (meetList && OrigAFPostParametersSuccessFailure) {
+    if (routedMeet && OrigAFPostParametersSuccessFailure) {
         id (*postOrig)(id, SEL, NSString *, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id))OrigAFPostParametersSuccessFailure;
         return postOrig(self, NSSelectorFromString(@"POST:parameters:success:failure:"), routedURL, routedParameters, success, failure);
     }
@@ -877,14 +994,13 @@ static id JLYAFGetParametersSuccessFailure(id self, SEL _cmd, NSString *urlStrin
 static id JLYAFGetParametersProgressSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id progress, id success, id failure) {
     NSString *routedURL = urlString;
     id routedParameters = parameters;
-    BOOL meetList = JLYURLIsMeetList([NSURL URLWithString:JLYString(urlString)]);
     BOOL paidAppList = JLYURLIsPaidAppList([NSURL URLWithString:JLYString(urlString)]);
-    JLYRewriteMeetURLString(&routedURL, &routedParameters);
+    BOOL routedMeet = JLYRewriteMeetURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerURLString(&routedURL, &routedParameters);
     JLYRewriteMatchmakerDetailURLString(&routedURL);
     JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
-    if (meetList && OrigAFPostParametersProgressSuccessFailure) {
+    if (routedMeet && OrigAFPostParametersProgressSuccessFailure) {
         id (*postOrig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFPostParametersProgressSuccessFailure;
         return postOrig(self, NSSelectorFromString(@"POST:parameters:progress:success:failure:"), routedURL, routedParameters, progress, success, failure);
     }
