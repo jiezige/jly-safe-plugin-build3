@@ -960,6 +960,89 @@ static BOOL JLYRewritePaidAppListURLString(NSString **urlString, id *parameters)
     return YES;
 }
 
+static BOOL JLYURLNeedsShareURLPatch(NSURL *url) {
+    NSString *absolute = JLYString(url.absoluteString).lowercaseString;
+    return [absolute containsString:@"/sm/user/getinfo"] ||
+           [absolute containsString:@"/sm/circle/myspace"] ||
+           [absolute containsString:@"/sm/invite/getinviteinfo"];
+}
+
+static id JLYPatchShareURLObject(id object) {
+    if ([object isKindOfClass:NSDictionary.class]) {
+        NSMutableDictionary *patched = [NSMutableDictionary dictionaryWithCapacity:[(NSDictionary *)object count]];
+        [(NSDictionary *)object enumerateKeysAndObjectsUsingBlock:^(id key, id value, __unused BOOL *stop) {
+            if ([JLYString(key).lowercaseString isEqualToString:@"share_url"]) {
+                patched[key] = @"https://www.jlyapp.com";
+            } else {
+                patched[key] = JLYPatchShareURLObject(value) ?: (id)kCFNull;
+            }
+        }];
+        return patched;
+    }
+    if ([object isKindOfClass:NSArray.class]) {
+        NSMutableArray *patched = [NSMutableArray arrayWithCapacity:[(NSArray *)object count]];
+        for (id value in (NSArray *)object) {
+            [patched addObject:JLYPatchShareURLObject(value) ?: (id)kCFNull];
+        }
+        return patched;
+    }
+    return object;
+}
+
+static NSData *JLYPatchShareURLDataForURL(NSURL *url, NSData *data) {
+    if (!JLYURLNeedsShareURLPatch(url) || data.length == 0) {
+        return data;
+    }
+    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    id patched = JLYPatchShareURLObject(json);
+    if (!patched || ![NSJSONSerialization isValidJSONObject:patched]) {
+        return data;
+    }
+    NSData *out = [NSJSONSerialization dataWithJSONObject:patched options:0 error:nil];
+    return out ?: data;
+}
+
+static id JLYPatchShareURLResponseObjectForURL(NSURL *url, id responseObject) {
+    if (!JLYURLNeedsShareURLPatch(url)) {
+        return responseObject;
+    }
+    if ([responseObject isKindOfClass:NSData.class]) {
+        return JLYPatchShareURLDataForURL(url, responseObject);
+    }
+    return JLYPatchShareURLObject(responseObject);
+}
+
+static id JLYShareURLPatchedSessionCompletion(NSURL *url, id completion) {
+    if (!completion || !JLYURLNeedsShareURLPatch(url)) {
+        return completion;
+    }
+    void (^original)(NSData *, NSURLResponse *, NSError *) = completion;
+    return [^(NSData *data, NSURLResponse *response, NSError *error) {
+        original(JLYPatchShareURLDataForURL(url, data), response, error);
+    } copy];
+}
+
+static id JLYShareURLPatchedConnectionCompletion(NSURL *url, id completion) {
+    if (!completion || !JLYURLNeedsShareURLPatch(url)) {
+        return completion;
+    }
+    void (^original)(NSURLResponse *, NSData *, NSError *) = completion;
+    return [^(NSURLResponse *response, NSData *data, NSError *error) {
+        original(response, JLYPatchShareURLDataForURL(url, data), error);
+    } copy];
+}
+
+static id JLYShareURLPatchedAFSuccess(NSString *urlString, id success) {
+    NSURL *url = [NSURL URLWithString:JLYString(urlString)];
+    if (!success || !JLYURLNeedsShareURLPatch(url)) {
+        return success;
+    }
+    void (^original)(NSURLSessionDataTask *, id) = success;
+    return [^(NSURLSessionDataTask *task, id responseObject) {
+        original(task, JLYPatchShareURLResponseObjectForURL(url, responseObject));
+    } copy];
+}
+
 static id JLYAFRequestWithMethodURLStringParametersError(id self, SEL _cmd, NSString *method, NSString *urlString, id parameters, NSError **error) {
     NSString *routedURL = urlString;
     id routedParameters = parameters;
@@ -983,7 +1066,7 @@ static id JLYAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure(i
     JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, NSString *, id, id, id, id, id) = (id (*)(id, SEL, NSString *, NSString *, id, id, id, id, id))OrigAFDataTaskWithHTTPMethodURLStringParametersProgressSuccessFailure;
-    return orig ? orig(self, _cmd, (routedMeet || paidAppList) ? @"POST" : method, routedURL, routedParameters, uploadProgress, downloadProgress, success, failure) : nil;
+    return orig ? orig(self, _cmd, (routedMeet || paidAppList) ? @"POST" : method, routedURL, routedParameters, uploadProgress, downloadProgress, JLYShareURLPatchedAFSuccess(routedURL, success), failure) : nil;
 }
 
 static id JLYAFPostParametersSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id success, id failure) {
@@ -995,7 +1078,7 @@ static id JLYAFPostParametersSuccessFailure(id self, SEL _cmd, NSString *urlStri
     JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id))OrigAFPostParametersSuccessFailure;
-    return orig ? orig(self, _cmd, routedURL, routedParameters, success, failure) : nil;
+    return orig ? orig(self, _cmd, routedURL, routedParameters, JLYShareURLPatchedAFSuccess(routedURL, success), failure) : nil;
 }
 
 static id JLYAFPostParametersProgressSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id progress, id success, id failure) {
@@ -1007,7 +1090,7 @@ static id JLYAFPostParametersProgressSuccessFailure(id self, SEL _cmd, NSString 
     JLYRewritePaidAppListURLString(&routedURL, &routedParameters);
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     id (*orig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFPostParametersProgressSuccessFailure;
-    return orig ? orig(self, _cmd, routedURL, routedParameters, progress, success, failure) : nil;
+    return orig ? orig(self, _cmd, routedURL, routedParameters, progress, JLYShareURLPatchedAFSuccess(routedURL, success), failure) : nil;
 }
 
 static id JLYAFGetParametersSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id success, id failure) {
@@ -1021,14 +1104,14 @@ static id JLYAFGetParametersSuccessFailure(id self, SEL _cmd, NSString *urlStrin
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     if (routedMeet && OrigAFPostParametersSuccessFailure) {
         id (*postOrig)(id, SEL, NSString *, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id))OrigAFPostParametersSuccessFailure;
-        return postOrig(self, NSSelectorFromString(@"POST:parameters:success:failure:"), routedURL, routedParameters, success, failure);
+        return postOrig(self, NSSelectorFromString(@"POST:parameters:success:failure:"), routedURL, routedParameters, JLYShareURLPatchedAFSuccess(routedURL, success), failure);
     }
     if (paidAppList && OrigAFPostParametersSuccessFailure) {
         id (*postOrig)(id, SEL, NSString *, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id))OrigAFPostParametersSuccessFailure;
-        return postOrig(self, NSSelectorFromString(@"POST:parameters:success:failure:"), routedURL, routedParameters, success, failure);
+        return postOrig(self, NSSelectorFromString(@"POST:parameters:success:failure:"), routedURL, routedParameters, JLYShareURLPatchedAFSuccess(routedURL, success), failure);
     }
     id (*orig)(id, SEL, NSString *, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id))OrigAFGetParametersSuccessFailure;
-    return orig ? orig(self, _cmd, routedURL, routedParameters, success, failure) : nil;
+    return orig ? orig(self, _cmd, routedURL, routedParameters, JLYShareURLPatchedAFSuccess(routedURL, success), failure) : nil;
 }
 
 static id JLYAFGetParametersProgressSuccessFailure(id self, SEL _cmd, NSString *urlString, id parameters, id progress, id success, id failure) {
@@ -1042,14 +1125,14 @@ static id JLYAFGetParametersProgressSuccessFailure(id self, SEL _cmd, NSString *
     JLYRewriteAllAppListURLString(&routedURL, &routedParameters);
     if (routedMeet && OrigAFPostParametersProgressSuccessFailure) {
         id (*postOrig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFPostParametersProgressSuccessFailure;
-        return postOrig(self, NSSelectorFromString(@"POST:parameters:progress:success:failure:"), routedURL, routedParameters, progress, success, failure);
+        return postOrig(self, NSSelectorFromString(@"POST:parameters:progress:success:failure:"), routedURL, routedParameters, progress, JLYShareURLPatchedAFSuccess(routedURL, success), failure);
     }
     if (paidAppList && OrigAFPostParametersProgressSuccessFailure) {
         id (*postOrig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFPostParametersProgressSuccessFailure;
-        return postOrig(self, NSSelectorFromString(@"POST:parameters:progress:success:failure:"), routedURL, routedParameters, progress, success, failure);
+        return postOrig(self, NSSelectorFromString(@"POST:parameters:progress:success:failure:"), routedURL, routedParameters, progress, JLYShareURLPatchedAFSuccess(routedURL, success), failure);
     }
     id (*orig)(id, SEL, NSString *, id, id, id, id) = (id (*)(id, SEL, NSString *, id, id, id, id))OrigAFGetParametersProgressSuccessFailure;
-    return orig ? orig(self, _cmd, routedURL, routedParameters, progress, success, failure) : nil;
+    return orig ? orig(self, _cmd, routedURL, routedParameters, progress, JLYShareURLPatchedAFSuccess(routedURL, success), failure) : nil;
 }
 
 static NSURLRequest *JLYRoutedRequest(NSURLRequest *request) {
@@ -1064,21 +1147,22 @@ static NSURLRequest *JLYRoutedRequest(NSURLRequest *request) {
 
 static id JLYSessionDataTaskWithRequestCompletion(id self, SEL _cmd, NSURLRequest *request, id completion) {
     id (*orig)(id, SEL, NSURLRequest *, id) = (id (*)(id, SEL, NSURLRequest *, id))OrigSessionDataTaskWithRequestCompletion;
-    return orig ? orig(self, _cmd, JLYRoutedRequest(request), completion) : nil;
+    NSURLRequest *routed = JLYRoutedRequest(request);
+    return orig ? orig(self, _cmd, routed, JLYShareURLPatchedSessionCompletion(routed.URL, completion)) : nil;
 }
 
 static id JLYSessionDataTaskWithURLCompletion(id self, SEL _cmd, NSURL *url, id completion) {
     id (*orig)(id, SEL, NSURL *, id) = (id (*)(id, SEL, NSURL *, id))OrigSessionDataTaskWithURLCompletion;
     if (!JLYURLIsMeetList(url) && !JLYURLIsMatchmakerRecommend(url) && !JLYURLIsPaidAppList(url) && !JLYURLIsAllAppList(url)) {
-        return orig ? orig(self, _cmd, url, completion) : nil;
+        return orig ? orig(self, _cmd, url, JLYShareURLPatchedSessionCompletion(url, completion)) : nil;
     }
     NSURLRequest *request = JLYRoutedRequest([NSURLRequest requestWithURL:url]);
     IMP requestIMP = OrigSessionDataTaskWithRequestCompletion;
     if (requestIMP) {
         id (*requestOrig)(id, SEL, NSURLRequest *, id) = (id (*)(id, SEL, NSURLRequest *, id))requestIMP;
-        return requestOrig(self, NSSelectorFromString(@"dataTaskWithRequest:completionHandler:"), request, completion);
+        return requestOrig(self, NSSelectorFromString(@"dataTaskWithRequest:completionHandler:"), request, JLYShareURLPatchedSessionCompletion(request.URL, completion));
     }
-    return orig ? orig(self, _cmd, request.URL, completion) : nil;
+    return orig ? orig(self, _cmd, request.URL, JLYShareURLPatchedSessionCompletion(request.URL, completion)) : nil;
 }
 
 static id JLYConnectionWithRequestDelegate(id self, SEL _cmd, NSURLRequest *request, id delegate) {
@@ -1094,13 +1178,16 @@ static id JLYConnectionWithRequestDelegateStart(id self, SEL _cmd, NSURLRequest 
 static void JLYSendAsyncRequestQueueCompletion(id self, SEL _cmd, NSURLRequest *request, NSOperationQueue *queue, id completion) {
     void (*orig)(id, SEL, NSURLRequest *, NSOperationQueue *, id) = (void (*)(id, SEL, NSURLRequest *, NSOperationQueue *, id))OrigSendAsyncRequestQueueCompletion;
     if (orig) {
-        orig(self, _cmd, JLYRoutedRequest(request), queue, completion);
+        NSURLRequest *routed = JLYRoutedRequest(request);
+        orig(self, _cmd, routed, queue, JLYShareURLPatchedConnectionCompletion(routed.URL, completion));
     }
 }
 
 static NSData *JLYSendSyncRequestReturningResponseError(id self, SEL _cmd, NSURLRequest *request, NSURLResponse **response, NSError **error) {
     NSData *(*orig)(id, SEL, NSURLRequest *, NSURLResponse **, NSError **) = (NSData *(*)(id, SEL, NSURLRequest *, NSURLResponse **, NSError **))OrigSendSyncRequestReturningResponseError;
-    return orig ? orig(self, _cmd, JLYRoutedRequest(request), response, error) : nil;
+    NSURLRequest *routed = JLYRoutedRequest(request);
+    NSData *data = orig ? orig(self, _cmd, routed, response, error) : nil;
+    return JLYPatchShareURLDataForURL(routed.URL, data);
 }
 
 static id JLYPaidPostsURLWithCountPageInfo(id self, SEL _cmd, id count, id pageInfo) {
