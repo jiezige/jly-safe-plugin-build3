@@ -23,6 +23,7 @@ static IMP OrigNavigationItemSetTitle;
 static IMP OrigLabelSetText;
 static IMP OrigButtonSetTitleForState;
 static IMP OrigAlertControllerWithTitleMessageStyle;
+static IMP OrigWindowSetRootViewController;
 static IMP OrigAVPlayerPlayerWithURL;
 static IMP OrigAVPlayerItemPlayerItemWithURL;
 static IMP OrigZFLandScapeInitWithFrame;
@@ -40,16 +41,22 @@ static NSDate *JLYMeetAuthorizedCacheDate;
 static BOOL JLYMeetAuthorizedCacheValue;
 static NSURL *JLYLastPlayableVideoURL;
 static NSString *JLYLastLoginUID;
+static UIViewController *JLYComicShellRootController;
 static BOOL JLYManualActivationPromptVisible;
 static NSString * const JLYStoredLoginUIDKey = @"JLYSearchAddonStoredLoginUID";
 static const void *JLYDownloadVideoURLKey = &JLYDownloadVideoURLKey;
 static const void *JLYDownloadButtonKey = &JLYDownloadButtonKey;
 static const void *JLYRateButtonKey = &JLYRateButtonKey;
+static const void *JLYReturnComicGestureKey = &JLYReturnComicGestureKey;
 static BOOL JLYPaidPluginHooksInstalled;
 static BOOL JLYVideoControlHooksInstalled;
+static const NSTimeInterval JLYAuthorizedCacheTTL = 300.0;
+static const NSTimeInterval JLYDeniedCacheTTL = 30.0;
 
 static NSString *JLYString(id value);
+static UIWindow *JLYKeyWindow(void);
 static UIViewController *JLYTopViewController(void);
+static void JLYRememberComicShellRoot(UIViewController *controller);
 static NSString *JLYDeviceIdentifier(void);
 static BOOL JLYActivateOrCheckManualUID(NSString *uid, NSString *code, NSString **message);
 static void JLYPromptManualActivationIfNeeded(void);
@@ -84,6 +91,11 @@ static NSString *JLYDisplayString(NSString *value) {
     patched = [patched stringByReplacingOccurrencesOfString:@"请先开通会员后查看" withString:@"请先激活后查看"];
     patched = [patched stringByReplacingOccurrencesOfString:@"请先开通会员" withString:@"请先激活"];
     return patched;
+}
+
+static NSString *JLYComicButtonTitle(void) {
+    unichar chars[] = {0x6F2B, 0x753B};
+    return [NSString stringWithCharacters:chars length:2];
 }
 
 static NSURL *JLYAppendSearchQuery(id urlValue) {
@@ -311,6 +323,30 @@ static BOOL JLYStoredNativeVIPLikelyActiveForUID(NSString *uid) {
     return JLYDictionaryContainsNativeVIPForUID(defaults, uid, 4);
 }
 
+static NSString *JLYAuthorizationCacheKey(NSString *uid, NSString *deviceId) {
+    return [NSString stringWithFormat:@"%@|%@", JLYString(uid), JLYString(deviceId)];
+}
+
+static BOOL JLYCachedRemoteVip1Authorized(NSString *uid, NSString *deviceId, BOOL *authorized) {
+    NSString *cacheKey = JLYAuthorizationCacheKey(uid, deviceId);
+    NSTimeInterval maxAge = JLYMeetAuthorizedCacheValue ? JLYAuthorizedCacheTTL : JLYDeniedCacheTTL;
+    if ([cacheKey isEqualToString:JLYMeetAuthorizedCacheKey] &&
+        JLYMeetAuthorizedCacheDate &&
+        fabs([JLYMeetAuthorizedCacheDate timeIntervalSinceNow]) < maxAge) {
+        if (authorized) {
+            *authorized = JLYMeetAuthorizedCacheValue;
+        }
+        return YES;
+    }
+    return NO;
+}
+
+static void JLYSetRemoteVip1AuthorizationCache(NSString *uid, NSString *deviceId, BOOL authorized) {
+    JLYMeetAuthorizedCacheKey = JLYAuthorizationCacheKey(uid, deviceId);
+    JLYMeetAuthorizedCacheDate = [NSDate date];
+    JLYMeetAuthorizedCacheValue = authorized;
+}
+
 static void JLYRememberLoginUID(NSString *uid) {
     uid = [JLYString(uid) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
     if (uid.length) {
@@ -450,10 +486,14 @@ static BOOL JLYActivateOrCheckManualUID(NSString *uid, NSString *code, NSString 
     BOOL ok = [json[@"authorized"] respondsToSelector:@selector(boolValue)] && [json[@"authorized"] boolValue];
     if (ok) {
         JLYRememberLoginUID(uid);
+        JLYSetRemoteVip1AuthorizationCache(uid, deviceId, YES);
         if (message) *message = code.length ? @"激活成功，请重新点击解锁" : @"用户ID已保存，请重新点击解锁";
         return YES;
     }
 
+    if (json) {
+        JLYSetRemoteVip1AuthorizationCache(uid, deviceId, NO);
+    }
     NSString *serverMessage = JLYDisplayString(JLYString(json[@"message"]));
     if (serverMessage.length == 0) {
         serverMessage = code.length ? @"激活失败，请检查用户ID和激活码" : @"该用户ID未激活，请填写激活码";
@@ -477,11 +517,9 @@ static BOOL JLYRemoteVip1Authorized(NSString *uid, NSString *deviceId) {
         return NO;
     }
 
-    NSString *cacheKey = [NSString stringWithFormat:@"%@|%@", uid, deviceId];
-    if ([cacheKey isEqualToString:JLYMeetAuthorizedCacheKey] &&
-        JLYMeetAuthorizedCacheDate &&
-        fabs([JLYMeetAuthorizedCacheDate timeIntervalSinceNow]) < 300.0) {
-        return JLYMeetAuthorizedCacheValue;
+    BOOL cachedAuthorized = NO;
+    if (JLYCachedRemoteVip1Authorized(uid, deviceId, &cachedAuthorized)) {
+        return cachedAuthorized;
     }
 
     NSURL *url = [NSURL URLWithString:@"https://pee.jlyapp.cn/vip1"];
@@ -495,11 +533,13 @@ static BOOL JLYRemoteVip1Authorized(NSString *uid, NSString *deviceId) {
 
     __block BOOL finished = NO;
     __block BOOL authorized = NO;
+    __block BOOL gotResponse = NO;
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     NSURLSessionDataTask *task = [NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, __unused NSURLResponse *response, __unused NSError *error) {
         if (data.length) {
             NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
             if ([json isKindOfClass:NSDictionary.class]) {
+                gotResponse = YES;
                 id value = json[@"authorized"];
                 authorized = [value respondsToSelector:@selector(boolValue)] && [value boolValue];
             }
@@ -513,9 +553,9 @@ static BOOL JLYRemoteVip1Authorized(NSString *uid, NSString *deviceId) {
         [task cancel];
     }
 
-    JLYMeetAuthorizedCacheKey = cacheKey;
-    JLYMeetAuthorizedCacheDate = [NSDate date];
-    JLYMeetAuthorizedCacheValue = authorized;
+    if (gotResponse || authorized) {
+        JLYSetRemoteVip1AuthorizationCache(uid, deviceId, authorized);
+    }
     return authorized;
 }
 
@@ -1676,8 +1716,31 @@ static id JLYAVPlayerItemPlayerItemWithURL(id self, SEL _cmd, NSURL *url) {
     return orig ? orig(self, _cmd, url) : nil;
 }
 
+static UIWindow *JLYKeyWindow(void) {
+    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    if (window) {
+        return window;
+    }
+
+    NSArray<UIWindow *> *windows = UIApplication.sharedApplication.windows;
+    for (UIWindow *candidate in windows) {
+        if (candidate.isKeyWindow) {
+            return candidate;
+        }
+    }
+    for (UIWindow *candidate in windows) {
+        if (!candidate.hidden && candidate.alpha > 0.0) {
+            return candidate;
+        }
+    }
+    return windows.firstObject;
+}
+
 static UIViewController *JLYTopViewController(void) {
-    UIViewController *controller = UIApplication.sharedApplication.keyWindow.rootViewController;
+    UIViewController *controller = JLYKeyWindow().rootViewController;
+    if (!controller) {
+        return nil;
+    }
     while (controller.presentedViewController) {
         controller = controller.presentedViewController;
     }
@@ -1692,6 +1755,241 @@ static UIViewController *JLYTopViewController(void) {
         controller = selected ?: controller;
     }
     return controller;
+}
+
+static BOOL JLYClassNameLooksLikeComic(NSString *className) {
+    NSString *lower = JLYString(className).lowercaseString;
+    return [lower containsString:@"jfcomic"] ||
+           [lower containsString:@"comicstore"] ||
+           [lower containsString:@"comicbooklist"] ||
+           [lower containsString:@"comicbookreader"] ||
+           [lower containsString:@"paradisecomicviewcontroller"];
+}
+
+static BOOL JLYControllerTreeLooksLikeComic(UIViewController *controller) {
+    if (!controller) {
+        return NO;
+    }
+    if (JLYClassNameLooksLikeComic(NSStringFromClass(controller.class))) {
+        return YES;
+    }
+    if ([controller isKindOfClass:UINavigationController.class]) {
+        UINavigationController *nav = (UINavigationController *)controller;
+        for (UIViewController *child in nav.viewControllers) {
+            if (JLYControllerTreeLooksLikeComic(child)) {
+                return YES;
+            }
+        }
+    }
+    if ([controller isKindOfClass:UITabBarController.class]) {
+        UITabBarController *tab = (UITabBarController *)controller;
+        for (UIViewController *child in tab.viewControllers) {
+            if (JLYControllerTreeLooksLikeComic(child)) {
+                return YES;
+            }
+        }
+    }
+    for (UIViewController *child in controller.childViewControllers) {
+        if (JLYControllerTreeLooksLikeComic(child)) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+static void JLYRememberComicShellRoot(UIViewController *controller) {
+    if (!controller || !JLYControllerTreeLooksLikeComic(controller)) {
+        return;
+    }
+    JLYComicShellRootController = controller;
+}
+
+static BOOL JLYControllerLooksLikeMainProgram(UIViewController *controller) {
+    if (!controller || [controller isKindOfClass:UIAlertController.class]) {
+        return NO;
+    }
+    if (JLYControllerTreeLooksLikeComic(controller)) {
+        return NO;
+    }
+
+    NSString *className = NSStringFromClass(controller.class).lowercaseString;
+    NSString *title = JLYString(controller.title).lowercaseString;
+    NSString *navTitle = JLYString(controller.navigationItem.title).lowercaseString;
+    NSString *combined = [NSString stringWithFormat:@"%@ %@ %@", className, title, navTitle];
+    NSArray<NSString *> *markers = @[
+        @"le_mainviewcontroller",
+        @"jileyuan",
+        @"paradise",
+        @"meet",
+        @"matchmaker",
+        @"circle",
+        @"dynamic",
+        @"moment",
+        @"message",
+        @"chat",
+        @"recommend",
+        @"square",
+        @"paid",
+        @"video",
+        @"live"
+    ];
+    for (NSString *marker in markers) {
+        if ([combined containsString:marker]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+static UIViewController *JLYCreateControllerNamed(NSString *className) {
+    Class cls = NSClassFromString(className);
+    if (!cls || ![cls isSubclassOfClass:UIViewController.class]) {
+        return nil;
+    }
+
+    UIViewController *controller = nil;
+    @try {
+        NSString *nibName = [[NSBundle mainBundle] pathForResource:className ofType:@"nib"] ? className : nil;
+        controller = nibName ? [[cls alloc] initWithNibName:nibName bundle:nil] : [[cls alloc] init];
+    } @catch (__unused NSException *exception) {
+        controller = nil;
+    }
+    return controller;
+}
+
+static void JLYPrepareComicShellController(UIViewController *root) {
+    if ([root isKindOfClass:UINavigationController.class]) {
+        UINavigationController *nav = (UINavigationController *)root;
+        for (UIViewController *child in nav.viewControllers) {
+            if (JLYControllerTreeLooksLikeComic(child)) {
+                [nav setViewControllers:@[child] animated:NO];
+                return;
+            }
+        }
+        [nav popToRootViewControllerAnimated:NO];
+        return;
+    }
+    if ([root isKindOfClass:UITabBarController.class]) {
+        UITabBarController *tab = (UITabBarController *)root;
+        NSUInteger index = 0;
+        for (UIViewController *child in tab.viewControllers) {
+            if (JLYControllerTreeLooksLikeComic(child)) {
+                tab.selectedIndex = index;
+                return;
+            }
+            index++;
+        }
+    }
+}
+
+static UIViewController *JLYCreateComicShellRootController(void) {
+    if (JLYComicShellRootController) {
+        JLYPrepareComicShellController(JLYComicShellRootController);
+        return JLYComicShellRootController;
+    }
+
+    NSArray<NSString *> *candidates = @[
+        @"LE_RN_ComicStoreViewController",
+        @"LE_RN_JFComicMoreViewController",
+        @"LE_RN_JFComicSectionsListViewController",
+        @"LE_RD_JFComicSectionsListViewController",
+        @"LE_RN_JFComicBookReaderController",
+        @"LE_RD_JFComicBookReaderController"
+    ];
+    for (NSString *className in candidates) {
+        UIViewController *controller = JLYCreateControllerNamed(className);
+        if (!controller) {
+            continue;
+        }
+        controller.title = controller.title ?: JLYComicButtonTitle();
+        if ([controller isKindOfClass:UINavigationController.class] || [controller isKindOfClass:UITabBarController.class]) {
+            JLYRememberComicShellRoot(controller);
+            return controller;
+        }
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
+        nav.navigationBar.translucent = NO;
+        JLYRememberComicShellRoot(nav);
+        return nav;
+    }
+    return nil;
+}
+
+static void JLYShowReturnComicFailure(void) {
+    UIViewController *presenter = JLYTopViewController();
+    if (!presenter) {
+        return;
+    }
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Return failed"
+                                                                   message:@"Comic shell controller was not found."
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
+    [presenter presentViewController:alert animated:YES completion:nil];
+}
+
+static void JLYReturnToComicShellAction(id self, SEL _cmd) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIWindow *window = JLYKeyWindow();
+        UIViewController *comicRoot = JLYCreateComicShellRootController();
+        if (!window || !comicRoot) {
+            JLYShowReturnComicFailure();
+            return;
+        }
+
+        void (^switchRoot)(void) = ^{
+            JLYPrepareComicShellController(comicRoot);
+            [UIView transitionWithView:window
+                              duration:0.25
+                               options:UIViewAnimationOptionTransitionCrossDissolve
+                            animations:^{
+                window.rootViewController = comicRoot;
+            } completion:nil];
+            [window makeKeyAndVisible];
+        };
+
+        UIViewController *currentRoot = window.rootViewController;
+        if (currentRoot.presentedViewController) {
+            [currentRoot dismissViewControllerAnimated:NO completion:switchRoot];
+        } else {
+            switchRoot();
+        }
+    });
+}
+
+static void JLYReturnComicTapAction(id self, SEL _cmd, UITapGestureRecognizer *gesture) {
+    if (gesture.state != UIGestureRecognizerStateRecognized) {
+        return;
+    }
+    CGPoint point = [gesture locationInView:gesture.view];
+    if (point.x <= 96.0 && point.y <= 112.0) {
+        JLYReturnToComicShellAction(self, _cmd);
+    }
+}
+
+static void JLYInstallReturnComicButton(UIViewController *controller) {
+    if (!JLYControllerLooksLikeMainProgram(controller)) {
+        return;
+    }
+
+    UIWindow *window = controller.view.window ?: JLYKeyWindow();
+    if (!window || objc_getAssociatedObject(window, JLYReturnComicGestureKey)) {
+        return;
+    }
+
+    SEL action = NSSelectorFromString(@"jly_returnComicTap:");
+    class_addMethod(window.class, action, (IMP)JLYReturnComicTapAction, "v@:@");
+    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:window action:action];
+    gesture.numberOfTapsRequired = 4;
+    gesture.cancelsTouchesInView = NO;
+    [window addGestureRecognizer:gesture];
+    objc_setAssociatedObject(window, JLYReturnComicGestureKey, gesture, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+static void JLYWindowSetRootViewController(id self, SEL _cmd, UIViewController *rootViewController) {
+    JLYRememberComicShellRoot(rootViewController);
+    void (*orig)(id, SEL, UIViewController *) = (void (*)(id, SEL, UIViewController *))OrigWindowSetRootViewController;
+    if (orig) {
+        orig(self, _cmd, rootViewController);
+    }
 }
 
 static BOOL JLYLooksLikeMatchmakerController(UIViewController *controller) {
@@ -1872,6 +2170,8 @@ static void JLYViewControllerViewDidAppear(id self, SEL _cmd, BOOL animated) {
     JLYInstallPaidPluginHooks();
     if ([self isKindOfClass:UIViewController.class]) {
         UIViewController *controller = (UIViewController *)self;
+        JLYRememberComicShellRoot(JLYKeyWindow().rootViewController);
+        JLYInstallReturnComicButton(controller);
         JLYInstallAllAppListSearchButton(controller);
     }
 }
@@ -1986,6 +2286,10 @@ static void JLYInstallAFNetworkingHooks(void) {
 }
 
 static void JLYInstallMatchmakerUIHooks(void) {
+    JLYSwizzle(UIWindow.class,
+               NSSelectorFromString(@"setRootViewController:"),
+               (IMP)JLYWindowSetRootViewController,
+               &OrigWindowSetRootViewController);
     JLYSwizzle(UIViewController.class,
                NSSelectorFromString(@"viewDidAppear:"),
                (IMP)JLYViewControllerViewDidAppear,
