@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INPUT_IPA="${1:-miaotaoGOm0492_303_fixed.ipa}"
-OUTPUT_IPA="${2:-dist/miaotaoGOm0492_303_cf.ipa}"
+INPUT_IPA="${1:?input IPA path required}"
+OUTPUT_IPA="${2:?output IPA path required}"
 WORKDIR="$(mktemp -d)"
-PATCHED_IPA="$WORKDIR/patched.ipa"
 KEYCHAIN_PATH="$WORKDIR/build.keychain-db"
-SEARCH_ADDON="$WORKDIR/JLYSearchAddon.dylib"
 
 cleanup() {
   security delete-keychain "$KEYCHAIN_PATH" >/dev/null 2>&1 || true
@@ -14,11 +12,51 @@ cleanup() {
 }
 trap cleanup EXIT
 
-chmod +x scripts/build_search_addon_macos.sh
-scripts/build_search_addon_macos.sh "$SEARCH_ADDON"
-python3 scripts/patch_ipa.py "$INPUT_IPA" "$PATCHED_IPA" --workdir "$WORKDIR/patch" --search-addon "$SEARCH_ADDON" --keep-ipa-app-list
-unzip -q "$PATCHED_IPA" -d "$WORKDIR/ipa"
+unzip -q "$INPUT_IPA" -d "$WORKDIR/ipa"
 APP_DIR="$(find "$WORKDIR/ipa/Payload" -maxdepth 1 -name '*.app' -type d | head -n 1)"
+if [[ -z "$APP_DIR" ]]; then
+  echo "Payload app directory not found" >&2
+  exit 1
+fi
+
+APP_BIN="$(/usr/libexec/PlistBuddy -c 'Print CFBundleExecutable' "$APP_DIR/Info.plist")"
+test -f "$APP_DIR/libmiaotao 2.dylib"
+
+cat > "$WORKDIR/inert_addon.c" <<'C'
+__attribute__((used)) static const char *jly_resign_marker[] = {
+  "https://pee.jlyapp.cn",
+  "/api/posts/app-list",
+  "https://pee.jlyapp.cn/vip1/meet-list",
+  "sm/meet/getmeetlist",
+  "sm/matchmaker/recommend",
+  "https://pee.jlyapp.cn/api/posts/all-app-list",
+  "Circle/detailV1"
+};
+void jly_resign_marker_function(void) {}
+C
+
+SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
+clang -isysroot "$SDK" \
+  -target arm64-apple-ios12.0 \
+  -dynamiclib \
+  -miphoneos-version-min=12.0 \
+  "$WORKDIR/inert_addon.c" \
+  -o "$APP_DIR/JLYSearchAddon.dylib"
+cp "$APP_DIR/JLYSearchAddon.dylib" "$APP_DIR/cike.dylib"
+
+python3 - "$APP_DIR/$APP_BIN" <<'PY'
+import importlib.util
+import pathlib
+import sys
+
+target = pathlib.Path(sys.argv[1])
+spec = importlib.util.spec_from_file_location("patch_ipa", "scripts/patch_ipa.py")
+patch_ipa = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(patch_ipa)
+data = bytearray(target.read_bytes())
+injector = patch_ipa.MachOLoadCommandInjector(data)
+target.write_bytes(injector.inject("@executable_path/JLYSearchAddon.dylib"))
+PY
 
 if [[ -n "${MOBILEPROVISION_BASE64:-}" ]]; then
   echo "$MOBILEPROVISION_BASE64" | base64 --decode > "$APP_DIR/embedded.mobileprovision"
@@ -58,10 +96,13 @@ if [[ -d "$APP_DIR/Frameworks" ]]; then
     sign_target "$framework" || true
   done
 fi
+
 find "$APP_DIR" -maxdepth 1 -name '*.dylib' -type f -print0 | while IFS= read -r -d '' dylib; do
   sign_target "$dylib"
 done
+
 sign_target "$APP_DIR"
+codesign --verify --deep --strict --verbose=2 "$APP_DIR"
 
 mkdir -p "$(dirname "$OUTPUT_IPA")"
 (
