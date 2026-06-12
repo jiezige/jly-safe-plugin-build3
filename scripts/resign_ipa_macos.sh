@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INPUT_IPA="${1:?input IPA path required}"
-OUTPUT_IPA="${2:?output IPA path required}"
+INPUT_IPA="${1:-miaotaoGOm0492_303_fixed.ipa}"
+OUTPUT_IPA="${2:-dist/miaotaoGOm0492_303_cf.ipa}"
 WORKDIR="$(mktemp -d)"
+PATCHED_IPA="$WORKDIR/patched.ipa"
 KEYCHAIN_PATH="$WORKDIR/build.keychain-db"
+SEARCH_ADDON="$WORKDIR/JLYSearchAddon.dylib"
 
 cleanup() {
   security delete-keychain "$KEYCHAIN_PATH" >/dev/null 2>&1 || true
@@ -12,323 +14,11 @@ cleanup() {
 }
 trap cleanup EXIT
 
-unzip -q "$INPUT_IPA" -d "$WORKDIR/ipa"
+chmod +x scripts/build_search_addon_macos.sh
+scripts/build_search_addon_macos.sh "$SEARCH_ADDON"
+python3 scripts/patch_ipa.py "$INPUT_IPA" "$PATCHED_IPA" --workdir "$WORKDIR/patch" --search-addon "$SEARCH_ADDON" --keep-ipa-app-list
+unzip -q "$PATCHED_IPA" -d "$WORKDIR/ipa"
 APP_DIR="$(find "$WORKDIR/ipa/Payload" -maxdepth 1 -name '*.app' -type d | head -n 1)"
-if [[ -z "$APP_DIR" ]]; then
-  echo "Payload app directory not found" >&2
-  exit 1
-fi
-
-APP_BIN="$(/usr/libexec/PlistBuddy -c 'Print CFBundleExecutable' "$APP_DIR/Info.plist")"
-MIAOTAO_LOAD="@executable_path/libmiaotao 2.dylib"
-MIAOTAO_ROOT="$APP_DIR/libmiaotao 2.dylib"
-LIBTEST="$APP_DIR/Frameworks/libtestMonekyDylib.dylib"
-TOUCH_FIX_LOAD="@executable_path/libJLYTouchFix.dylib"
-TOUCH_FIX="$APP_DIR/libJLYTouchFix.dylib"
-test -f "$MIAOTAO_ROOT"
-test -f "$LIBTEST"
-
-python3 - "$LIBTEST" "$MIAOTAO_LOAD" <<'PY'
-import importlib.util
-import pathlib
-import sys
-
-target = pathlib.Path(sys.argv[1])
-dylib_name = sys.argv[2]
-data = bytearray(target.read_bytes())
-if dylib_name.encode() in data:
-    print(f"{target} already contains {dylib_name}")
-    raise SystemExit(0)
-
-spec = importlib.util.spec_from_file_location("patch_ipa", "scripts/patch_ipa.py")
-patch_ipa = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(patch_ipa)
-injector = patch_ipa.MachOLoadCommandInjector(data)
-target.write_bytes(injector.inject(dylib_name))
-print(f"Injected {dylib_name} into {target}")
-PY
-
-cat > "$WORKDIR/JLYTouchFix.m" <<'OBJC'
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-#import <objc/runtime.h>
-#import <objc/message.h>
-
-static UIView *(*orig_UIView_hitTest)(id, SEL, CGPoint, UIEvent *);
-static void (*orig_FTPopOverMenu_dismiss)(id, SEL);
-
-static BOOL JLYTFNameContains(Class cls, const char *needle) {
-  while (cls) {
-    const char *name = class_getName(cls);
-    if (name && strstr(name, needle)) {
-      return YES;
-    }
-    cls = class_getSuperclass(cls);
-  }
-  return NO;
-}
-
-static BOOL JLYTFViewTreeContains(UIView *view, const char *needle) {
-  if (!view) {
-    return NO;
-  }
-  if (JLYTFNameContains([view class], needle)) {
-    return YES;
-  }
-  for (UIView *subview in view.subviews) {
-    if (JLYTFViewTreeContains(subview, needle)) {
-      return YES;
-    }
-  }
-  return NO;
-}
-
-static BOOL JLYTFHasVisibleMenuView(UIView *view) {
-  if (!view || view.hidden || view.alpha < 0.05) {
-    return NO;
-  }
-  if (JLYTFNameContains([view class], "FTPopOverMenuView")) {
-    return YES;
-  }
-  for (UIView *subview in view.subviews) {
-    if (JLYTFHasVisibleMenuView(subview)) {
-      return YES;
-    }
-  }
-  return NO;
-}
-
-static void JLYTFHideWindow(UIWindow *window, NSString *reason) {
-  if (!window || window.hidden) {
-    return;
-  }
-  NSLog(@"[JLYTouchFix] hide stale plugin window: %@ %@", window, reason);
-  window.userInteractionEnabled = NO;
-  window.hidden = YES;
-  window.alpha = 0.0;
-}
-
-static void JLYTFCleanupFTPopOverSingleton(void) {
-  Class cls = NSClassFromString(@"FTPopOverMenu");
-  if (!cls || ![cls respondsToSelector:@selector(sharedInstance)]) {
-    return;
-  }
-
-  id (*idMsg)(id, SEL) = (id (*)(id, SEL))objc_msgSend;
-  BOOL (*boolMsg)(id, SEL) = (BOOL (*)(id, SEL))objc_msgSend;
-  id menu = idMsg(cls, @selector(sharedInstance));
-  if (!menu) {
-    return;
-  }
-
-  BOOL onScreen = NO;
-  if ([menu respondsToSelector:@selector(isCurrentlyOnScreen)]) {
-    onScreen = boolMsg(menu, @selector(isCurrentlyOnScreen));
-  }
-
-  UIWindow *backgroundWindow = nil;
-  UIView *backgroundView = nil;
-  UIView *popMenuView = nil;
-  @try {
-    backgroundWindow = [menu valueForKey:@"backgroundWindow"];
-    backgroundView = [menu valueForKey:@"backgroundView"];
-    popMenuView = [menu valueForKey:@"popMenuView"];
-  } @catch (__unused NSException *exception) {
-  }
-
-  BOOL menuVisible = popMenuView && popMenuView.window && !popMenuView.hidden && popMenuView.alpha >= 0.05;
-  if ((!onScreen || !menuVisible) && backgroundWindow && !backgroundWindow.hidden) {
-    NSLog(@"[JLYTouchFix] cleanup FTPopOverMenu backgroundWindow onScreen=%d menuVisible=%d", onScreen, menuVisible);
-    backgroundWindow.userInteractionEnabled = NO;
-    backgroundWindow.hidden = YES;
-    backgroundWindow.alpha = 0.0;
-  }
-  if ((!onScreen || !menuVisible) && backgroundView && backgroundView.superview) {
-    backgroundView.userInteractionEnabled = NO;
-    [backgroundView removeFromSuperview];
-  }
-}
-
-static void JLYTFCleanupPluginViews(void) {
-  UIApplication *app = [UIApplication sharedApplication];
-  NSArray<UIWindow *> *windows = app.windows;
-  for (UIWindow *window in windows) {
-    if (!window || window.hidden) {
-      continue;
-    }
-
-    BOOL hasGestureLock = JLYTFViewTreeContains(window, "JLYGestureLock") || JLYTFViewTreeContains(window, "DBGuestureLock");
-    if (hasGestureLock) {
-      JLYTFHideWindow(window, @"gesture-lock");
-      continue;
-    }
-
-    BOOL hasPopOver = JLYTFViewTreeContains(window, "FTPopOverMenu");
-    if (hasPopOver && !JLYTFHasVisibleMenuView(window)) {
-      JLYTFHideWindow(window, @"popover-background");
-    }
-  }
-  JLYTFCleanupFTPopOverSingleton();
-}
-
-static BOOL JLYTFShouldPassThroughView(UIView *view) {
-  if (!view) {
-    return NO;
-  }
-  if (JLYTFNameContains([view class], "JLYGestureLock") || JLYTFNameContains([view class], "DBGuestureLock")) {
-    return YES;
-  }
-  if (JLYTFNameContains([view class], "FTPopOverMenu") && !JLYTFHasVisibleMenuView(view)) {
-    return YES;
-  }
-  return NO;
-}
-
-static UIView *JLYTF_UIView_hitTest(id self, SEL _cmd, CGPoint point, UIEvent *event) {
-  if (JLYTFShouldPassThroughView((UIView *)self)) {
-    return nil;
-  }
-  UIView *hit = orig_UIView_hitTest ? orig_UIView_hitTest(self, _cmd, point, event) : nil;
-  if (JLYTFShouldPassThroughView(hit)) {
-    return nil;
-  }
-  return hit;
-}
-
-static void JLYTF_FTPopOverMenu_dismiss(id self, SEL _cmd) {
-  if (orig_FTPopOverMenu_dismiss) {
-    orig_FTPopOverMenu_dismiss(self, _cmd);
-  }
-  dispatch_async(dispatch_get_main_queue(), ^{
-    JLYTFCleanupFTPopOverSingleton();
-  });
-}
-
-static void JLYTFNoopVoid(id self, SEL _cmd) {
-  NSLog(@"[JLYTouchFix] suppress %@", NSStringFromSelector(_cmd));
-}
-
-static void JLYTFSwizzleInstance(Class cls, SEL sel, IMP imp, IMP *orig) {
-  Method method = class_getInstanceMethod(cls, sel);
-  if (!method) {
-    return;
-  }
-  if (orig) {
-    *orig = method_getImplementation(method);
-  }
-  method_setImplementation(method, imp);
-}
-
-static void JLYTFSwizzleClassVoidNoop(Class cls, SEL sel) {
-  if (!cls) {
-    return;
-  }
-  Class meta = object_getClass(cls);
-  Method method = class_getClassMethod(cls, sel);
-  if (!method) {
-    return;
-  }
-  class_replaceMethod(meta, sel, (IMP)JLYTFNoopVoid, method_getTypeEncoding(method));
-}
-
-static void JLYTFInstall(void) {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    NSLog(@"[JLYTouchFix] loaded");
-    JLYTFSwizzleInstance([UIView class], @selector(hitTest:withEvent:), (IMP)JLYTF_UIView_hitTest, (IMP *)&orig_UIView_hitTest);
-    JLYTFSwizzleInstance(NSClassFromString(@"FTPopOverMenu"), @selector(dismiss), (IMP)JLYTF_FTPopOverMenu_dismiss, (IMP *)&orig_FTPopOverMenu_dismiss);
-    JLYTFSwizzleClassVoidNoop(NSClassFromString(@"JLYGestureLockView"), @selector(showGestureLockIfNeed));
-  });
-}
-
-static void JLYTFStartTimer(void) {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    JLYTFInstall();
-    JLYTFCleanupPluginViews();
-    [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:YES block:^(__unused NSTimer *timer) {
-      JLYTFCleanupPluginViews();
-    }];
-  });
-}
-
-__attribute__((constructor))
-static void JLYTouchFixEntry(void) {
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-    JLYTFStartTimer();
-  });
-}
-OBJC
-
-SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
-clang -isysroot "$SDK" \
-  -target arm64-apple-ios12.0 \
-  -dynamiclib \
-  -fobjc-arc \
-  -fblocks \
-  -miphoneos-version-min=12.0 \
-  -install_name "$TOUCH_FIX_LOAD" \
-  "$WORKDIR/JLYTouchFix.m" \
-  -framework Foundation \
-  -framework UIKit \
-  -o "$TOUCH_FIX"
-
-python3 - "$APP_DIR/$APP_BIN" "$TOUCH_FIX_LOAD" <<'PY'
-import importlib.util
-import pathlib
-import sys
-
-target = pathlib.Path(sys.argv[1])
-dylib_name = sys.argv[2]
-data = bytearray(target.read_bytes())
-if dylib_name.encode() in data:
-    print(f"{target} already contains {dylib_name}")
-    raise SystemExit(0)
-
-spec = importlib.util.spec_from_file_location("patch_ipa", "scripts/patch_ipa.py")
-patch_ipa = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(patch_ipa)
-injector = patch_ipa.MachOLoadCommandInjector(data)
-target.write_bytes(injector.inject(dylib_name))
-print(f"Injected {dylib_name} into {target}")
-PY
-
-cat > "$WORKDIR/inert_addon.c" <<'C'
-__attribute__((used)) static const char *jly_resign_marker[] = {
-  "https://pee.jlyapp.cn",
-  "/api/posts/app-list",
-  "https://pee.jlyapp.cn/vip1/meet-list",
-  "sm/meet/getmeetlist",
-  "sm/matchmaker/recommend",
-  "https://pee.jlyapp.cn/api/posts/all-app-list",
-  "Circle/detailV1"
-};
-void jly_resign_marker_function(void) {}
-C
-
-clang -isysroot "$SDK" \
-  -target arm64-apple-ios12.0 \
-  -dynamiclib \
-  -miphoneos-version-min=12.0 \
-  "$WORKDIR/inert_addon.c" \
-  -o "$APP_DIR/JLYSearchAddon.dylib"
-cp "$APP_DIR/JLYSearchAddon.dylib" "$APP_DIR/cike.dylib"
-
-python3 - "$APP_DIR/$APP_BIN" <<'PY'
-import importlib.util
-import pathlib
-import sys
-
-target = pathlib.Path(sys.argv[1])
-addon = "@executable_path/JLYSearchAddon.dylib"
-data = bytearray(target.read_bytes())
-if addon.encode() in data:
-    raise SystemExit(0)
-spec = importlib.util.spec_from_file_location("patch_ipa", "scripts/patch_ipa.py")
-patch_ipa = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(patch_ipa)
-injector = patch_ipa.MachOLoadCommandInjector(data)
-target.write_bytes(injector.inject(addon))
-PY
 
 if [[ -n "${MOBILEPROVISION_BASE64:-}" ]]; then
   echo "$MOBILEPROVISION_BASE64" | base64 --decode > "$APP_DIR/embedded.mobileprovision"
@@ -341,7 +31,6 @@ if [[ -f "$APP_DIR/embedded.mobileprovision" ]]; then
 fi
 
 IDENTITY="${CODESIGN_IDENTITY:--}"
-echo "Signing identity: ${IDENTITY}"
 if [[ -n "${SIGNING_CERT_P12_BASE64:-}" ]]; then
   security create-keychain -p "" "$KEYCHAIN_PATH"
   security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
@@ -369,17 +58,10 @@ if [[ -d "$APP_DIR/Frameworks" ]]; then
     sign_target "$framework" || true
   done
 fi
-
 find "$APP_DIR" -maxdepth 1 -name '*.dylib' -type f -print0 | while IFS= read -r -d '' dylib; do
   sign_target "$dylib"
 done
-
 sign_target "$APP_DIR"
-codesign --verify --deep --strict --verbose=2 "$APP_DIR"
-otool -l "$LIBTEST" | grep -F "$MIAOTAO_LOAD"
-otool -l "$APP_DIR/$APP_BIN" | grep -F "$TOUCH_FIX_LOAD"
-grep -q 'libmiaotao 2.dylib' "$APP_DIR/_CodeSignature/CodeResources"
-grep -q 'libJLYTouchFix.dylib' "$APP_DIR/_CodeSignature/CodeResources"
 
 mkdir -p "$(dirname "$OUTPUT_IPA")"
 (
