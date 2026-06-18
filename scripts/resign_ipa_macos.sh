@@ -7,6 +7,8 @@ WORKDIR="$(mktemp -d)"
 PATCHED_IPA="$WORKDIR/patched.ipa"
 KEYCHAIN_PATH="$WORKDIR/build.keychain-db"
 SEARCH_ADDON="$WORKDIR/JLYSearchAddon.dylib"
+ROUTE_FIX="$WORKDIR/libJLYRouteFix.dylib"
+ROUTE_FIX_LOAD="@executable_path/libJLYRouteFix.dylib"
 
 cleanup() {
   security delete-keychain "$KEYCHAIN_PATH" >/dev/null 2>&1 || true
@@ -19,6 +21,30 @@ scripts/build_search_addon_macos.sh "$SEARCH_ADDON"
 python3 scripts/patch_ipa.py "$INPUT_IPA" "$PATCHED_IPA" --workdir "$WORKDIR/patch" --search-addon "$SEARCH_ADDON" --keep-ipa-app-list
 unzip -q "$PATCHED_IPA" -d "$WORKDIR/ipa"
 APP_DIR="$(find "$WORKDIR/ipa/Payload" -maxdepth 1 -name '*.app' -type d | head -n 1)"
+APP_BIN="$(/usr/libexec/PlistBuddy -c 'Print CFBundleExecutable' "$APP_DIR/Info.plist")"
+
+chmod +x scripts/build_route_fix_macos.sh
+scripts/build_route_fix_macos.sh "$ROUTE_FIX"
+cp "$ROUTE_FIX" "$APP_DIR/libJLYRouteFix.dylib"
+python3 - "$APP_DIR/$APP_BIN" "$ROUTE_FIX_LOAD" <<'PY'
+import importlib.util
+import pathlib
+import sys
+
+target = pathlib.Path(sys.argv[1])
+dylib_name = sys.argv[2]
+data = bytearray(target.read_bytes())
+if dylib_name.encode() in data:
+    print(f"{target} already contains {dylib_name}")
+    raise SystemExit(0)
+
+spec = importlib.util.spec_from_file_location("patch_ipa", "scripts/patch_ipa.py")
+patch_ipa = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(patch_ipa)
+injector = patch_ipa.MachOLoadCommandInjector(data)
+target.write_bytes(injector.inject(dylib_name))
+print(f"Injected {dylib_name} into {target}")
+PY
 
 if [[ -n "${MOBILEPROVISION_BASE64:-}" ]]; then
   echo "$MOBILEPROVISION_BASE64" | base64 --decode > "$APP_DIR/embedded.mobileprovision"
