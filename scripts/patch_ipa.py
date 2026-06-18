@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 import argparse
 import re
 import shutil
@@ -34,6 +34,11 @@ def main():
         action="store_true",
         help="Only patch hosts. Do not repoint the paid video list CFString to the APK all-app-list endpoint.",
     )
+    parser.add_argument(
+        "--allow-missing-host-patch",
+        action="store_true",
+        help="Continue when host strings were already patched or are not present in cike.dylib.",
+    )
     args = parser.parse_args()
 
     replacements = DEFAULT_REPLACEMENTS
@@ -67,8 +72,10 @@ def main():
             data = data.replace(from_bytes, to_bytes)
             print(f"Patched {count} occurrence(s): {old} -> {new}")
 
-    if total == 0:
+    if total == 0 and not args.allow_missing_host_patch:
         raise SystemExit(f"No patchable endpoint strings found in {dylib_path}")
+    if total == 0:
+        print(f"No patchable endpoint strings found in {dylib_path}; continuing")
 
     if not args.keep_ipa_app_list:
         data, all_list_count = patch_all_app_list_endpoint(data)
@@ -446,3 +453,4 @@ def align(value, alignment):
 
 if __name__ == "__main__":
     main()
+
