@@ -18,7 +18,7 @@ trap cleanup EXIT
 
 chmod +x scripts/build_search_addon_macos.sh
 scripts/build_search_addon_macos.sh "$SEARCH_ADDON"
-python3 scripts/patch_ipa.py "$INPUT_IPA" "$PATCHED_IPA" --workdir "$WORKDIR/patch" --search-addon "$SEARCH_ADDON" --keep-ipa-app-list
+python3 scripts/patch_ipa.py "$INPUT_IPA" "$PATCHED_IPA" --workdir "$WORKDIR/patch" --search-addon "$SEARCH_ADDON" --keep-ipa-app-list --allow-missing-host-patch
 unzip -q "$PATCHED_IPA" -d "$WORKDIR/ipa"
 APP_DIR="$(find "$WORKDIR/ipa/Payload" -maxdepth 1 -name '*.app' -type d | head -n 1)"
 APP_BIN="$(/usr/libexec/PlistBuddy -c 'Print CFBundleExecutable' "$APP_DIR/Info.plist")"
