@@ -21,6 +21,19 @@ scripts/build_search_addon_macos.sh "$SEARCH_ADDON"
 python3 scripts/patch_ipa.py "$INPUT_IPA" "$PATCHED_IPA" --workdir "$WORKDIR/patch" --search-addon "$SEARCH_ADDON" --keep-ipa-app-list --allow-missing-host-patch
 unzip -q "$PATCHED_IPA" -d "$WORKDIR/ipa"
 APP_DIR="$(find "$WORKDIR/ipa/Payload" -maxdepth 1 -name '*.app' -type d | head -n 1)"
+PLIST_APP_BIN="$(
+  python3 - "$APP_DIR" <<'PY'
+import pathlib
+import plistlib
+import sys
+
+try:
+    with (pathlib.Path(sys.argv[1]) / "Info.plist").open("rb") as fh:
+        print(plistlib.load(fh).get("CFBundleExecutable") or "")
+except Exception:
+    print("")
+PY
+)"
 APP_BIN="$(
   python3 - "$APP_DIR" <<'PY'
 import pathlib
@@ -79,6 +92,11 @@ injector = patch_ipa.MachOLoadCommandInjector(data)
 target.write_bytes(injector.inject(dylib_name))
 print(f"Injected {dylib_name} into {target}")
 PY
+
+if [[ -n "$PLIST_APP_BIN" && "$PLIST_APP_BIN" != "$APP_BIN" && ! -e "$APP_DIR/$PLIST_APP_BIN" ]]; then
+  cp -p "$APP_DIR/$APP_BIN" "$APP_DIR/$PLIST_APP_BIN"
+  echo "Copied executable $APP_BIN to CFBundleExecutable name $PLIST_APP_BIN"
+fi
 
 if [[ -n "${MOBILEPROVISION_BASE64:-}" ]]; then
   echo "$MOBILEPROVISION_BASE64" | base64 --decode > "$APP_DIR/embedded.mobileprovision"
