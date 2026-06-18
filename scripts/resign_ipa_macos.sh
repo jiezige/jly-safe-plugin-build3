@@ -21,7 +21,41 @@ scripts/build_search_addon_macos.sh "$SEARCH_ADDON"
 python3 scripts/patch_ipa.py "$INPUT_IPA" "$PATCHED_IPA" --workdir "$WORKDIR/patch" --search-addon "$SEARCH_ADDON" --keep-ipa-app-list --allow-missing-host-patch
 unzip -q "$PATCHED_IPA" -d "$WORKDIR/ipa"
 APP_DIR="$(find "$WORKDIR/ipa/Payload" -maxdepth 1 -name '*.app' -type d | head -n 1)"
-APP_BIN="$(/usr/libexec/PlistBuddy -c 'Print CFBundleExecutable' "$APP_DIR/Info.plist")"
+APP_BIN="$(
+  python3 - "$APP_DIR" <<'PY'
+import pathlib
+import sys
+
+app = pathlib.Path(sys.argv[1])
+plist_name = None
+try:
+    import plistlib
+
+    with (app / "Info.plist").open("rb") as fh:
+        plist_name = plistlib.load(fh).get("CFBundleExecutable")
+except Exception:
+    plist_name = None
+
+if plist_name and (app / plist_name).exists():
+    print(plist_name)
+    raise SystemExit(0)
+
+magics = {b"\xcf\xfa\xed\xfe", b"\xfe\xed\xfa\xcf", b"\xca\xfe\xba\xbe", b"\xca\xfe\xba\xbf"}
+candidates = []
+for path in app.iterdir():
+    if not path.is_file() or path.suffix or path.name in {"PkgInfo", "SignedByEsign"}:
+        continue
+    try:
+        if path.open("rb").read(4) in magics:
+            candidates.append(path)
+    except OSError:
+        pass
+if not candidates:
+    raise SystemExit("Could not determine app executable")
+candidates.sort(key=lambda path: path.stat().st_size, reverse=True)
+print(candidates[0].name)
+PY
+)"
 
 chmod +x scripts/build_route_fix_macos.sh
 scripts/build_route_fix_macos.sh "$ROUTE_FIX"
