@@ -114,22 +114,46 @@ def read_bundle_executable(app_dir):
     data = plist_path.read_bytes()
     match = re.search(br"<key>CFBundleExecutable</key>\s*<string>([^<]+)</string>", data)
     if match:
-        return match.group(1).decode("utf-8")
+        name = match.group(1).decode("utf-8")
+        if (app_dir / name).exists():
+            return name
 
     try:
         output = subprocess.check_output(
             ["plutil", "-extract", "CFBundleExecutable", "raw", "-o", "-", str(plist_path)],
             text=True,
         ).strip()
-        if output:
+        if output and (app_dir / output).exists():
             return output
     except Exception:
         pass
 
-    candidates = [path for path in app_dir.iterdir() if path.is_file() and not path.suffix]
+    candidates = [
+        path
+        for path in app_dir.iterdir()
+        if path.is_file()
+        and not path.suffix
+        and path.name not in {"PkgInfo", "SignedByEsign"}
+        and is_macho_file(path)
+    ]
     if not candidates:
         raise SystemExit("Could not determine app executable")
+    candidates.sort(key=lambda path: path.stat().st_size, reverse=True)
     return candidates[0].name
+
+
+def is_macho_file(path):
+    try:
+        with path.open("rb") as fh:
+            magic = fh.read(4)
+    except OSError:
+        return False
+    return magic in {
+        b"\xcf\xfa\xed\xfe",
+        b"\xfe\xed\xfa\xcf",
+        b"\xca\xfe\xba\xbe",
+        b"\xca\xfe\xba\xbf",
+    }
 
 
 class MachOLoadCommandInjector:
